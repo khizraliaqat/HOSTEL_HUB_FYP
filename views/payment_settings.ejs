@@ -4,9 +4,9 @@
     .hh-payment-settings-wrap {
         padding: 108px 0 72px;
         background:
-            radial-gradient(circle at top left, rgba(14, 165, 233, 0.14), transparent 24%),
-            radial-gradient(circle at top right, rgba(124, 58, 237, 0.12), transparent 22%),
-            linear-gradient(180deg, #071120 0%, #0b1730 24%, #f8fafc 24%, #f8fafc 100%);
+            radial-gradient(circle at top left, rgb(241, 189, 189), transparent 24%),
+            radial-gradient(circle at top right, rgb(197, 170, 245), transparent 22%),
+            linear-gradient(180deg, #de9cc9 0%, #809dda 24%, #f8fafc 24%, #f8fafc 100%);
         min-height: 100vh;
     }
 
@@ -16,25 +16,29 @@
     }
 
     .hh-payment-settings-wrap label {
-        color: #0f172a;
+        color: #ffffff;
         font-weight: 700;
         margin-bottom: 6px;
     }
 
     .hh-payment-settings-wrap .form-control {
-        color: #0f172a;
+        color: #000000;
         background: #ffffff;
         border: 1px solid #dbe4f0;
     }
 
     .hh-payment-settings-wrap .form-control:focus {
-        border-color: #7dd3fc;
-        box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.08);
+        border-color: #000000;
+        box-shadow: 0 0 0 4px rgb(35, 189, 104);
     }
 
     .hh-payment-settings-wrap .btn-dark {
         color: #ffffff;
-        font-weight: 700;
+        font-weight: 800;
+    }
+
+    .hh-payment-settings-wrap .text-muted {
+        color: #ffffff !important;
     }
 
     @media (max-width: 767px) {
@@ -46,7 +50,7 @@
 
 <div class="content-wrapper hh-payment-settings-wrap">
     <div class="container" style="max-width: 700px;">
-        <h2 class="fw-bold mb-4 text-center" style="font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.5px; color: #0066CC; font-size: 1.8rem;">Payment Methods</h2>
+        <h2 class="fw-bold mb-4 text-center" style="font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.5px; color: #000000; font-size: 1.8rem;">Payment Methods</h2>
         
         <div class="card shadow-sm border-0">
             <div class="card-body p-5">
