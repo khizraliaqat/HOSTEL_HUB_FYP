@@ -1,0 +1,615 @@
+<%- include('partials/header') %>
+
+<style>
+    :root {
+        --hh-bg: #071120;
+        --hh-bg-soft: #0b1730;
+        --hh-white: #ffffff;
+        --hh-text: #0f172a;
+        --hh-text-soft: #64748b;
+        --hh-line: rgba(255, 255, 255, 0.12);
+        --hh-primary: #0ea5e9;
+        --hh-secondary: #7c3aed;
+        --hh-accent: #14b8a6;
+        --hh-gold: #fbbf24;
+        --hh-success: #10b981;
+        --hh-danger: #ef4444;
+        --hh-warning: #f59e0b;
+        --hh-shadow: 0 24px 60px rgba(2, 8, 23, 0.16);
+    }
+
+    body {
+        background: #f8fafc;
+        font-family: 'Outfit', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .hh-complaints-page {
+        background:
+            radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 26%),
+            radial-gradient(circle at top right, rgba(124, 58, 237, 0.16), transparent 24%),
+            linear-gradient(180deg, #071120 0%, #0b1730 22%, #f8fafc 22%, #f8fafc 100%);
+        min-height: 100vh;
+        padding: 108px 0 72px;
+    }
+
+    .hh-shell {
+        width: min(1320px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    .hh-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: #dbeafe;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        backdrop-filter: blur(14px);
+    }
+
+    .hh-hero {
+        position: relative;
+        border-radius: 36px;
+        overflow: hidden;
+        background: linear-gradient(180deg, #0c172c 0%, #101d3a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 24px 60px rgba(2, 8, 23, 0.2);
+        color: #ffffff;
+        padding: 34px;
+        margin-bottom: 24px;
+    }
+
+    .hh-hero::before {
+        content: '';
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        right: -80px;
+        top: -90px;
+        border-radius: 999px;
+        background: rgba(239, 68, 68, 0.14);
+        filter: blur(36px);
+        pointer-events: none;
+    }
+
+    .hh-hero-top {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+
+    .hh-hero-copy h1 {
+        margin: 18px 0 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2.2rem, 5vw, 3.8rem);
+        line-height: 1.02;
+        letter-spacing: -0.05em;
+        color: #ffffff;
+    }
+
+    .hh-hero-copy h1 .accent {
+        background: linear-gradient(90deg, #ffb4b4 0%, #f87171 42%, #f59e0b 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hh-hero-copy p {
+        margin: 0;
+        color: #c8d6f0;
+        line-height: 1.85;
+        max-width: 760px;
+        font-size: 1rem;
+    }
+
+    .hh-back-link,
+    .hh-btn,
+    .hh-btn-outline,
+    .hh-btn-success {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 50px;
+        padding: 0 18px;
+        border-radius: 16px;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        border: 0;
+        cursor: pointer;
+    }
+
+    .hh-back-link,
+    .hh-btn-outline {
+        background: #ffffff;
+        border: 1px solid #dbe4f0;
+        color: #0f172a;
+    }
+
+    .hh-btn {
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+        color: #ffffff;
+        box-shadow: 0 16px 32px rgba(14, 165, 233, 0.18);
+    }
+
+    .hh-btn-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        box-shadow: 0 16px 32px rgba(16, 185, 129, 0.18);
+    }
+
+    .hh-back-link:hover,
+    .hh-btn:hover,
+    .hh-btn-outline:hover,
+    .hh-btn-success:hover {
+        transform: translateY(-2px);
+    }
+
+    .hh-btn:hover,
+    .hh-btn-success:hover {
+        color: #ffffff;
+    }
+
+    .hh-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 26px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hh-stat {
+        padding: 18px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(14px);
+    }
+
+    .hh-stat strong {
+        display: block;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.6rem;
+        line-height: 1;
+        color: #ffffff;
+        margin-bottom: 7px;
+    }
+
+    .hh-stat span {
+        color: #c8d6f0;
+        font-size: 0.88rem;
+    }
+
+    .hh-card {
+        border-radius: 30px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        box-shadow: var(--hh-shadow);
+        overflow: hidden;
+    }
+
+    .hh-card-head {
+        padding: 22px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #edf2f7;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    }
+
+    .hh-card-head h3 {
+        margin: 0;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.3rem;
+        color: #0f172a;
+    }
+
+    .hh-card-body {
+        padding: 24px;
+    }
+
+    .hh-status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+    }
+
+    .hh-status.pending {
+        background: rgba(245, 158, 11, 0.14);
+        color: #b45309;
+    }
+
+    .hh-status.resolved {
+        background: rgba(16, 185, 129, 0.12);
+        color: #047857;
+    }
+
+    .hh-table-wrap {
+        overflow-x: auto;
+    }
+
+    .hh-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 900px;
+    }
+
+    .hh-table thead {
+        background: linear-gradient(135deg, #ef4444 0%, #f59e0b 100%);
+        color: #ffffff;
+    }
+
+    .hh-table th,
+    .hh-table td {
+        padding: 14px 16px;
+        text-align: left;
+        border-bottom: 1px solid #edf2f7;
+        vertical-align: middle;
+    }
+
+    .hh-table th {
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-weight: 800;
+    }
+
+    .hh-table td {
+        color: #0f172a;
+        font-size: 0.94rem;
+    }
+
+    .hh-table tbody tr:hover {
+        background: #fffaf9;
+    }
+
+    .hh-user-chip {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .hh-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(245, 158, 11, 0.1) 100%);
+        color: #0f172a;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+
+    .hh-user-chip strong {
+        display: block;
+        color: #0f172a;
+        margin-bottom: 3px;
+    }
+
+    .hh-user-chip small {
+        color: #64748b;
+    }
+
+    .hh-issue {
+        color: #dc2626;
+        font-weight: 800;
+    }
+
+    .hh-empty {
+        padding: 56px 24px;
+        text-align: center;
+        color: #64748b;
+    }
+
+    .hh-empty i {
+        width: 74px;
+        height: 74px;
+        margin: 0 auto 16px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(245, 158, 11, 0.08) 100%);
+        color: #0f172a;
+        font-size: 1.8rem;
+    }
+
+    .hh-empty h4 {
+        margin: 0 0 8px;
+        font-family: 'Space Grotesk', sans-serif;
+        color: #0f172a;
+    }
+
+    .hh-mobile-grid {
+        display: none;
+        gap: 14px;
+    }
+
+    .hh-complaint-card {
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 18px;
+        border: 1px solid #e6eef8;
+        box-shadow: 0 12px 26px rgba(2, 8, 23, 0.06);
+    }
+
+    .hh-complaint-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .hh-complaint-top h4 {
+        margin: 0 0 4px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1rem;
+        color: #0f172a;
+    }
+
+    .hh-complaint-top p {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.82rem;
+    }
+
+    .hh-meta-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin: 12px 0;
+    }
+
+    .hh-meta-row span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: 999px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #334155;
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+
+    .hh-description {
+        color: #64748b;
+        line-height: 1.75;
+        font-size: 0.9rem;
+        margin: 12px 0 0;
+    }
+
+    .hh-complaint-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+        flex-wrap: wrap;
+    }
+
+    @media (max-width: 767px) {
+        .hh-complaints-page {
+            padding: 92px 0 54px;
+        }
+
+        .hh-shell {
+            width: min(100% - 20px, 1320px);
+        }
+
+        .hh-hero,
+        .hh-card-body,
+        .hh-card-head,
+        .hh-complaint-card {
+            padding-left: 18px;
+            padding-right: 18px;
+        }
+
+        .hh-hero,
+        .hh-card-body,
+        .hh-card-head,
+        .hh-complaint-card {
+            padding-top: 18px;
+            padding-bottom: 18px;
+        }
+
+        .hh-stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .hh-table-wrap {
+            display: none;
+        }
+
+        .hh-mobile-grid {
+            display: grid;
+        }
+
+        .hh-back-link,
+        .hh-btn,
+        .hh-btn-outline,
+        .hh-btn-success {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .hh-hero-copy h1 {
+            font-size: 2rem;
+        }
+
+        .hh-stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-complaint-top,
+        .hh-hero-top,
+        .hh-complaint-actions {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+</style>
+
+<div class="hh-complaints-page">
+    <div class="hh-shell">
+        <section class="hh-hero">
+            <div class="hh-hero-top">
+                <div class="hh-hero-copy">
+                    <span class="hh-badge"><i class="bi bi-tools"></i> complaint management</span>
+                    <h1>Hostel <span class="accent">complaints</span></h1>
+                    <p>Review student complaints, monitor issue status, and resolve maintenance or service problems from one cleaner premium management page that matches the rest of the HostelHub owner system.</p>
+                </div>
+
+                <a href="/owner_dashboard" class="hh-back-link"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
+            </div>
+
+            <div class="hh-stats-grid">
+                <div class="hh-stat">
+                    <strong><%= complaints.length %></strong>
+                    <span>Total complaints</span>
+                </div>
+                <div class="hh-stat">
+                    <strong><%= complaints.filter(c => c.status === 'Pending').length %></strong>
+                    <span>Pending</span>
+                </div>
+                <div class="hh-stat">
+                    <strong><%= complaints.filter(c => c.status === 'Resolved').length %></strong>
+                    <span>Resolved</span>
+                </div>
+                <div class="hh-stat">
+                    <strong><%= [...new Set(complaints.map(c => c.hostel_name))].length %></strong>
+                    <span>Properties affected</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="hh-card">
+            <div class="hh-card-head">
+                <h3><i class="bi bi-exclamation-octagon me-2"></i> Complaint Overview</h3>
+                <span class="hh-badge" style="background:#fff7ed; color:#c2410c; border-color:#fed7aa;">Issue tracking</span>
+            </div>
+
+            <div class="hh-card-body">
+                <div class="hh-table-wrap">
+                    <table class="hh-table">
+                        <thead>
+                            <tr>
+                                <th>Student</th>
+                                <th>Hostel</th>
+                                <th>Issue Type</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if(complaints.length > 0) { %>
+                                <% complaints.forEach(comp => { %>
+                                    <tr>
+                                        <td>
+                                            <div class="hh-user-chip">
+                                                <div class="hh-avatar"><%= comp.student_name.charAt(0).toUpperCase() %></div>
+                                                <div>
+                                                    <strong><%= comp.student_name %></strong>
+                                                    <small><%= comp.phone %></small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td><strong><%= comp.hostel_name %></strong></td>
+                                        <td><span class="hh-issue"><%= comp.issue_type %></span></td>
+                                        <td><small><%= comp.description %></small></td>
+                                        <td>
+                                            <span class="hh-status <%= comp.status === 'Resolved' ? 'resolved' : 'pending' %>"><%= comp.status %></span>
+                                        </td>
+                                        <td>
+                                            <% if(comp.status === 'Pending') { %>
+                                                <a href="/resolve_complaint/<%= comp._id %>" class="hh-btn-success" style="min-height:40px; padding:0 14px;" onclick="return confirm('Mark this issue as resolved?')">
+                                                    <i class="bi bi-check-lg"></i> Resolve
+                                                </a>
+                                            <% } else { %>
+                                                <span class="hh-status resolved"><i class="bi bi-check-circle-fill me-1"></i> Fixed</span>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="6">
+                                        <div class="hh-empty">
+                                            <i class="bi bi-inbox"></i>
+                                            <h4>No complaints found</h4>
+                                            <p>There are no complaints available right now.</p>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="hh-mobile-grid">
+                    <% if(complaints.length > 0) { %>
+                        <% complaints.forEach(comp => { %>
+                            <div class="hh-complaint-card">
+                                <div class="hh-complaint-top">
+                                    <div>
+                                        <h4><%= comp.student_name %></h4>
+                                        <p><%= comp.phone %></p>
+                                    </div>
+                                    <span class="hh-status <%= comp.status === 'Resolved' ? 'resolved' : 'pending' %>"><%= comp.status %></span>
+                                </div>
+
+                                <div class="hh-meta-row">
+                                    <span><i class="bi bi-building"></i> <%= comp.hostel_name %></span>
+                                    <span style="color:#dc2626;"><i class="bi bi-exclamation-circle"></i> <%= comp.issue_type %></span>
+                                </div>
+
+                                <div class="hh-description"><%= comp.description %></div>
+
+                                <div class="hh-complaint-actions">
+                                    <% if(comp.status === 'Pending') { %>
+                                        <a href="/resolve_complaint/<%= comp._id %>" class="hh-btn-success" onclick="return confirm('Mark this issue as resolved?')">
+                                            <i class="bi bi-check-lg"></i> Resolve
+                                        </a>
+                                    <% } else { %>
+                                        <div class="hh-btn-outline" style="border-color:#bbf7d0; color:#047857;"><i class="bi bi-check-circle-fill"></i> Fixed</div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="hh-empty">
+                            <i class="bi bi-inbox"></i>
+                            <h4>No complaints found</h4>
+                            <p>There are no complaints available right now.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

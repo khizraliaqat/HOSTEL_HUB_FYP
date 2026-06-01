@@ -1,0 +1,605 @@
+<%- include('partials/header') %>
+
+<style>
+    :root {
+        --hh-bg: #071120;
+        --hh-bg-soft: #0b1730;
+        --hh-white: #ffffff;
+        --hh-text: #0f172a;
+        --hh-text-soft: #64748b;
+        --hh-line: rgba(255, 255, 255, 0.12);
+        --hh-primary: #0ea5e9;
+        --hh-secondary: #7c3aed;
+        --hh-accent: #14b8a6;
+        --hh-gold: #fbbf24;
+        --hh-warning: #f59e0b;
+        --hh-shadow: 0 24px 60px rgba(2, 8, 23, 0.16);
+    }
+
+    body {
+        background: #f8fafc;
+        font-family: 'Outfit', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .hh-manage-announcement-page {
+        background:
+            radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 26%),
+            radial-gradient(circle at top right, rgba(124, 58, 237, 0.16), transparent 24%),
+            linear-gradient(180deg, #071120 0%, #0b1730 22%, #f8fafc 22%, #f8fafc 100%);
+        min-height: 100vh;
+        padding: 108px 0 72px;
+    }
+
+    .hh-shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    .hh-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: #dbeafe;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        backdrop-filter: blur(14px);
+    }
+
+    .hh-btn,
+    .hh-btn-outline,
+    .hh-btn-dark,
+    .hh-btn-light {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 50px;
+        padding: 0 18px;
+        border-radius: 16px;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        border: 0;
+        cursor: pointer;
+    }
+
+    .hh-btn {
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+        color: #ffffff;
+        box-shadow: 0 16px 32px rgba(14, 165, 233, 0.18);
+    }
+
+    .hh-btn:hover {
+        transform: translateY(-2px);
+        color: #ffffff;
+        box-shadow: 0 22px 38px rgba(14, 165, 233, 0.22);
+    }
+
+    .hh-btn-outline,
+    .hh-btn-light {
+        background: #ffffff;
+        border: 1px solid #dbe4f0;
+        color: #0f172a;
+    }
+
+    .hh-btn-dark {
+        background: #0f172a;
+        color: #ffffff;
+    }
+
+    .hh-btn-outline:hover,
+    .hh-btn-dark:hover,
+    .hh-btn-light:hover {
+        transform: translateY(-2px);
+    }
+
+    .hh-hero {
+        position: relative;
+        border-radius: 36px;
+        overflow: hidden;
+        background: linear-gradient(180deg, #0c172c 0%, #101d3a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 24px 60px rgba(2, 8, 23, 0.2);
+        color: #ffffff;
+        padding: 34px;
+        margin-bottom: 24px;
+    }
+
+    .hh-hero::before {
+        content: '';
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        right: -80px;
+        top: -90px;
+        border-radius: 999px;
+        background: rgba(251, 191, 36, 0.14);
+        filter: blur(36px);
+        pointer-events: none;
+    }
+
+    .hh-hero-top {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+
+    .hh-hero-copy h1 {
+        margin: 18px 0 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2.2rem, 5vw, 3.8rem);
+        line-height: 1.02;
+        letter-spacing: -0.05em;
+        color: #ffffff;
+    }
+
+    .hh-hero-copy h1 .accent {
+        background: linear-gradient(90deg, #fde68a 0%, #fbbf24 42%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hh-hero-copy p {
+        margin: 0;
+        color: #c8d6f0;
+        line-height: 1.85;
+        max-width: 760px;
+        font-size: 1rem;
+    }
+
+    .hh-hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 26px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hh-stat {
+        padding: 18px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(14px);
+    }
+
+    .hh-stat strong {
+        display: block;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.5rem;
+        line-height: 1;
+        color: #ffffff;
+        margin-bottom: 7px;
+    }
+
+    .hh-stat span {
+        color: #c8d6f0;
+        font-size: 0.88rem;
+    }
+
+    .hh-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.08fr) minmax(280px, 0.92fr);
+        gap: 24px;
+        align-items: start;
+    }
+
+    .hh-card,
+    .hh-side-card {
+        border-radius: 30px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        box-shadow: var(--hh-shadow);
+        overflow: hidden;
+    }
+
+    .hh-form-card {
+        padding: 28px;
+    }
+
+    .hh-section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 18px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.32rem;
+        color: #0f172a;
+    }
+
+    .hh-section-title .icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(251, 191, 36, 0.14) 0%, rgba(14, 165, 233, 0.08) 100%);
+        color: #0f172a;
+    }
+
+    .hh-status-box {
+        padding: 22px;
+        border-radius: 24px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        border: 1px solid #e6eef8;
+        margin-bottom: 22px;
+    }
+
+    .hh-status-live {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        padding: 18px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, rgba(251, 191, 36, 0.14) 0%, rgba(245, 158, 11, 0.08) 100%);
+        border: 1px solid rgba(245, 158, 11, 0.24);
+    }
+
+    .hh-status-empty {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 18px;
+        border-radius: 20px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+    }
+
+    .hh-status-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        flex-shrink: 0;
+        font-size: 1.45rem;
+    }
+
+    .hh-status-live .hh-status-icon {
+        background: rgba(255, 255, 255, 0.55);
+        color: #92400e;
+    }
+
+    .hh-status-empty .hh-status-icon {
+        background: #ffffff;
+        color: #475569;
+        border: 1px solid #e2e8f0;
+    }
+
+    .hh-status-text strong {
+        display: block;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.05rem;
+        color: #0f172a;
+        margin-bottom: 6px;
+    }
+
+    .hh-status-text p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.8;
+        word-break: break-word;
+    }
+
+    .hh-divider {
+        height: 1px;
+        background: #edf2f7;
+        margin: 22px 0;
+    }
+
+    .hh-field label {
+        display: block;
+        margin-bottom: 8px;
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .hh-field textarea {
+        width: 100%;
+        min-height: 180px;
+        border: 1px solid #dbe4f0;
+        border-radius: 18px;
+        background: #ffffff;
+        padding: 16px 18px;
+        outline: none;
+        color: #0f172a;
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.96rem;
+        line-height: 1.8;
+        transition: all 0.25s ease;
+        resize: vertical;
+    }
+
+    .hh-field textarea:focus {
+        border-color: #7dd3fc;
+        box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.08);
+    }
+
+    .hh-help {
+        margin-top: 8px;
+        color: #64748b;
+        font-size: 0.84rem;
+        line-height: 1.6;
+    }
+
+    .hh-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 22px;
+    }
+
+    .hh-side-card {
+        position: sticky;
+        top: 100px;
+        padding: 24px;
+        background: linear-gradient(180deg, #0c172c 0%, #101d3a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+    }
+
+    .hh-side-card::before {
+        content: '';
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        right: -40px;
+        top: -50px;
+        border-radius: 999px;
+        background: rgba(124, 58, 237, 0.16);
+        filter: blur(28px);
+        pointer-events: none;
+    }
+
+    .hh-side-head {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .hh-side-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+
+    .hh-side-head h3 {
+        margin: 0 0 4px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.2rem;
+        color: #ffffff;
+    }
+
+    .hh-side-head p {
+        margin: 0;
+        color: #c8d6f0;
+        font-size: 0.9rem;
+    }
+
+    .hh-side-points {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        gap: 12px;
+    }
+
+    .hh-point {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #dbeafe;
+        font-weight: 600;
+    }
+
+    .hh-point i {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.08);
+        color: #7dd3fc;
+        flex-shrink: 0;
+    }
+
+    .hh-note {
+        position: relative;
+        z-index: 1;
+        margin-top: 18px;
+        padding: 16px;
+        border-radius: 18px;
+        background: rgba(251, 191, 36, 0.12);
+        border: 1px solid rgba(251, 191, 36, 0.18);
+        color: #fde68a;
+        line-height: 1.7;
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 1199px) {
+        .hh-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-side-card {
+            position: static;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .hh-manage-announcement-page {
+            padding: 92px 0 54px;
+        }
+
+        .hh-shell {
+            width: min(100% - 20px, 1180px);
+        }
+
+        .hh-hero,
+        .hh-form-card,
+        .hh-side-card,
+        .hh-status-box {
+            padding: 18px;
+        }
+
+        .hh-hero-stats {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .hh-hero-copy h1 {
+            font-size: 2rem;
+        }
+
+        .hh-actions,
+        .hh-hero-top,
+        .hh-status-live,
+        .hh-status-empty {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .hh-btn,
+        .hh-btn-outline,
+        .hh-btn-dark,
+        .hh-btn-light {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="hh-manage-announcement-page">
+    <div class="hh-shell">
+        <section class="hh-hero">
+            <div class="hh-hero-top">
+                <div class="hh-hero-copy">
+                    <span class="hh-badge"><i class="bi bi-megaphone-fill"></i> hostel popup control</span>
+                    <h1>Manage <span class="accent">announcement</span></h1>
+                    <p>Create or update the popup message that appears on your hostel details page. This redesign keeps the same announcement logic, hostel ID handling, and form action while fitting the premium owner dashboard system.</p>
+                </div>
+
+                <a href="/owner_dashboard" class="hh-btn-outline"><i class="bi bi-arrow-left"></i> Back</a>
+            </div>
+
+            <div class="hh-hero-stats">
+                <div class="hh-stat">
+                    <strong><%= announcement ? 'Live' : 'Off' %></strong>
+                    <span>Current popup state</span>
+                </div>
+                <div class="hh-stat">
+                    <strong>1</strong>
+                    <span>Announcement slot</span>
+                </div>
+                <div class="hh-stat">
+                    <strong>Popup</strong>
+                    <span>Shown on hostel page</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="hh-layout">
+            <section class="hh-card">
+                <div class="hh-form-card">
+                    <div class="hh-status-box">
+                        <h3 class="hh-section-title"><span class="icon"><i class="bi bi-broadcast"></i></span> Current Status</h3>
+
+                        <% if (announcement) { %>
+                            <div class="hh-status-live">
+                                <div class="hh-status-icon"><i class="bi bi-megaphone-fill"></i></div>
+                                <div class="hh-status-text">
+                                    <strong>Live on website</strong>
+                                    <p>"<%= announcement %>"</p>
+                                </div>
+                            </div>
+                        <% } else { %>
+                            <div class="hh-status-empty">
+                                <div class="hh-status-icon"><i class="bi bi-info-circle"></i></div>
+                                <div class="hh-status-text">
+                                    <strong>No active announcement</strong>
+                                    <p>There is currently no popup message displayed on your hostel details page.</p>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="hh-divider"></div>
+
+                    <form action="/manage_hostel" method="POST">
+                        <input type="hidden" name="hostel_id" value="<%= hostel_id %>">
+
+                        <h3 class="hh-section-title"><span class="icon"><i class="bi bi-pencil-square"></i></span> Write New Announcement</h3>
+
+                        <div class="hh-field">
+                            <label>Announcement text</label>
+                            <textarea name="text" placeholder="e.g. Limited Time Offer: 50% OFF on First Month Rent! Contact now." required><%= announcement || '' %></textarea>
+                            <div class="hh-help">Write a short and clear update that students can understand immediately. Leave it empty and save if you want to remove the current announcement.</div>
+                        </div>
+
+                        <div class="hh-actions">
+                            <a href="/owner_dashboard" class="hh-btn-light">Cancel</a>
+                            <button type="submit" class="hh-btn"><i class="bi bi-check-circle"></i> Publish Update</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <aside class="hh-side-card">
+                <div class="hh-side-head">
+                    <div class="hh-side-icon"><i class="bi bi-lightning-charge"></i></div>
+                    <div>
+                        <h3>Quick guidance</h3>
+                        <p>Use announcements for short, high-value updates.</p>
+                    </div>
+                </div>
+
+                <div class="hh-side-points">
+                    <div class="hh-point"><i class="bi bi-tag"></i> Use it for promotions, offers, or urgent hostel notices</div>
+                    <div class="hh-point"><i class="bi bi-eye"></i> Keep the wording short so it reads well as a popup</div>
+                    <div class="hh-point"><i class="bi bi-people"></i> Write for students who are deciding quickly</div>
+                    <div class="hh-point"><i class="bi bi-arrow-repeat"></i> Update it whenever the offer or notice changes</div>
+                </div>
+
+                <div class="hh-note">
+                    This message appears as a popup on the hostel details page, so strong and direct wording works best.
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+
+</body>
+</html>

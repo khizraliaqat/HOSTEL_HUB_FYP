@@ -1,0 +1,698 @@
+const nodemailer = require('nodemailer');
+const crypto = require('crypto');
+const fs = require('fs');
+const express = require('express');
+const session = require('express-session');
+const bodyParser = require('body-parser');
+const path = require('path');
+const bcrypt = require('bcrypt');
+const multer = require('multer');
+const mysql = require('mysql2');
+const axios = require('axios'); 
+const db = require('./db');
+
+const app = express();
+
+// --- 1. CONFIGURATION ---
+app.set('view engine', 'ejs'); 
+app.use(express.static(path.join(__dirname, 'public'))); 
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+app.use(session({
+    secret: 'hostelhub_secret_key',
+    resave: false,
+    saveUninitialized: true
+}));
+
+// --- 2. GLOBAL MIDDLEWARE ---
+app.use((req, res, next) => {
+    res.locals.user = req.session.user || null;
+    res.locals.query = req.query || {};
+
+    if (req.session.user) {
+        const uid = req.session.user.id;
+        db.query("SELECT COUNT(*) as count FROM messages WHERE receiver_id = ? AND is_read = 0", [uid], (err, result) => {
+            res.locals.unreadCount = result ? result[0].count : 0;
+            next();
+        });
+    } else {
+        res.locals.unreadCount = 0;
+        next();
+    }
+});
+
+// --- 3. MULTER SETUP ---
+const storage = multer.diskStorage({
+    destination: './public/uploads/',
+    filename: function(req, file, cb){ cb(null, Date.now() + '_' + file.originalname); }
+});
+const upload = multer({ storage: storage });
+
+const query = (sql, params) => new Promise((resolve, reject) => {
+    db.query(sql, params, (err, res) => err ? reject(err) : resolve(res));
+});
+
+// ================= ROUTES =================
+
+// --- PUBLIC PAGES ---
+app.get('/', (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 9;
+    const offset = (page - 1) * limit;
+
+    let whereClause = "WHERE 1=1";
+    let params = [];
+
+    if (req.query.category) { whereClause += " AND category = ?"; params.push(req.query.category); }
+    if (req.query.price) { whereClause += " AND price <= ?"; params.push(req.query.price); }
+    if (req.query.area && !req.query.category) {
+        whereClause += " AND (area LIKE ? OR name LIKE ?)";
+        params.push(`%${req.query.area}%`, `%${req.query.area}%`);
+    }
+
+    const countSql = `SELECT COUNT(*) as total FROM hostels ${whereClause}`;
+    db.query(countSql, params, (err, countResult) => {
+        if (err) { console.error(err); return res.send("DB Error"); }
+        const totalItems = countResult[0].total;
+        const totalPages = Math.ceil(totalItems / limit);
+
+        const dataSql = `SELECT * FROM hostels ${whereClause} LIMIT ? OFFSET ?`;
+        const dataParams = [...params, limit, offset];
+        db.query(dataSql, dataParams, (err, results) => {
+            if (err) throw err;
+            res.render('index', { hostels: results, query: req.query, currentPage: page, totalPages: totalPages });
+        });
+    });
+});
+
+app.get('/about', (req, res) => res.render('about'));
+app.get('/contact', (req, res) => res.render('contact'));
+app.post('/contact', (req, res) => {
+    db.query("INSERT INTO contact_messages (name, email, subject, message) VALUES (?, ?, ?, ?)", 
+    [req.body.name, req.body.email, req.body.subject, req.body.message], () => res.redirect('/contact'));
+});
+
+// --- AUTHENTICATION ---
+app.get('/login', (req, res) => res.render('login', { error: null }));
+app.post('/login', (req, res) => {
+    db.query('SELECT * FROM users WHERE email = ?', [req.body.email], async (err, results) => {
+        if (results.length === 0) return res.render('login', { error: "Email not found" });
+        const user = results[0];
+        const isMatch = await bcrypt.compare(req.body.password, user.password);
+        if(isMatch) {
+            req.session.user = user;
+            if(user.role === 'owner') return res.redirect('/owner_dashboard');
+            if(user.role === 'student') return res.redirect('/student_dashboard');
+            res.redirect('/');
+        } else {
+            res.render('login', { error: "Incorrect Password" });
+        }
+    });
+});
+
+app.get('/register', (req, res) => res.render('register', { error: null }));
+app.post('/register', async (req, res) => {
+    if(req.body.password !== req.body.confirm_password) return res.render('register', { error: "Passwords do not match" });
+    
+    db.query('SELECT id FROM users WHERE email = ?', [req.body.email], async (err, result) => {
+        if(result.length > 0) return res.render('register', { error: "Email exists" });
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        db.query('INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)', 
+        [req.body.name, req.body.email, hashedPassword, req.body.role], () => res.redirect('/login'));
+    });
+});
+app.get('/logout', (req, res) => { req.session.destroy(() => res.redirect('/login')); });
+
+// --- SHARED ACTIONS ---
+app.post('/toggle_wishlist', (req, res) => {
+    if (!req.session.user) return res.send('login_required');
+    const hostelId = req.body.hostel_id;
+    const studentId = req.session.user.id;
+
+    db.query("SELECT id FROM wishlist WHERE student_id = ? AND hostel_id = ?", [studentId, hostelId], (err, result) => {
+        if (result.length > 0) {
+            db.query("DELETE FROM wishlist WHERE id = ?", [result[0].id], () => res.send('removed'));
+        } else {
+            db.query("INSERT INTO wishlist (student_id, hostel_id) VALUES (?, ?)", [studentId, hostelId], () => res.send('added'));
+        }
+    });
+});
+
+app.get('/compare', (req, res) => {
+    const { h1, h2 } = req.query;
+    if (!h1 || !h2) return res.redirect('/?error=select_two');
+
+    db.query('SELECT * FROM hostels WHERE id IN (?, ?)', [h1, h2], (err, results) => {
+        if (err || results.length !== 2) return res.send("Error fetching comparison");
+        const h1Data = results.find(h => h.id == h1);
+        const h2Data = results.find(h => h.id == h2);
+        let priceWinner = h1Data.price < h2Data.price ? h1Data.id : (h2Data.price < h1Data.price ? h2Data.id : null);
+        res.render('compare', { h1: h1Data, h2: h2Data, priceWinner });
+    });
+});
+
+// --- STUDENT DASHBOARD (Calculates Rent Receipt & Stay History for Room Bookings too) ---
+app.get('/student_dashboard', async (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'student') return res.redirect('/login');
+    const uid = req.session.user.id;
+
+    try {
+        const bookings = await query(`SELECT b.*, h.name as hostel_name, h.price, h.announcement_text, h.owner_id, h.id as hostel_id FROM bookings b JOIN hostels h ON b.hostel_id = h.id WHERE b.student_id = ? ORDER BY b.created_at DESC`, [uid]);
+        const complaints = await query(`SELECT * FROM complaints WHERE student_id = ? ORDER BY created_at DESC`, [uid]);
+        const wishlist = await query(`SELECT h.* FROM wishlist w JOIN hostels h ON w.hostel_id = h.id WHERE w.student_id = ?`, [uid]);
+        const payments = await query(`SELECT * FROM rent_payments WHERE student_id = ? ORDER BY id DESC`, [uid]);
+        
+        // This activeBooking could be a general hostel booking OR a room booking
+        // The DB structure handles both in the 'bookings' table
+        let activeBooking = bookings.find(b => b.status === 'Approved');
+        let stayRecord = null;
+
+        if (activeBooking) {
+            const joinDate = new Date(activeBooking.created_at);
+            const today = new Date();
+            let monthsPassed = (today.getFullYear() - joinDate.getFullYear()) * 12 + (today.getMonth() - joinDate.getMonth());
+            if (today.getDate() < joinDate.getDate()) monthsPassed--; 
+
+            let cycleStart = new Date(joinDate);
+            cycleStart.setMonth(joinDate.getMonth() + monthsPassed);
+            let cycleEnd = new Date(cycleStart);
+            cycleEnd.setMonth(cycleStart.getMonth() + 1);
+
+            const dateRangeStr = `${cycleStart.toLocaleDateString('en-GB', {day:'numeric', month:'short'})} - ${cycleEnd.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'})}`;
+
+            // Check/Create Bill for Rent Receipt
+            // This works for Room bookings because activeBooking.id refers to the main booking record created during room reservation
+            const existingBill = await query("SELECT * FROM rent_payments WHERE booking_id = ? AND month_year = ?", [activeBooking.id, dateRangeStr]);
+            
+            if (existingBill.length === 0) {
+                const rentAmount = activeBooking.final_rent || activeBooking.price; 
+                await query("INSERT INTO rent_payments (student_id, booking_id, month_year, amount, status) VALUES (?, ?, ?, ?, 'Pending')", 
+                [uid, activeBooking.id, dateRangeStr, rentAmount]);
+            }
+
+            // Calculate Stay History
+            stayRecord = {
+                joinDate: joinDate.toLocaleDateString(),
+                nextDue: cycleEnd.toLocaleDateString(),
+                amount: activeBooking.final_rent || activeBooking.price,
+                // Calculates days difference for history tracking
+                daysStayed: Math.ceil(Math.abs(today - joinDate) / (1000 * 60 * 60 * 24)),
+                status: activeBooking.status,
+                announcement: activeBooking.announcement_text,
+                owner_id: activeBooking.owner_id,
+                hostel_name: activeBooking.hostel_name,
+                hostel_id: activeBooking.hostel_id
+            };
+        }
+
+        res.render('student_dashboard', { user: req.session.user, bookings, complaints, wishlist, payments, stay: stayRecord, activeBooking });
+
+    } catch (err) { console.error(err); res.send("Error loading dashboard"); }
+});
+
+app.post('/book_hostel', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'student') return res.redirect('/login');
+    const { hostel_id, with_mess } = req.body;
+    
+    db.query("SELECT price, mess_fee FROM hostels WHERE id = ?", [hostel_id], (err, result) => {
+        if(err || result.length === 0) return res.send("Hostel error");
+        let finalRent = parseFloat(result[0].price);
+        let includesMess = 0;
+        if (with_mess === 'on') { 
+            finalRent += parseFloat(result[0].mess_fee || 0);
+            includesMess = 1;
+        }
+        db.query("INSERT INTO bookings (hostel_id, student_id, message, includes_mess, final_rent) VALUES (?, ?, ?, ?, ?)", 
+        [hostel_id, req.session.user.id, "Interested in booking.", includesMess, finalRent], () => res.redirect('/student_dashboard'));
+    });
+});
+
+app.post('/submit_complaint', (req, res) => {
+    const { hostel_id, issue_type, description } = req.body;
+    db.query('INSERT INTO complaints (student_id, hostel_id, issue_type, description) VALUES (?, ?, ?, ?)', 
+    [req.session.user.id, hostel_id, issue_type, description], () => res.redirect('/student_dashboard?msg=complaint_sent'));
+});
+
+app.post('/pay_rent', upload.single('proof'), (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'student') return res.redirect('/login');
+    const paymentId = req.body.payment_id;
+    if (req.file && paymentId) {
+        db.query("UPDATE rent_payments SET proof_image = ?, status = 'Submitted' WHERE id = ? AND student_id = ?", 
+        [req.file.filename, paymentId, req.session.user.id], () => res.redirect('/student_dashboard?msg=rent_proof_uploaded'));
+    } else {
+        res.redirect('/student_dashboard?msg=error');
+    }
+});
+
+app.get('/cancel_booking/:id', (req, res) => {
+    if (!req.session.user) return res.redirect('/login');
+    db.query("DELETE FROM bookings WHERE id = ? AND student_id = ? AND (status = 'Pending' OR status = 'Rejected')", 
+    [req.params.id, req.session.user.id], () => res.redirect('/student_dashboard?msg=deleted'));
+});
+
+// --- BOOK SEAT (Room Booking) ---
+app.post('/book_seat', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'student') return res.redirect('/login');
+    const { room_id, with_mess } = req.body;
+    const studentId = req.session.user.id;
+
+    db.query("SELECT r.*, h.name as hostel_name, h.id as hostel_id, h.mess_fee FROM rooms r JOIN hostels h ON r.hostel_id = h.id WHERE r.id = ?", [room_id], (err, result) => {
+        if (err || result.length === 0) return res.send("Room not found");
+        const room = result[0];
+
+        if ((room.total_seats - room.occupied_seats) <= 0) return res.send("Room Full");
+
+        db.query("SELECT id FROM hostel_bookings_room WHERE room_id = ? AND student_id = ?", [room_id, studentId], (err, exist) => {
+            if (exist.length > 0) return res.send("Already booked this room");
+
+            let finalRent = parseFloat(room.price_per_seat);
+            let includesMess = 0;
+            if (with_mess === 'on') {
+                finalRent += parseFloat(room.mess_fee || 0);
+                includesMess = 1;
+            }
+
+            db.query("INSERT INTO hostel_bookings_room (room_id, student_id, start_date) VALUES (?, ?, NOW())", [room_id, studentId], (err) => {
+                const msg = `Seat in Room: ${room.name} (${room.hostel_name})`;
+                // Saving room_id here ensures the Owner Dashboard sees this as a Room booking
+                db.query("INSERT INTO bookings (hostel_id, student_id, message, includes_mess, final_rent, room_id) VALUES (?, ?, ?, ?, ?, ?)", 
+                [room.hostel_id, studentId, msg, includesMess, finalRent, room_id], () => {
+                    db.query("UPDATE rooms SET occupied_seats = occupied_seats + 1 WHERE id = ?", [room_id]);
+                    res.redirect('/student_dashboard?msg=seat_booked_successfully');
+                });
+            });
+        });
+    });
+});
+
+
+// --- OWNER DASHBOARD (Updated with Filters) ---
+app.get('/owner_dashboard', async (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'owner') return res.redirect('/login');
+    const ownerId = req.session.user.id;
+    
+    // Filter Params
+    const { hostel_id, date, status } = req.query;
+
+    try {
+        const hostels = await query('SELECT * FROM hostels WHERE owner_id = ?', [ownerId]);
+        
+        // Dynamic Booking Query Construction
+        let bookingSql = `
+            SELECT 
+                b.id as booking_id, b.message, b.status, b.created_at, b.includes_mess, b.final_rent,
+                u.name as student_name, u.email, 
+                h.name as hostel_name,
+                r.name as room_name
+            FROM bookings b 
+            JOIN hostels h ON b.hostel_id = h.id 
+            JOIN users u ON b.student_id = u.id
+            LEFT JOIN rooms r ON b.room_id = r.id 
+            WHERE h.owner_id = ?`;
+        
+        const bookingParams = [ownerId];
+
+        // Apply Filters
+        if (hostel_id) {
+            bookingSql += ` AND h.id = ?`;
+            bookingParams.push(hostel_id);
+        }
+        if (date) {
+            bookingSql += ` AND DATE(b.created_at) = ?`;
+            bookingParams.push(date);
+        }
+        if (status) {
+            bookingSql += ` AND b.status = ?`;
+            bookingParams.push(status);
+        }
+
+        bookingSql += ` ORDER BY b.created_at DESC`;
+
+        const bookings = await query(bookingSql, bookingParams);
+
+        const rent_requests = await query(`
+            SELECT r.*, u.name as student_name, h.name as hostel_name 
+            FROM rent_payments r 
+            JOIN bookings b ON r.booking_id = b.id 
+            JOIN hostels h ON b.hostel_id = h.id 
+            JOIN users u ON r.student_id = u.id 
+            WHERE h.owner_id = ? AND r.status = 'Submitted'
+            ORDER BY r.created_at DESC`, [ownerId]);
+
+        const chartData = await query(`
+            SELECT MONTH(created_at) as month, COUNT(*) as count 
+            FROM bookings 
+            WHERE hostel_id IN (SELECT id FROM hostels WHERE owner_id = ?) 
+            AND YEAR(created_at) = YEAR(CURDATE()) 
+            GROUP BY MONTH(created_at)`, [ownerId]);
+
+        const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+        let counts = new Array(12).fill(0);
+        chartData.forEach(d => { if(d.month) counts[d.month - 1] = d.count; });
+
+        let stats = {
+            totalViews: hostels.reduce((acc, h) => acc + h.views, 0),
+            pending: bookings.filter(b => b.status === 'Pending').length,
+            approved: bookings.filter(b => b.status === 'Approved').length,
+            rejected: bookings.filter(b => b.status === 'Rejected').length
+        };
+
+        res.render('owner_dashboard', { 
+            my_hostels: hostels, 
+            bookings, 
+            rent_requests, 
+            stats, 
+            months, 
+            counts,
+            query: req.query // Pass query back for filter inputs state
+        });
+
+    } catch (err) { console.error(err); res.send("Error loading dashboard"); }
+});
+
+app.get('/owner_bookings', async (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'owner') return res.redirect('/login');
+    res.redirect('/owner_dashboard');
+});
+
+app.get('/update_booking/:id/:status', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'owner') return res.redirect('/login');
+    const sql = `UPDATE bookings SET status = ? WHERE id = ? AND hostel_id IN (SELECT id FROM hostels WHERE owner_id = ?)`;
+    db.query(sql, [req.params.status, req.params.id, req.session.user.id], () => res.redirect('/owner_dashboard?msg=booking_updated'));
+});
+
+app.get('/approve_rent/:id', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'owner') return res.redirect('/login');
+    db.query("UPDATE rent_payments SET status = 'Paid' WHERE id = ?", [req.params.id], () => res.redirect('/owner_dashboard?msg=rent_approved'));
+});
+
+
+// --- MANAGE HOSTELS & ROOMS ---
+app.get('/add_hostel', (req, res) => { 
+    if (!req.session.user || req.session.user.role !== 'owner') return res.redirect('/login');
+    res.render('add_hostel'); 
+});
+
+app.post('/add_hostel', upload.array('images', 5), (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'owner') return res.redirect('/login');
+    const { name, category, area, price, mess_fee, desc, map_embed, facilities, day, bkf, lun, din } = req.body;
+    const facilitiesStr = Array.isArray(facilities) ? facilities.join(',') : (facilities || '');
+
+    const sql = "INSERT INTO hostels (owner_id, name, category, area, price, mess_fee, description, facilities, map_embed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    db.query(sql, [req.session.user.id, name, category, area, price, mess_fee || 0, desc, facilitiesStr, map_embed], (err, result) => {
+        if (err) return res.send("DB Error");
+        const hostelId = result.insertId;
+        
+        if (req.files && req.files.length > 0) {
+            const imageValues = req.files.map(file => [hostelId, file.filename]);
+            db.query("INSERT INTO hostel_images (hostel_id, image_path) VALUES ?", [imageValues]);
+            db.query("UPDATE hostels SET image = ? WHERE id = ?", [req.files[0].filename, hostelId]);
+        }
+        
+        if (day) {
+            for(let i=0; i<7; i++) {
+                if(day[i]) {
+                    db.query("INSERT INTO mess_menu (hostel_id, day_name, breakfast, lunch, dinner) VALUES (?, ?, ?, ?, ?)", 
+                    [hostelId, day[i], bkf[i], lun[i], din[i]]);
+                }
+            }
+        }
+        res.redirect('/owner_dashboard?msg=added');
+    });
+});
+
+app.get('/edit_hostel/:id', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'owner') return res.redirect('/login');
+    db.query("SELECT * FROM hostels WHERE id = ? AND owner_id = ?", [req.params.id, req.session.user.id], (err, result) => {
+        if(err || result.length === 0) return res.send("Hostel not found");
+        db.query("SELECT * FROM hostel_images WHERE hostel_id = ?", [req.params.id], (err, imgs) => {
+            res.render('edit_hostel', { hostel: result[0], images: imgs });
+        });
+    });
+});
+
+app.post('/edit_hostel/:id', upload.array('images', 5), (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'owner') return res.redirect('/login');
+    const { name, category, area, price, mess_fee, desc, map_embed, facilities } = req.body;
+    const facilitiesStr = Array.isArray(facilities) ? facilities.join(',') : (facilities || '');
+    
+    const sql = "UPDATE hostels SET name=?, category=?, area=?, price=?, mess_fee=?, description=?, facilities=?, map_embed=? WHERE id=? AND owner_id=?";
+    const values = [name, category, area, price, mess_fee || 0, desc, facilitiesStr, map_embed, req.params.id, req.session.user.id];
+
+    db.query(sql, values, (err) => {
+        if (err) return res.send("DB Update Error");
+        if (req.files && req.files.length > 0) {
+            const imageValues = req.files.map(file => [req.params.id, file.filename]);
+            db.query("INSERT INTO hostel_images (hostel_id, image_path) VALUES ?", [imageValues]);
+            db.query("UPDATE hostels SET image = ? WHERE id = ? AND (image IS NULL OR image = '')", [req.files[0].filename, req.params.id]);
+        }
+        res.redirect('/owner_dashboard?msg=updated');
+    });
+});
+
+// Manage Mess/Payment/Complaints Routes
+app.get('/payment_settings', (req, res) => {
+    db.query("SELECT * FROM payment_settings WHERE owner_id = ?", [req.session.user.id], (err, result) => res.render('payment_settings', { data: result[0] || {} }));
+});
+app.post('/save_payment_settings', (req, res) => {
+    const { jc_name, jc_no, ep_name, ep_no, bank_name, bank_title, bank_iban } = req.body;
+    db.query("SELECT id FROM payment_settings WHERE owner_id = ?", [req.session.user.id], (err, result) => {
+        const sql = result.length > 0 
+            ? "UPDATE payment_settings SET jazzcash_name=?, jazzcash_no=?, easypaisa_name=?, easypaisa_no=?, bank_name=?, bank_acc_title=?, bank_iban=? WHERE owner_id=?" 
+            : "INSERT INTO payment_settings (jazzcash_name, jazzcash_no, easypaisa_name, easypaisa_no, bank_name, bank_acc_title, bank_iban, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        db.query(sql, [jc_name, jc_no, ep_name, ep_no, bank_name, bank_title, bank_iban, req.session.user.id], () => res.redirect('/owner_dashboard?msg=saved'));
+    });
+});
+// --- OWNER COMPLAINTS ROUTES ---
+
+app.get('/owner_complaints', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'owner') return res.redirect('/login');
+    
+    const sql = `
+        SELECT c.*, h.name as hostel_name, u.name as student_name, u.phone 
+        FROM complaints c 
+        JOIN hostels h ON c.hostel_id = h.id 
+        JOIN users u ON c.student_id = u.id 
+        WHERE h.owner_id = ? 
+        ORDER BY c.created_at DESC`;
+        
+    db.query(sql, [req.session.user.id], (err, complaints) => {
+        if (err) {
+            console.error(err);
+            return res.send("Database error fetching complaints.");
+        }
+        res.render('owner_complaints', { complaints });
+    });
+});
+
+app.get('/resolve_complaint/:id', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'owner') return res.redirect('/login');
+    
+    db.query("UPDATE complaints SET status = 'Resolved' WHERE id = ?", [req.params.id], (err) => {
+        if (err) console.error(err);
+        res.redirect('/owner_complaints');
+    });
+});
+
+app.get('/add_room/:hostel_id', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'owner') return res.redirect('/login');
+    db.query("SELECT id, name FROM hostels WHERE id = ? AND owner_id = ?", [req.params.hostel_id, req.session.user.id], (err, result) => {
+        res.render('owner_add_room', { hostel: result[0] });
+    });
+});
+
+app.post('/add_room/:hostel_id', upload.array('room_images', 3), (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'owner') return res.redirect('/login');
+    const { name, description, total_seats, occupied_seats, price_per_seat } = req.body;
+    db.query("INSERT INTO rooms (hostel_id, name, description, price_per_seat, total_seats, occupied_seats) VALUES (?, ?, ?, ?, ?, ?)", 
+    [req.params.hostel_id, name, description, price_per_seat, total_seats, occupied_seats], (err, result) => {
+        if (req.files && req.files.length > 0) {
+            const imageValues = req.files.map(file => [result.insertId, file.filename]);
+            db.query("INSERT INTO room_images (room_id, image_path) VALUES ?", [imageValues]);
+        }
+        res.redirect('/owner_dashboard?msg=room_added');
+    });
+});
+
+// --- DETAILS & ROOMS (Consolidated) ---
+app.get('/details/:id', (req, res) => {
+    const id = req.params.id;
+    const includeMessFlag = (req.query.include_mess === '1' || req.query.include_mess === 'on');
+    
+    db.query("UPDATE hostels SET views = views + 1 WHERE id = ?", [id]);
+    
+    const queries = {
+        hostel: 'SELECT * FROM hostels WHERE id = ?',
+        images: 'SELECT image_path FROM hostel_images WHERE hostel_id = ?',
+        mess: 'SELECT * FROM mess_menu WHERE hostel_id = ?',
+        reviews: 'SELECT r.*, u.name, u.profile_pic FROM reviews r JOIN users u ON r.student_id = u.id WHERE hostel_id = ? ORDER BY r.created_at DESC',
+        rating: 'SELECT AVG(rating) as avg, COUNT(*) as count FROM reviews WHERE hostel_id = ?',
+        rooms: 'SELECT * FROM rooms WHERE hostel_id = ?'
+    };
+
+    db.query(queries.hostel, [id], (err, hRes) => {
+        if(err || hRes.length === 0) return res.send("Hostel Not Found");
+        const hostel = hRes[0];
+
+        db.query(queries.images, [id], (err, images) => {
+            db.query(queries.mess, [id], (err, mess) => {
+                db.query(queries.reviews, [id], (err, reviews) => {
+                    db.query(queries.rating, [id], (err, rating) => {
+                        db.query(queries.rooms, [id], async (err, rooms) => {
+                            if(rooms && rooms.length > 0) {
+                                for(let r of rooms) {
+                                    r.available = Math.max(0, (r.total_seats || 0) - (r.occupied_seats || 0));
+                                    r.images = await query('SELECT image_path FROM room_images WHERE room_id = ?', [r.id]);
+                                }
+                            }
+                            res.render('details', { 
+                                hostel, images, mess, reviews, 
+                                rating: rating[0], 
+                                rooms: rooms || [], 
+                                is_owner: (req.session.user && req.session.user.id === hostel.owner_id),
+                                include_mess: includeMessFlag
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+});
+
+app.get('/room_details/:room_id', (req, res) => {
+    const roomId = req.params.room_id;
+    const sql = `SELECT r.*, h.name as hostel_name, h.id as hostel_id, h.facilities, h.mess_fee 
+                 FROM rooms r JOIN hostels h ON r.hostel_id = h.id WHERE r.id = ?`;
+    
+    db.query(sql, [roomId], async (err, results) => {
+        if (err || results.length === 0) return res.send("Room Not Found");
+        const room = results[0];
+        room.available = Math.max(0, (room.total_seats || 0) - (room.occupied_seats || 0));
+        room.images = await query('SELECT image_path FROM room_images WHERE room_id = ?', [roomId]);
+
+        res.render('room_details', { 
+            room, 
+            hostel: { name: room.hostel_name, id: room.hostel_id, facilities: room.facilities, mess_fee: room.mess_fee } 
+        });
+    });
+});
+
+app.post('/submit_review', (req, res) => {
+    if (!req.session.user) return res.redirect('/login');
+    db.query("INSERT INTO reviews (hostel_id, student_id, rating, comment) VALUES (?, ?, ?, ?)", 
+    [req.body.hostel_id, req.session.user.id, req.body.rating, req.body.comment], () => res.redirect('/details/' + req.body.hostel_id));
+});
+
+// --- PROFILE & CHAT ---
+app.get('/profile', (req, res) => {
+    db.query("SELECT * FROM users WHERE id = ?", [req.session.user.id], (err, r) => res.render('profile', { user: r[0] }));
+});
+app.post('/update_profile', upload.fields([{ name: 'profile_pic' }, { name: 'cnic_front' }]), (req, res) => {
+    const { name, phone, city, about } = req.body;
+    let sql = "UPDATE users SET name=?, phone=?, city=?, about=? WHERE id=?";
+    let params = [name, phone, city, about, req.session.user.id];
+    if (req.files.profile_pic) { db.query("UPDATE users SET profile_pic = ? WHERE id = ?", [req.files.profile_pic[0].filename, req.session.user.id]); }
+    if (req.files.cnic_front) { db.query("UPDATE users SET cnic_front = ?, is_id_verified = 1 WHERE id = ?", [req.files.cnic_front[0].filename, req.session.user.id]); }
+    db.query(sql, params, () => res.redirect('/profile'));
+});
+
+// Chat & Community Routes
+app.get('/chat', (req, res) => {
+    // Support legacy links using ?receiver_id=123 — redirect to the proper /chat/:id route
+    const rid = req.query.receiver_id;
+    if (rid) return res.redirect('/chat/' + rid);
+    return res.redirect('/chat_list');
+});
+app.get('/chat_list', (req, res) => {
+    if (!req.session.user) return res.redirect('/login');
+    const myId = req.session.user.id;
+    const sql = `SELECT DISTINCT u.id, u.name, u.role, u.profile_pic FROM messages m JOIN users u ON (m.sender_id = u.id OR m.receiver_id = u.id) WHERE (m.sender_id = ? OR m.receiver_id = ?) AND u.id != ? ORDER BY m.created_at DESC`;
+    db.query(sql, [myId, myId, myId], (err, users) => res.render('chat_list', { chats: users }));
+});
+app.get('/chat/:id', (req, res) => {
+    if (!req.session.user) return res.redirect('/login');
+    db.query("UPDATE messages SET is_read = 1 WHERE sender_id = ? AND receiver_id = ?", [req.params.id, req.session.user.id]);
+    db.query("SELECT * FROM users WHERE id = ?", [req.params.id], (err, r) => res.render('chat', { receiver: r[0] }));
+});
+app.post('/api_chat', (req, res) => {
+    if (!req.session.user) return res.status(401).send("Unauthorized");
+    const { action, receiver_id, message } = req.body;
+    if(action === 'send') db.query("INSERT INTO messages (sender_id, receiver_id, message) VALUES (?, ?, ?)", [req.session.user.id, receiver_id, message], () => res.send('sent'));
+    else db.query(`SELECT * FROM messages WHERE (sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?) ORDER BY created_at ASC`, [req.session.user.id, receiver_id, receiver_id, req.session.user.id], (err, msgs) => res.json(msgs));
+});
+
+// Community: public listing and area chat (allow guests)
+app.get('/community', (req, res) => {
+    res.render('community');
+});
+
+app.get('/area_chat', (req, res) => {
+    const area = req.query.area || 'General';
+    res.render('area_chat', { area });
+});
+
+app.post('/api_community', (req, res) => {
+    const { action, area, message, name } = req.body || {};
+    if (!action || !area) return res.status(400).send('Bad Request');
+
+    if (action === 'send') {
+        if (req.session.user) {
+            // Logged-in user
+            db.query("INSERT INTO community_messages (area_name, sender_id, message) VALUES (?, ?, ?)", [area, req.session.user.id, message], (err) => {
+                if (err) {
+                    console.error('INSERT community_messages (user) error:', err);
+                    return res.status(500).send('Error saving message');
+                }
+                return res.send('sent');
+            });
+        } else {
+            // Guest: use sender_id = 3 (Guest user) and format [Guest] message
+            const guestName = (name || 'Guest').toString().substring(0, 50);
+            const fullMsg = `[${guestName}] ${message}`;
+            
+            db.query("INSERT INTO community_messages (area_name, sender_id, message) VALUES (?, ?, ?)", [area, 3, fullMsg], (err) => {
+                if (err) {
+                    console.error('INSERT community_messages (guest) error:', err);
+                    return res.status(500).send('Error saving message');
+                }
+                return res.send('sent');
+            });
+        }
+    } else if (action === 'fetch') {
+        const sql = `SELECT m.*, COALESCE(u.name, 'Guest') as name FROM community_messages m LEFT JOIN users u ON m.sender_id = u.id WHERE m.area_name = ? ORDER BY m.created_at ASC`;
+        db.query(sql, [area], (err, rows) => {
+            if (err) {
+                console.error('SELECT community_messages error:', err);
+                return res.json([]);
+            }
+            
+            // Parse guest messages where format is [Name] message (sender_id = 3 = Guest user)
+            rows.forEach(r => {
+                if (r.sender_id === 3 && r.message && r.message.startsWith('[')) {
+                    const end = r.message.indexOf(']');
+                    if (end > 1) {
+                        r.name = r.message.substring(1, end);
+                        r.message = r.message.substring(end + 1).trim();
+                    } else {
+                        r.name = 'Guest';
+                    }
+                }
+            });
+            
+            return res.json(rows);
+        });
+    } else {
+        return res.status(400).send('Bad Request');
+    }
+});
+
+app.get('/delete_hostel/:id', (req, res) => {
+    if (!req.session.user || req.session.user.role !== 'owner') return res.redirect('/login');
+    db.query("DELETE FROM hostels WHERE id = ? AND owner_id = ?", [req.params.id, req.session.user.id], () => res.redirect('/owner_dashboard?msg=deleted'));
+});
+
+// Start Server
+app.listen(3000, () => console.log('🚀 Server running on http://localhost:3000'));

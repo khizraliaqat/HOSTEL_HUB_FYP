@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking Receipt #<%= data.id %></title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --hh-bg: #071120;
+            --hh-bg-soft: #0b1730;
+            --hh-white: #ffffff;
+            --hh-text: #0f172a;
+            --hh-text-soft: #64748b;
+            --hh-primary: #0ea5e9;
+            --hh-secondary: #7c3aed;
+            --hh-gold: #fbbf24;
+            --hh-success: #10b981;
+            --hh-border: #e6eef8;
+            --hh-shadow: 0 24px 60px rgba(2, 8, 23, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background:
+                radial-gradient(circle at top left, rgba(14, 165, 233, 0.14), transparent 24%),
+                radial-gradient(circle at top right, rgba(124, 58, 237, 0.12), transparent 20%),
+                linear-gradient(180deg, #071120 0%, #0b1730 24%, #f8fafc 24%, #f8fafc 100%);
+            padding: 48px 18px;
+            font-family: 'Outfit', 'Helvetica Neue', Arial, sans-serif;
+            color: var(--hh-text);
+        }
+
+        .hh-receipt-shell {
+            max-width: 860px;
+            margin: 0 auto;
+        }
+
+        .hh-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+        }
+
+        .hh-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 18px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: #dbeafe;
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            backdrop-filter: blur(14px);
+        }
+
+        .hh-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .hh-btn,
+        .hh-btn-outline,
+        .hh-btn-dark {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-height: 46px;
+            padding: 0 18px;
+            border-radius: 16px;
+            border: 0;
+            text-decoration: none;
+            font-weight: 800;
+            transition: all 0.25s ease;
+            cursor: pointer;
+        }
+
+        .hh-btn {
+            background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+            color: #ffffff;
+            box-shadow: 0 16px 30px rgba(14, 165, 233, 0.16);
+        }
+
+        .hh-btn-outline {
+            background: #ffffff;
+            border: 1px solid #dbe4f0;
+            color: var(--hh-text);
+        }
+
+        .hh-btn-dark {
+            background: #0f172a;
+            color: #ffffff;
+        }
+
+        .hh-btn:hover,
+        .hh-btn-outline:hover,
+        .hh-btn-dark:hover {
+            transform: translateY(-2px);
+        }
+
+        .hh-receipt-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 36px;
+            background: #ffffff;
+            border: 1px solid var(--hh-border);
+            box-shadow: var(--hh-shadow);
+        }
+
+        .hh-receipt-card::before {
+            content: '';
+            position: absolute;
+            width: 280px;
+            height: 280px;
+            right: -80px;
+            top: -120px;
+            border-radius: 999px;
+            background: rgba(14, 165, 233, 0.08);
+            filter: blur(20px);
+            pointer-events: none;
+        }
+
+        .hh-header {
+            position: relative;
+            z-index: 1;
+            padding: 30px 34px 26px;
+            background: linear-gradient(180deg, #0c172c 0%, #101d3a 100%);
+            color: #ffffff;
+        }
+
+        .hh-header-grid {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .hh-brand-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #dbeafe;
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .hh-brand {
+            margin: 0 0 8px;
+            font-family: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            line-height: 1;
+            letter-spacing: -0.05em;
+            color: #ffffff;
+        }
+
+        .hh-brand .accent {
+            background: linear-gradient(90deg, #8be7ff 0%, #39bdf8 42%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hh-subcopy {
+            margin: 0;
+            color: #c8d6f0;
+            line-height: 1.8;
+            max-width: 460px;
+            font-size: 0.96rem;
+        }
+
+        .hh-ref-box {
+            min-width: 230px;
+            padding: 18px;
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(12px);
+        }
+
+        .hh-ref-box small {
+            display: block;
+            color: #b9c9e6;
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            margin-bottom: 8px;
+        }
+
+        .hh-ref-box h3 {
+            margin: 0 0 6px;
+            font-family: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 1.45rem;
+            color: #ffffff;
+        }
+
+        .hh-ref-box p {
+            margin: 0;
+            color: #dbeafe;
+            font-size: 0.92rem;
+        }
+
+        .hh-body {
+            padding: 32px 34px 34px;
+        }
+
+        .hh-info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .hh-info-card {
+            padding: 22px;
+            border-radius: 26px;
+            background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+            border: 1px solid #e6eef8;
+        }
+
+        .hh-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+            color: #64748b;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .hh-info-card h4 {
+            margin: 0 0 8px;
+            font-family: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 1.24rem;
+            color: #0f172a;
+        }
+
+        .hh-info-card p {
+            margin: 0;
+            color: #64748b;
+            line-height: 1.8;
+            font-size: 0.94rem;
+        }
+
+        .hh-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            background: rgba(16, 185, 129, 0.12);
+            color: #047857;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .hh-status-badge.pending {
+            background: rgba(245, 158, 11, 0.14);
+            color: #b45309;
+            border-color: rgba(245, 158, 11, 0.2);
+        }
+
+        .hh-status-badge.rejected,
+        .hh-status-badge.cancelled {
+            background: rgba(239, 68, 68, 0.12);
+            color: #b91c1c;
+            border-color: rgba(239, 68, 68, 0.18);
+        }
+
+        .hh-table-wrap {
+            overflow: hidden;
+            border-radius: 28px;
+            border: 1px solid #e6eef8;
+            background: #ffffff;
+            margin-bottom: 24px;
+        }
+
+        .hh-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .hh-table thead {
+            background: linear-gradient(135deg, #0ea5e9 0%, #7c3aed 100%);
+            color: #ffffff;
+        }
+
+        .hh-table th,
+        .hh-table td {
+            padding: 16px 18px;
+            text-align: left;
+            border-bottom: 1px solid #edf2f7;
+            vertical-align: middle;
+        }
+
+        .hh-table th {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-weight: 800;
+        }
+
+        .hh-table td {
+            color: #0f172a;
+            font-size: 0.95rem;
+        }
+
+        .hh-table tbody tr:hover td {
+            background: #f8fbff;
+        }
+
+        .hh-desc strong {
+            display: block;
+            margin-bottom: 6px;
+            font-family: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 1rem;
+            color: #0f172a;
+        }
+
+        .hh-desc span {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .hh-amount {
+            text-align: right;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .hh-total-row td {
+            background: linear-gradient(180deg, #fffdf5 0%, #ffffff 100%);
+            border-bottom: 0;
+        }
+
+        .hh-total-label {
+            color: #0f172a;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        .hh-total-amount {
+            text-align: right;
+            font-family: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 1.45rem;
+            color: #b45309;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .hh-footer-note {
+            padding: 20px 22px;
+            border-radius: 24px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            color: #64748b;
+            font-size: 0.92rem;
+            line-height: 1.8;
+        }
+
+        @media print {
+            body {
+                background: #ffffff;
+                padding: 0;
+            }
+
+            .hh-topbar,
+            .no-print {
+                display: none !important;
+            }
+
+            .hh-receipt-card {
+                box-shadow: none;
+                border: 1px solid #dbe4f0;
+                border-radius: 0;
+            }
+
+            .hh-header {
+                background: #0f172a !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .hh-table thead {
+                background: #0f172a !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+        }
+
+        @media (max-width: 767px) {
+            body {
+                padding: 18px 12px 40px;
+            }
+
+            .hh-header,
+            .hh-body {
+                padding: 22px 18px;
+            }
+
+            .hh-info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .hh-table th,
+            .hh-table td {
+                padding: 14px 12px;
+            }
+
+            .hh-total-amount {
+                font-size: 1.2rem;
+            }
+
+            .hh-actions {
+                width: 100%;
+            }
+
+            .hh-btn,
+            .hh-btn-outline,
+            .hh-btn-dark {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hh-receipt-shell">
+    <div class="hh-topbar no-print">
+        <span class="hh-pill">HostelHub Receipt View</span>
+        <div class="hh-actions">
+            <button onclick="window.print()" class="hh-btn-dark">Print / Save PDF</button>
+            <button onclick="window.close()" class="hh-btn-outline">Close</button>
+        </div>
+    </div>
+
+    <div class="hh-receipt-card">
+        <div class="hh-header">
+            <div class="hh-header-grid">
+                <div>
+                    <span class="hh-brand-tag">Booking Receipt</span>
+                    <h1 class="hh-brand">Hostel<span class="accent">Hub</span></h1>
+                    <p class="hh-subcopy">This receipt confirms the booking and billing details attached to your HostelHub reservation. Keep it for your records and future reference.</p>
+                </div>
+
+                <div class="hh-ref-box">
+                    <small>Invoice / Receipt</small>
+                    <h3>#HB-<%= data.id %></h3>
+                    <p>Date: <%= new Date(data.created_at).toLocaleDateString() %></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="hh-body">
+            <div class="hh-info-grid">
+                <div class="hh-info-card">
+                    <div class="hh-label">Billed To</div>
+                    <h4><%= data.student_name %></h4>
+                    <p><%= data.email %></p>
+                    <p><%= data.phone %></p>
+                </div>
+
+                <div class="hh-info-card">
+                    <div class="hh-label">Payment Status</div>
+                    <% const statusLower = (data.status || '').toLowerCase(); %>
+                    <span class="hh-status-badge <%= statusLower === 'pending' ? 'pending' : ((statusLower === 'rejected' || statusLower === 'cancelled') ? 'rejected' : '') %>">
+                        <span style="width:10px; height:10px; border-radius:999px; background:currentColor; opacity:0.8;"></span>
+                        <%= data.status %>
+                    </span>
+                    <p style="margin-top:14px;">Reference ID: HB-<%= data.id %></p>
+                </div>
+            </div>
+
+            <div class="hh-table-wrap">
+                <table class="hh-table">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th class="hh-amount">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="hh-desc">
+                                    <strong><%= data.hostel_name %></strong>
+                                    <span><%= data.area %></span>
+                                </div>
+                            </td>
+                            <td class="hh-amount">Rs. <%= data.price.toLocaleString() %></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="hh-desc">
+                                    <strong>Security Deposit / Booking Fee</strong>
+                                    <span>Additional charges</span>
+                                </div>
+                            </td>
+                            <td class="hh-amount">Rs. 0</td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr class="hh-total-row">
+                            <td class="hh-total-label">Total Due</td>
+                            <td class="hh-total-amount">Rs. <%= data.price.toLocaleString() %></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="hh-footer-note">
+                This is a computer-generated receipt and does not require a signature. If you need any clarification regarding your booking or payment status, please contact HostelHub support.
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

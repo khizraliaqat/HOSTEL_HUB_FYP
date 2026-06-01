@@ -1,0 +1,869 @@
+<%- include('partials/header') %>
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+<style>
+    .hh-contact-page {
+        --hh-bg: #071120;
+        --hh-bg-soft: #0b1730;
+        --hh-white: #ffffff;
+        --hh-text: #0f172a;
+        --hh-text-soft: #64748b;
+        --hh-line: rgba(255, 255, 255, 0.12);
+        --hh-primary: #0ea5e9;
+        --hh-secondary: #7c3aed;
+        --hh-accent: #14b8a6;
+        --hh-gold: #fbbf24;
+        --hh-shadow: 0 24px 60px rgba(2, 8, 23, 0.25);
+        background:
+            radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 26%),
+            radial-gradient(circle at top right, rgba(124, 58, 237, 0.16), transparent 24%),
+            linear-gradient(180deg, #071120 0%, #0b1730 22%, #f8fafc 22%, #f8fafc 100%);
+        color: var(--hh-text);
+    }
+
+    body {
+        background: #f8fafc;
+    }
+
+    .hh-shell {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    .hh-section {
+        padding: 92px 0;
+    }
+
+    .hh-section-tight {
+        padding: 72px 0;
+    }
+
+    .hh-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: #dbeafe;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        backdrop-filter: blur(14px);
+    }
+
+    .hh-section-heading {
+        max-width: 760px;
+        margin: 0 auto 52px;
+        text-align: center;
+    }
+
+    .hh-section-heading h2 {
+        margin: 12px 0 12px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        line-height: 1.06;
+        letter-spacing: -0.04em;
+        color: #0f172a;
+    }
+
+    .hh-section-heading p {
+        margin: 0;
+        color: var(--hh-text-soft);
+        font-size: 1rem;
+        line-height: 1.85;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .hh-contact-hero {
+        position: relative;
+        padding: 108px 0 60px;
+        overflow: hidden;
+    }
+
+    .hh-contact-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.02fr) minmax(420px, 0.98fr);
+        gap: 34px;
+        align-items: center;
+    }
+
+    .hh-contact-copy {
+        color: #ffffff;
+        position: relative;
+        z-index: 2;
+    }
+
+    .hh-contact-copy h1 {
+        margin: 18px 0 18px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(3rem, 7vw, 5.1rem);
+        line-height: 0.98;
+        letter-spacing: -0.055em;
+        color: #ffffff;
+        max-width: 680px;
+    }
+
+    .hh-contact-copy h1 .accent {
+        background: linear-gradient(90deg, #8be7ff 0%, #39bdf8 42%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hh-contact-copy p {
+        max-width: 620px;
+        margin: 0 0 26px;
+        color: #c8d6f0;
+        font-size: 1.08rem;
+        line-height: 1.9;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .hh-contact-points {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        max-width: 620px;
+    }
+
+    .hh-contact-point {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 18px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(14px);
+        color: #e2ecff;
+        font-weight: 600;
+    }
+
+    .hh-contact-point i {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.08);
+        color: #7dd3fc;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .hh-contact-visual {
+        position: relative;
+        min-height: 600px;
+    }
+
+    .hh-orb,
+    .hh-orb-2 {
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(60px);
+        z-index: 0;
+    }
+
+    .hh-orb {
+        width: 180px;
+        height: 180px;
+        left: -20px;
+        top: 60px;
+        background: rgba(14, 165, 233, 0.22);
+    }
+
+    .hh-orb-2 {
+        width: 210px;
+        height: 210px;
+        right: -10px;
+        bottom: 10px;
+        background: rgba(124, 58, 237, 0.24);
+    }
+
+    .hh-showcase {
+        position: relative;
+        z-index: 1;
+        min-height: 600px;
+        border-radius: 38px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: #081120;
+        box-shadow: var(--hh-shadow);
+    }
+
+    .hh-showcase img {
+        width: 100%;
+        height: 600px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .hh-showcase::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(7, 17, 32, 0.08) 0%, rgba(7, 17, 32, 0.52) 55%, rgba(7, 17, 32, 0.92) 100%);
+    }
+
+    .hh-floating-card,
+    .hh-floating-bottom {
+        position: absolute;
+        z-index: 2;
+        border-radius: 26px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(8, 17, 32, 0.62);
+        color: #ffffff;
+        backdrop-filter: blur(16px);
+        box-shadow: 0 18px 38px rgba(2, 8, 23, 0.32);
+    }
+
+    .hh-floating-card {
+        top: 22px;
+        left: 22px;
+        right: 22px;
+        padding: 20px;
+    }
+
+    .hh-floating-card small {
+        display: block;
+        color: #c3d4f1;
+        margin-bottom: 5px;
+    }
+
+    .hh-floating-card h3 {
+        margin: 0 0 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.45rem;
+    }
+
+    .hh-inline-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        color: #dbeafe;
+        font-size: 0.92rem;
+    }
+
+    .hh-inline-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .hh-floating-bottom {
+        left: 22px;
+        right: 22px;
+        bottom: 22px;
+        padding: 20px;
+    }
+
+    .hh-floating-bottom h4 {
+        margin: 0 0 12px;
+        font-size: 1.08rem;
+        color: #ffffff;
+    }
+
+    .hh-mini-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .hh-mini-grid div {
+        padding: 14px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.07);
+        color: #dbeafe;
+        font-size: 0.88rem;
+        line-height: 1.6;
+    }
+
+    .hh-contact-card-row {
+        margin-top: 16px;
+        position: relative;
+        z-index: 3;
+    }
+
+    .hh-contact-card {
+        min-height: 100%;
+        padding: 32px 26px;
+        border-radius: 30px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.06);
+        transition: transform 0.28s ease, box-shadow 0.28s ease;
+        text-align: center;
+    }
+
+    .hh-contact-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 24px 42px rgba(15, 23, 42, 0.1);
+    }
+
+    .hh-contact-icon {
+        width: 78px;
+        height: 78px;
+        margin: 0 auto 18px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(124, 58, 237, 0.08) 100%);
+        color: #0f172a;
+        font-size: 1.7rem;
+    }
+
+    .hh-contact-card h3 {
+        margin: 0 0 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.28rem;
+        color: #0f172a;
+    }
+
+    .hh-contact-card p {
+        margin: 0 0 12px;
+        color: var(--hh-text-soft);
+        line-height: 1.8;
+        font-size: 0.95rem;
+    }
+
+    .hh-contact-card strong,
+    .hh-contact-card a {
+        color: #0f172a;
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 1.05rem;
+    }
+
+    .hh-contact-card a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s ease;
+    }
+
+    .hh-contact-card a:hover {
+        color: #0ea5e9;
+        border-bottom-color: #0ea5e9;
+    }
+
+    .hh-form-map-grid {
+        display: grid;
+        grid-template-columns: 1fr 0.95fr;
+        gap: 30px;
+        align-items: stretch;
+    }
+
+    .hh-panel {
+        border-radius: 34px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.06);
+        overflow: hidden;
+    }
+
+    .hh-panel-dark {
+        border-radius: 34px;
+        background: linear-gradient(180deg, #0c172c 0%, #101d3a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: var(--hh-shadow);
+        color: #ffffff;
+        overflow: hidden;
+    }
+
+    .hh-panel-body {
+        padding: 34px;
+    }
+
+    .hh-panel-body h5 {
+        margin: 0 0 12px;
+        color: var(--hh-gold);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 800;
+        font-size: 0.88rem;
+    }
+
+    .hh-panel-body h2 {
+        margin: 0 0 12px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(1.9rem, 4vw, 3rem);
+        line-height: 1.08;
+        letter-spacing: -0.04em;
+    }
+
+    .hh-panel-body p {
+        margin: 0 0 24px;
+        line-height: 1.85;
+        font-family: 'Outfit', sans-serif;
+        color: #c8d6f0;
+    }
+
+    .hh-form-grid {
+        display: grid;
+        gap: 18px;
+    }
+
+    .hh-form-grid .split {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .hh-field-wrap label {
+        display: block;
+        margin-bottom: 8px;
+        color: #bcd0ef;
+        font-size: 0.86rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
+    .hh-field-wrap input,
+    .hh-field-wrap textarea {
+        width: 100%;
+        border: none;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.18);
+        border-radius: 0;
+        background: transparent;
+        color: #ffffff;
+        padding: 14px 0;
+        outline: none;
+        font-family: 'Outfit', sans-serif;
+        transition: border-color 0.25s ease;
+    }
+
+    .hh-field-wrap input::placeholder,
+    .hh-field-wrap textarea::placeholder {
+        color: #9fb3d7;
+    }
+
+    .hh-field-wrap input:focus,
+    .hh-field-wrap textarea:focus {
+        border-bottom-color: #7dd3fc;
+    }
+
+    .hh-submit-btn {
+        width: 100%;
+        height: 56px;
+        border: 0;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+        color: #ffffff;
+        font-weight: 800;
+        letter-spacing: 0.01em;
+        box-shadow: 0 18px 34px rgba(14, 165, 233, 0.2);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .hh-submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 22px 38px rgba(14, 165, 233, 0.24);
+    }
+
+    .hh-map-wrap {
+        position: relative;
+        min-height: 100%;
+    }
+
+    .hh-map-frame {
+        width: 100%;
+        height: 100%;
+        min-height: 620px;
+        border: 0;
+        display: block;
+        filter: grayscale(100%) invert(92%) contrast(83%);
+    }
+
+    .hh-map-badge {
+        position: absolute;
+        left: 22px;
+        right: 22px;
+        bottom: 22px;
+        z-index: 2;
+        padding: 18px 20px;
+        border-radius: 24px;
+        background: rgba(8, 17, 32, 0.68);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+        backdrop-filter: blur(14px);
+        box-shadow: 0 18px 38px rgba(2, 8, 23, 0.32);
+    }
+
+    .hh-map-badge h4 {
+        margin: 0 0 6px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.18rem;
+    }
+
+    .hh-map-badge p {
+        margin: 0;
+        color: #dbeafe;
+        line-height: 1.7;
+        font-size: 0.94rem;
+    }
+
+    .hh-faq-wrap {
+        border-radius: 36px;
+        padding: 40px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.06);
+        max-width: 980px;
+        margin: 0 auto;
+    }
+
+    .hh-faq-item {
+        border: 0;
+        border-radius: 20px !important;
+        overflow: hidden;
+        box-shadow: 0 12px 26px rgba(15, 23, 42, 0.05);
+        background: #ffffff;
+    }
+
+    .hh-faq-item + .hh-faq-item {
+        margin-top: 14px;
+    }
+
+    .accordion-button {
+        font-family: 'Outfit', sans-serif;
+        font-weight: 700;
+        color: #0f172a;
+        padding: 20px 22px;
+        background: #ffffff;
+        box-shadow: none;
+    }
+
+    .accordion-button:not(.collapsed) {
+        color: #ffffff;
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+        box-shadow: none;
+    }
+
+    .accordion-button:focus {
+        box-shadow: 0 0 0 0.2rem rgba(14, 165, 233, 0.12);
+        border-color: transparent;
+    }
+
+    .accordion-body {
+        color: #64748b;
+        line-height: 1.9;
+        font-family: 'Outfit', sans-serif;
+        padding: 20px 22px 24px;
+    }
+
+    .accordion-body a {
+        color: #0284c7;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    @media (max-width: 1199px) {
+        .hh-contact-grid,
+        .hh-form-map-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-contact-visual,
+        .hh-showcase,
+        .hh-showcase img {
+            min-height: auto;
+            height: 560px;
+        }
+    }
+
+    @media (max-width: 991px) {
+        .hh-contact-points,
+        .hh-mini-grid,
+        .hh-form-grid .split {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .hh-contact-page {
+            background:
+                radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 20%),
+                radial-gradient(circle at top right, rgba(124, 58, 237, 0.16), transparent 18%),
+                linear-gradient(180deg, #071120 0%, #0b1730 18%, #f8fafc 18%, #f8fafc 100%);
+        }
+
+        .hh-shell {
+            width: min(100% - 22px, 1240px);
+        }
+
+        .hh-contact-hero {
+            padding: 92px 0 54px;
+        }
+
+        .hh-showcase,
+        .hh-showcase img,
+        .hh-map-frame {
+            height: 500px;
+            min-height: 500px;
+        }
+
+        .hh-floating-card,
+        .hh-floating-bottom,
+        .hh-map-badge {
+            left: 16px;
+            right: 16px;
+        }
+
+        .hh-faq-wrap,
+        .hh-panel-body {
+            padding: 24px;
+        }
+
+        .hh-section,
+        .hh-section-tight {
+            padding: 72px 0;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .hh-contact-copy h1 {
+            font-size: 2.35rem;
+        }
+
+        .hh-contact-copy p,
+        .hh-section-heading p,
+        .hh-panel-body p,
+        .accordion-body {
+            font-size: 0.96rem;
+        }
+
+        .hh-showcase,
+        .hh-showcase img,
+        .hh-map-frame {
+            height: 460px;
+            min-height: 460px;
+        }
+
+        .hh-contact-card,
+        .hh-panel-body,
+        .hh-faq-wrap {
+            padding: 20px;
+        }
+
+        .accordion-button {
+            padding: 16px 18px;
+            font-size: 0.94rem;
+        }
+    }
+</style>
+
+<div class="hh-contact-page">
+    <section class="hh-contact-hero">
+        <div class="hh-shell hh-contact-grid">
+            <div class="hh-contact-copy" data-aos="fade-up" data-aos-duration="900">
+                <span class="hh-badge"><i class="bi bi-headset"></i> 24/7 support</span>
+                <h1>Get in <span class="accent">touch</span></h1>
+                <p>We would love to hear from you. Whether you need help with listings, booking questions, or platform support, this page gives users a cleaner and more premium way to contact HostelHub.</p>
+
+                <div class="hh-contact-points">
+                    <div class="hh-contact-point">
+                        <i class="bi bi-telephone-fill"></i>
+                        <span>Talk to sales</span>
+                    </div>
+                    <div class="hh-contact-point">
+                        <i class="bi bi-envelope-fill"></i>
+                        <span>Support response</span>
+                    </div>
+                    <div class="hh-contact-point">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <span>Visit our office</span>
+                    </div>
+                    <div class="hh-contact-point">
+                        <i class="bi bi-chat-dots-fill"></i>
+                        <span>Direct inquiry form</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hh-contact-visual" data-aos="zoom-in" data-aos-duration="1000">
+                <div class="hh-orb"></div>
+                <div class="hh-orb-2"></div>
+                <div class="hh-showcase">
+                    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1200" alt="Modern office interior">
+
+                    <div class="hh-floating-card">
+                        <small>Support made simple</small>
+                        <h3>A clearer contact page with better hierarchy and stronger trust</h3>
+                        <div class="hh-inline-meta">
+                            <span><i class="bi bi-lightning-charge"></i> Faster inquiry path</span>
+                            <span><i class="bi bi-shield-check"></i> More polished user experience</span>
+                        </div>
+                    </div>
+
+                    <div class="hh-floating-bottom">
+                        <h4>What this redesign improves</h4>
+                        <div class="hh-mini-grid">
+                            <div>Cleaner contact cards with stronger emphasis</div>
+                            <div>Better form and map layout balance</div>
+                            <div>More premium FAQ presentation</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hh-section-tight">
+        <div class="hh-shell">
+            <div class="row g-4 hh-contact-card-row">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
+                    <div class="hh-contact-card">
+                        <div class="hh-contact-icon"><i class="bi bi-telephone-fill"></i></div>
+                        <h3>Talk to Sales</h3>
+                        <p>Interested in hosting plans or property onboarding guidance?</p>
+                        <strong>+92 300 1234567</strong>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="120">
+                    <div class="hh-contact-card">
+                        <div class="hh-contact-icon"><i class="bi bi-envelope-open-fill"></i></div>
+                        <h3>Customer Support</h3>
+                        <p>Need help with booking, listings, or account questions?</p>
+                        <a href="mailto:support@hostelhub.pk?subject=HostelHub%20Support%20Request">support@hostelhub.pk</a>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="240">
+                    <div class="hh-contact-card">
+                        <div class="hh-contact-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                        <h3>Visit HQ</h3>
+                        <p>Come say hello at our office and speak with the team directly.</p>
+                        <strong>D-Ground, Faisalabad</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hh-section">
+        <div class="hh-shell hh-form-map-grid">
+            <div class="hh-panel-dark" data-aos="fade-right">
+                <div class="hh-panel-body">
+                    <h5>Message us</h5>
+                    <h2>Have a question?</h2>
+                    <p>Fill out the form below and the team will get back to you as soon as possible. The redesigned form keeps your original contact logic while making the overall experience more polished.</p>
+
+                    <form action="/contact" method="POST" class="hh-form-grid">
+                        <div class="split">
+                            <div class="hh-field-wrap">
+                                <label for="name">Your Name</label>
+                                <input id="name" type="text" name="name" placeholder="John Doe" required>
+                            </div>
+                            <div class="hh-field-wrap">
+                                <label for="email">Email Address</label>
+                                <input id="email" type="email" name="email" placeholder="name@example.com" required>
+                            </div>
+                        </div>
+                        <div class="hh-field-wrap">
+                            <label for="subject">Subject</label>
+                            <input id="subject" type="text" name="subject" placeholder="Inquiry about..." required>
+                        </div>
+                        <div class="hh-field-wrap">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" rows="5" placeholder="How can we help you?" required></textarea>
+                        </div>
+                        <button type="submit" class="hh-submit-btn">Send Message <i class="bi bi-arrow-right ms-2"></i></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="hh-panel hh-map-wrap" data-aos="fade-left">
+                <iframe class="hh-map-frame" src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3404.7947925577423!2d73.0852697151036!3d31.419879981402965!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x392242a1d8422977%3A0x387f22a0c9227739!2sD%20Ground%20Faisalabad!5e0!3m2!1sen!2s!4v1623456789012!5m2!1sen!2s" allowfullscreen="" loading="lazy"></iframe>
+                <div class="hh-map-badge">
+                    <h4>HostelHub HQ</h4>
+                    <p>D-Ground, Faisalabad. This map stays functional, but the presentation now feels integrated with the rest of the page instead of looking detached.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hh-section-tight">
+        <div class="hh-shell">
+            <div class="hh-faq-wrap">
+                <div class="hh-section-heading" data-aos="fade-up">
+                    <span class="hh-badge" style="background:#eef6ff; color:#1d4ed8; border-color:#dbeafe;"><i class="bi bi-question-circle"></i> faq</span>
+                    <h2>Frequently asked questions</h2>
+                    <p>The FAQ section is redesigned to feel cleaner, lighter, and easier to scan while preserving your original questions and collapse behavior.</p>
+                </div>
+
+                <div class="accordion" id="faqAccordion">
+                    <div class="accordion-item hh-faq-item" data-aos="fade-up" data-aos-delay="0">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                How do I register my hostel?
+                            </button>
+                        </h2>
+                        <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                It is simple. Go to the <a href="/register">Sign Up Page</a> and select Owner. Once logged in, you can move forward with adding a new hostel listing.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item hh-faq-item" data-aos="fade-up" data-aos-delay="100">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                Is the service free for students?
+                            </button>
+                        </h2>
+                        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                Yes. Searching, comparing, and contacting owners is free for students. Community features can also support discovery and decision-making.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item hh-faq-item" data-aos="fade-up" data-aos-delay="200">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                How secure are the payments?
+                            </button>
+                        </h2>
+                        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                The platform facilitates a direct owner-student flow. Users can upload proof in <a href="/my_bookings">My Bookings</a> for verification and record-keeping.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item hh-faq-item" data-aos="fade-up" data-aos-delay="300">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                How can I contact support?
+                            </button>
+                        </h2>
+                        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                            <div class="accordion-body">
+                                You can use the form above or email the team at <a href="mailto:support@hostelhub.pk?subject=HostelHub%20Support%20Request">support@hostelhub.pk</a>. The page now makes both paths much easier to find.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({
+        once: true,
+        offset: 100,
+        duration: 800
+    });
+</script>
+
+<%- include('partials/footer') %>

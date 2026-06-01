@@ -1,0 +1,449 @@
+<style>
+    .hh-footer {
+        position: relative;
+        width: 100%;
+        margin-top: 80px;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        background:
+            radial-gradient(circle at top left, rgba(14, 165, 233, 0.12), transparent 24%),
+            radial-gradient(circle at top right, rgba(124, 58, 237, 0.12), transparent 22%),
+            linear-gradient(135deg, var(--dark-bg) 0%, #111c2f 55%, #16253b 100%);
+        color: #ffffff;
+        overflow: hidden;
+    }
+
+    .hh-footer::before {
+        content: '';
+        position: absolute;
+        width: 240px;
+        height: 240px;
+        right: -80px;
+        top: -90px;
+        border-radius: 999px;
+        background: rgba(14, 165, 233, 0.1);
+        filter: blur(36px);
+        pointer-events: none;
+    }
+
+    .hh-footer::after {
+        content: '';
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        left: -70px;
+        bottom: -90px;
+        border-radius: 999px;
+        background: rgba(124, 58, 237, 0.1);
+        filter: blur(34px);
+        pointer-events: none;
+    }
+
+    .hh-footer-shell {
+        position: relative;
+        z-index: 1;
+        width: min(1320px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 72px 0 28px;
+    }
+
+    .hh-footer-grid {
+        display: grid;
+        grid-template-columns: 1.4fr 0.85fr 0.85fr 1fr;
+        gap: 28px;
+        align-items: start;
+    }
+
+    .hh-footer-brand h3 {
+        margin: 0 0 14px;
+        font-family: 'Space Grotesk', sans-serif;
+        color: var(--secondary);
+        font-size: 2rem;
+        letter-spacing: -0.04em;
+    }
+
+    .hh-footer-brand p,
+    .hh-footer-contact p,
+    .hh-footer-links a,
+    .hh-footer-copy {
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .hh-footer-brand p,
+    .hh-footer-contact p {
+        color: rgba(255, 255, 255, 0.72);
+        line-height: 1.9;
+        font-size: 0.94rem;
+        margin: 0;
+    }
+
+    .hh-footer-title {
+        margin: 0 0 16px;
+        color: var(--secondary);
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .hh-footer-links {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+    }
+
+    .hh-footer-links a {
+        color: rgba(255, 255, 255, 0.72);
+        text-decoration: none;
+        font-size: 0.94rem;
+        transition: all 0.25s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .hh-footer-links a:hover,
+    .hh-footer-social a:hover {
+        color: #ffffff;
+        transform: translateX(2px);
+    }
+
+    .hh-footer-social {
+        display: flex;
+        gap: 12px;
+        margin-top: 20px;
+        flex-wrap: wrap;
+    }
+
+    .hh-footer-social a {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        color: #ffffff;
+        text-decoration: none;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        transition: all 0.25s ease;
+    }
+
+    .hh-footer-contact-list {
+        display: grid;
+        gap: 12px;
+    }
+
+    .hh-footer-contact p {
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .hh-footer-contact i {
+        color: var(--secondary);
+        margin-top: 3px;
+    }
+
+    .hh-footer-divider {
+        margin: 34px 0 0;
+        border: 0;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .hh-footer-bottom {
+        padding-top: 22px;
+        text-align: center;
+    }
+
+    .hh-footer-copy {
+        color: rgba(255, 255, 255, 0.68);
+        font-size: 0.86rem;
+    }
+
+    .hh-ai-widget {
+        position: fixed;
+        right: 26px;
+        bottom: 26px;
+        z-index: 10000;
+    }
+
+    .hh-ai-toggle {
+        width: 64px;
+        height: 64px;
+        border-radius: 999px;
+        border: 0;
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: #ffffff;
+        font-size: 1.6rem;
+        box-shadow: 0 16px 32px rgba(0, 102, 204, 0.28);
+        cursor: pointer;
+        transition: all 0.28s ease;
+        display: grid;
+        place-items: center;
+    }
+
+    .hh-ai-toggle:hover {
+        transform: translateY(-3px) scale(1.03);
+        box-shadow: 0 22px 36px rgba(0, 102, 204, 0.34);
+    }
+
+    .hh-ai-window {
+        display: none;
+        position: absolute;
+        right: 0;
+        bottom: 84px;
+        width: 340px;
+        height: 470px;
+        border-radius: 24px;
+        overflow: hidden;
+        background: #ffffff;
+        box-shadow: 0 24px 60px rgba(2, 8, 23, 0.24);
+        border: 1px solid #dbe4f0;
+        flex-direction: column;
+    }
+
+    .hh-ai-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: #ffffff;
+        padding: 16px 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 700;
+        font-size: 0.96rem;
+    }
+
+    .hh-ai-header .btn-close {
+        filter: invert(1);
+        opacity: 1;
+    }
+
+    .hh-ai-messages {
+        flex: 1;
+        padding: 16px;
+        overflow-y: auto;
+        background: var(--light-bg-secondary);
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .hh-ai-bubble,
+    .hh-ai-bubble-user {
+        padding: 10px 14px;
+        border-radius: 14px;
+        max-width: 85%;
+        font-size: 0.84rem;
+        line-height: 1.65;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .hh-ai-bubble {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        align-self: flex-start;
+        color: #0f172a;
+    }
+
+    .hh-ai-bubble-user {
+        background: var(--primary);
+        color: #ffffff;
+        align-self: flex-end;
+    }
+
+    .hh-ai-inputbar {
+        padding: 12px;
+        background: #ffffff;
+        border-top: 1px solid #e5e7eb;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .hh-ai-inputbar input {
+        flex: 1;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 2px solid #e5e7eb;
+        outline: none;
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.84rem;
+        transition: all 0.2s ease;
+    }
+
+    .hh-ai-inputbar input:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.08);
+    }
+
+    .hh-ai-send {
+        width: 42px;
+        height: 42px;
+        border-radius: 999px;
+        border: 0;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        color: #ffffff;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        display: grid;
+        place-items: center;
+    }
+
+    .hh-ai-send:hover {
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 1199px) {
+        .hh-footer-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 767px) {
+        .hh-footer-shell {
+            width: min(100% - 20px, 1320px);
+            padding: 52px 0 22px;
+        }
+
+        .hh-footer-grid {
+            grid-template-columns: 1fr;
+            gap: 24px;
+        }
+
+        .hh-ai-widget {
+            right: 16px;
+            bottom: 16px;
+        }
+
+        .hh-ai-window {
+            width: min(92vw, 340px);
+            height: 440px;
+            right: 0;
+            bottom: 78px;
+        }
+    }
+</style>
+
+<footer class="hh-footer">
+    <div class="hh-footer-shell">
+        <div class="hh-footer-grid">
+            <div class="hh-footer-brand">
+                <h3>HostelHub</h3>
+                <p>Pakistan's #1 premium accommodation finder. We bridge the gap between students and safe, verified hostels with a seamless digital experience.</p>
+                <div class="hh-footer-social">
+                    <a href="#" aria-label="Facebook"><i class="bi bi-facebook fs-5"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="bi bi-instagram fs-5"></i></a>
+                    <a href="#" aria-label="Twitter"><i class="bi bi-twitter fs-5"></i></a>
+                </div>
+            </div>
+
+            <div>
+                <h6 class="hh-footer-title">Quick Links</h6>
+                <ul class="hh-footer-links">
+                    <li><a href="/"><i class="bi bi-house-door"></i> Home</a></li>
+                    <li><a href="/about"><i class="bi bi-info-circle"></i> About Us</a></li>
+                    <li><a href="/contact"><i class="bi bi-envelope"></i> Contact Us</a></li>
+                    <li><a href="/community"><i class="bi bi-people"></i> Community</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h6 class="hh-footer-title">Support</h6>
+                <ul class="hh-footer-links">
+                    <li><a href="#"><i class="bi bi-life-preserver"></i> Help Center</a></li>
+                    <li><a href="#"><i class="bi bi-shield-check"></i> Privacy Policy</a></li>
+                    <li><a href="/login"><i class="bi bi-box-arrow-in-right"></i> Login / Register</a></li>
+                </ul>
+            </div>
+
+            <div class="hh-footer-contact">
+                <h6 class="hh-footer-title">Contact</h6>
+                <div class="hh-footer-contact-list">
+                    <p><i class="bi bi-geo-alt-fill"></i><span>D-Ground, Faisalabad</span></p>
+                    <p><i class="bi bi-envelope-fill"></i><span>support@hostelhub.pk</span></p>
+                    <p><i class="bi bi-telephone-fill"></i><span>+92 300 1234567</span></p>
+                </div>
+            </div>
+        </div>
+
+        <hr class="hh-footer-divider">
+
+        <div class="hh-footer-bottom">
+            <div class="hh-footer-copy">
+                &copy; 2025 HostelHub.pk - Designed with <i class="bi bi-heart-fill text-danger"></i>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<div id="ai-chat-widget" class="hh-ai-widget">
+    <button onclick="toggleAIChat()" class="hh-ai-toggle" aria-label="Open HostelHub AI chat">
+        <i class="bi bi-robot"></i>
+    </button>
+
+    <div id="ai-chat-window" class="hh-ai-window">
+        <div class="hh-ai-header">
+            <span>HostelHub AI</span>
+            <button onclick="toggleAIChat()" class="btn-close btn-close-white" type="button" aria-label="Close"></button>
+        </div>
+        
+        <div id="ai-messages" class="hh-ai-messages">
+            <div class="hh-ai-bubble">
+                Hello! How can I help you find a hostel today?
+            </div>
+        </div>
+
+        <div class="hh-ai-inputbar">
+            <input type="text" id="ai-input" placeholder="Ask something...">
+            <button onclick="sendAIMessage()" class="hh-ai-send" aria-label="Send">
+                <i class="bi bi-send-fill" style="font-size: 14px;"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function toggleAIChat() {
+        const win = document.getElementById('ai-chat-window');
+        win.style.display = (win.style.display === 'none' || win.style.display === '') ? 'flex' : 'none';
+    }
+
+    function sendAIMessage() {
+        const input = document.getElementById('ai-input');
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        const chatBox = document.getElementById('ai-messages');
+        chatBox.innerHTML += `<div class="hh-ai-bubble-user">${msg}</div>`;
+        input.value = "";
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        fetch('/api_ai', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: msg })
+        })
+        .then(response => response.text())
+        .then(data => {
+            chatBox.innerHTML += `<div class="hh-ai-bubble">${data}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const aiInput = document.getElementById('ai-input');
+        if (aiInput) {
+            aiInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    sendAIMessage();
+                }
+            });
+        }
+    });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

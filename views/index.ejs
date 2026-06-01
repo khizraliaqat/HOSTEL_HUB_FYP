@@ -1,0 +1,1798 @@
+<%- include('partials/header') %>
+
+<style>
+    :root {
+        --hh-bg: #081120;
+        --hh-surface: #0f172a;
+        --hh-surface-2: #111c34;
+        --hh-card: rgba(255, 255, 255, 0.08);
+        --hh-card-solid: #ffffff;
+        --hh-text: #0f172a;
+        --hh-text-light: #e5eefc;
+        --hh-muted: #8fa1c2;
+        --hh-line: rgba(255, 255, 255, 0.12);
+        --hh-primary: #22c1ee;
+        --hh-secondary: #7c3aed;
+        --hh-accent: #14b8a6;
+        --hh-success: #10b981;
+        --hh-shadow: 0 24px 60px rgba(3, 10, 26, 0.28);
+        --hh-radius-xl: 32px;
+        --hh-radius-lg: 24px;
+        --hh-radius-md: 18px;
+        --hh-radius-sm: 14px;
+        --hero-overlay-opacity: 0.35;
+    }
+
+    body {
+        background: #f8fafc;
+    }
+
+    .hh-home {
+        color: var(--hh-text);
+        background:
+            radial-gradient(circle at top left, rgba(34, 193, 238, 0.18), transparent 28%),
+            radial-gradient(circle at top right, rgba(124, 58, 237, 0.22), transparent 26%),
+            linear-gradient(180deg, #071120 0%, #0b1730 24%, #f8fafc 24%, #f8fafc 100%);
+    }
+
+    .hh-shell {
+        width: min(1280px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    .hh-section {
+        padding: 92px 0;
+    }
+
+    .hh-section-tight {
+        padding: 72px 0;
+    }
+
+    .hh-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        background: rgba(255, 255, 255, 0.08);
+        color: #e6f4ff;
+        backdrop-filter: blur(16px);
+    }
+
+    .hh-section-heading {
+        max-width: 760px;
+        margin: 0 auto 54px;
+        text-align: center;
+    }
+
+    .hh-section-heading h2 {
+        margin: 0 0 12px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2rem, 4vw, 3.5rem);
+        line-height: 1.08;
+        letter-spacing: -0.04em;
+        color: #0f172a;
+    }
+
+    .hh-section-heading p {
+        margin: 0;
+        color: #64748b;
+        font-size: 1.02rem;
+        line-height: 1.8;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .hh-hero {
+        position: relative;
+        padding: 108px 0 56px;
+        overflow: hidden;
+        background-image: url('https://images.unsplash.com/photo-1552321554-5fefe8c9ef14?auto=format&fit=crop&w=1920&q=80');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-color: #081120;
+    }
+    
+    .hh-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, 
+            rgba(8, 17, 32, var(--hero-overlay-opacity)) 0%, 
+            rgba(15, 23, 42, var(--hero-overlay-opacity)) 50%, 
+            rgba(7, 17, 32, var(--hero-overlay-opacity)) 100%);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .hh-hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.08fr) minmax(420px, 0.92fr);
+        gap: 34px;
+        align-items: center;
+        position: relative;
+        z-index: 2;
+    }
+
+    .hh-hero-copy {
+        color: var(--hh-text-light);
+        position: relative;
+        z-index: 2;
+    }
+
+    .hh-hero-copy h1 {
+        margin: 18px 0 18px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2.9rem, 7vw, 5.4rem);
+        line-height: 0.98;
+        letter-spacing: -0.055em;
+        color: #ffffff;
+        max-width: 760px;
+    }
+
+    .hh-hero-copy h1 .accent {
+        background: linear-gradient(90deg, #8be7ff 0%, #5cc8ff 35%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hh-hero-copy p {
+        max-width: 640px;
+        margin: 0 0 28px;
+        color: #c9d6f0;
+        font-size: 1.08rem;
+        line-height: 1.85;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .hh-search-card {
+        padding: 20px;
+        border-radius: 32px;
+        border: 1px solid rgba(255, 255, 255, 0.16);
+        background: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(24px);
+        box-shadow: 0 32px 80px rgba(34, 193, 238, 0.18);
+        max-width: 760px;
+    }
+
+    .hh-search-form {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 1fr auto;
+        gap: 14px;
+    }
+
+    .hh-field {
+        position: relative;
+    }
+
+    .hh-field i {
+        position: absolute;
+        top: 50%;
+        left: 16px;
+        transform: translateY(-50%);
+        color: #7dd3fc;
+        font-size: 0.92rem;
+    }
+
+    .hh-field input,
+    .hh-field select {
+        width: 100%;
+        height: 56px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 18px;
+        background: rgba(7, 17, 32, 0.5);
+        color: #ffffff;
+        padding: 0 16px 0 42px;
+        outline: none;
+        font-size: 0.98rem;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .hh-field input::placeholder,
+    .hh-field select,
+    .hh-field select option {
+        color: #dbeafe;
+    }
+
+    .hh-search-btn {
+        height: 56px;
+        border: 0;
+        border-radius: 18px;
+        padding: 0 28px;
+        font-weight: 700;
+        color: #ffffff;
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+        box-shadow: 0 18px 32px rgba(34, 193, 238, 0.24);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .hh-search-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 22px 38px rgba(34, 193, 238, 0.28);
+    }
+
+    .hh-search-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        margin-top: 16px;
+    }
+
+    .hh-search-tags span {
+        display: inline-flex;
+        align-items: center;
+        padding: 12px 20px;
+        border-radius: 999px;
+        background: rgba(34, 193, 238, 0.3);
+        border: 2px solid rgba(34, 193, 238, 0.6);
+        color: #003d52;
+        font-size: 0.95rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        transition: all 0.25s ease;
+    }
+
+    .hh-search-tags span:hover {
+        background: rgba(34, 193, 238, 0.18);
+        border-color: rgba(34, 193, 238, 0.35);
+        transform: translateY(-2px);
+    }
+
+    .hh-hero-stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        margin-top: 26px;
+        max-width: 780px;
+    }
+
+    .hh-stat {
+        padding: 26px 22px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.95);
+        border: 1px solid rgba(0, 0, 0, 0.08);
+        backdrop-filter: blur(14px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .hh-stat strong {
+        display: block;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2.4rem;
+        line-height: 1;
+        color: #0f172a;
+        margin-bottom: 8px;
+        font-weight: 800;
+    }
+
+    .hh-stat span {
+        color: #475569;
+        font-size: 0.95rem;
+        font-weight: 600;
+    }
+
+    .hh-hero-visual {
+        position: relative;
+        min-height: 640px;
+    }
+
+    .hh-orb,
+    .hh-orb-2 {
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(60px);
+        z-index: 0;
+    }
+
+    .hh-orb {
+        width: 190px;
+        height: 190px;
+        top: 60px;
+        left: -30px;
+        background: rgba(34, 193, 238, 0.25);
+    }
+
+    .hh-orb-2 {
+        width: 220px;
+        height: 220px;
+        right: -20px;
+        bottom: 26px;
+        background: rgba(124, 58, 237, 0.24);
+    }
+
+    .hh-showcase {
+        position: relative;
+        z-index: 1;
+        overflow: hidden;
+        border-radius: 36px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: #0a1222;
+        box-shadow: var(--hh-shadow);
+        min-height: 640px;
+    }
+
+    .hh-showcase img {
+        width: 100%;
+        height: 640px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .hh-showcase::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(7, 17, 32, 0.08) 0%, rgba(7, 17, 32, 0.55) 55%, rgba(7, 17, 32, 0.9) 100%);
+    }
+
+    .hh-floating,
+    .hh-floating-bottom,
+    .hh-floating-price {
+        position: absolute;
+        z-index: 2;
+        border-radius: 26px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(8, 17, 32, 0.6);
+        color: #ffffff;
+        backdrop-filter: blur(18px);
+        box-shadow: 0 18px 38px rgba(3, 10, 26, 0.34);
+    }
+
+    .hh-floating {
+        top: 22px;
+        left: 22px;
+        right: 22px;
+        padding: 18px;
+    }
+
+    .hh-floating small {
+        color: #b7c7e8;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .hh-floating h3 {
+        margin: 0;
+        font-size: 1.4rem;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .hh-floating .meta {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+        color: #dbeafe;
+        font-size: 0.92rem;
+    }
+
+    .hh-mini-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        font-size: 0.82rem;
+    }
+
+    .hh-floating-bottom {
+        left: 22px;
+        right: 180px;
+        bottom: 22px;
+        padding: 18px;
+    }
+
+    .hh-floating-bottom h4 {
+        margin: 0 0 10px;
+        font-size: 1.05rem;
+        color: #ffffff;
+    }
+
+    .hh-bullet-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .hh-bullet-grid span {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.06);
+        color: #dbeafe;
+        font-size: 0.88rem;
+    }
+
+    .hh-floating-price {
+        width: 142px;
+        right: 22px;
+        bottom: 22px;
+        padding: 20px 18px;
+        text-align: center;
+    }
+
+    .hh-floating-price .label {
+        display: block;
+        font-size: 0.82rem;
+        color: #bed0ef;
+        margin-bottom: 4px;
+    }
+
+    .hh-floating-price strong {
+        display: block;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.9rem;
+        line-height: 1.1;
+        margin-bottom: 6px;
+        color: #ffffff;
+    }
+
+    .hh-floating-price button,
+    .hh-inline-btn,
+    .hh-card-btn,
+    .hh-outline-btn,
+    .hh-dark-btn {
+        border: 0;
+        cursor: pointer;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        transition: all 0.25s ease;
+    }
+
+    .hh-card-grid-4,
+    .hh-card-grid-3,
+    .hh-card-grid-2 {
+        display: grid;
+        gap: 24px;
+    }
+
+    .hh-card-grid-4 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .hh-card-grid-3 {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .hh-card-grid-2 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .hh-feature-banner {
+        margin-top: 14px;
+        border-radius: 32px;
+        padding: 34px;
+        background: linear-gradient(135deg, #20b7ef 0%, #7c3aed 100%);
+        color: #ffffff;
+        box-shadow: 0 24px 60px rgba(66, 74, 179, 0.22);
+    }
+
+    .hh-feature-banner-grid {
+        display: grid;
+        grid-template-columns: 0.95fr 1.05fr;
+        gap: 30px;
+        align-items: center;
+    }
+
+    .hh-feature-banner h2 {
+        margin: 0 0 12px;
+        font-size: clamp(1.9rem, 3vw, 3rem);
+        line-height: 1.1;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .hh-feature-banner p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.88);
+        line-height: 1.8;
+    }
+
+    .hh-feature-boxes {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .hh-feature-box {
+        padding: 20px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(12px);
+    }
+
+    .hh-feature-box i {
+        font-size: 1.1rem;
+        margin-bottom: 12px;
+        display: inline-block;
+    }
+
+    .hh-feature-box h4 {
+        margin: 0 0 8px;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .hh-feature-box p {
+        margin: 0;
+        font-size: 0.92rem;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.82);
+    }
+
+    .hh-card {
+        border-radius: 28px;
+        border: 1px solid #e5edf9;
+        background: #ffffff;
+        box-shadow: 0 16px 34px rgba(15, 23, 42, 0.06);
+        overflow: hidden;
+        transition: transform 0.28s ease, box-shadow 0.28s ease;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .hh-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 24px 40px rgba(15, 23, 42, 0.1);
+    }
+
+    .hh-stay-top {
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+        background: #e5e7eb;
+    }
+
+    .hh-stay-top img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.45s ease;
+    }
+
+    .hh-card:hover .hh-stay-top img {
+        transform: scale(1.06);
+    }
+
+    .hh-stay-top::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.05) 0%, rgba(15, 23, 42, 0.62) 100%);
+    }
+
+    .hh-card-tag,
+    .hh-card-price {
+        position: absolute;
+        z-index: 2;
+        border-radius: 999px;
+        font-weight: 700;
+        font-size: 0.82rem;
+    }
+
+    .hh-card-tag {
+        top: 16px;
+        left: 16px;
+        padding: 9px 14px;
+        background: rgba(255, 255, 255, 0.94);
+        color: #0f172a;
+    }
+
+    .hh-card-price {
+        right: 16px;
+        bottom: 16px;
+        padding: 10px 14px;
+        background: rgba(255, 255, 255, 0.94);
+        color: #0f4bc0;
+        box-shadow: 0 8px 20px rgba(15, 23, 42, 0.1);
+    }
+
+    .hh-wishlist-btn {
+        position: absolute;
+        top: 16px;
+        right: 16px;
+        z-index: 3;
+        width: 40px;
+        height: 40px;
+        border: 0;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.95);
+        color: #0f172a;
+        box-shadow: 0 10px 22px rgba(15, 23, 42, 0.15);
+        transition: all 0.22s ease;
+    }
+
+    .hh-wishlist-btn:hover {
+        transform: translateY(-1px);
+        color: #dc2626;
+    }
+
+    .hh-wishlist-btn.active {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+
+    .hh-card-body {
+        padding: 22px;
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .hh-card-title-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        align-items: flex-start;
+    }
+
+    .hh-card-body h3 {
+        margin: 0 0 6px;
+        font-size: 1.16rem;
+        line-height: 1.35;
+        color: #0f172a;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .hh-card-meta {
+        color: #64748b;
+        font-size: 0.92rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+
+    .hh-card-actions {
+        margin-top: auto;
+        display: grid;
+        gap: 10px;
+    }
+
+    .hh-card-mini-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .hh-rating {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #0f172a;
+        font-size: 0.84rem;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .hh-card-btn {
+        width: 100%;
+        height: 48px;
+        border-radius: 16px;
+        border: 0;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: #ffffff;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+        transition: all 0.22s ease;
+    }
+
+    .hh-card-btn:hover {
+        transform: translateY(-1px);
+        background: linear-gradient(135deg, #0b1220 0%, #172233 100%);
+    }
+
+    .hh-card-btn-outline {
+        background: #ffffff;
+        border: 1px solid #dbe4f0;
+        color: #0f172a;
+    }
+
+    .hh-card-btn-outline.active {
+        background: #fee2e2;
+        border-color: #fecaca;
+        color: #b91c1c;
+    }
+
+    .hh-card-btn-outline:hover {
+        transform: translateY(-1px);
+        border-color: #cbd5e1;
+        background: #f8fafc;
+    }
+
+    .hh-filter-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-bottom: 28px;
+    }
+
+    .hh-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .hh-pills span,
+    .hh-pills a {
+        padding: 10px 16px;
+        border-radius: 999px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #475569;
+        text-decoration: none;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .hh-pills .active {
+        background: #0f172a;
+        border-color: #0f172a;
+        color: #ffffff;
+    }
+
+    .hh-pills a:hover {
+        border-color: #0ea5e9;
+        color: #0f172a;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 16px rgba(2, 8, 23, 0.08);
+    }
+
+    .hh-compare-dock {
+        position: fixed;
+        left: 50%;
+        bottom: 18px;
+        transform: translateX(-50%);
+        z-index: 1042;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 14px;
+        border-radius: 18px;
+        background: rgba(15, 23, 42, 0.96);
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        box-shadow: 0 22px 44px rgba(2, 8, 23, 0.32);
+    }
+
+    .hh-compare-dock small {
+        color: #cbd5e1;
+        font-weight: 600;
+    }
+
+    .hh-compare-btn {
+        min-height: 40px;
+        border-radius: 12px;
+        padding: 0 14px;
+        font-size: 0.88rem;
+    }
+
+    .hh-compare-btn[disabled] {
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    .hh-outline-btn {
+        padding: 12px 18px;
+        border-radius: 999px;
+        border: 1px solid #d8e2f0;
+        background: #ffffff;
+        color: #0f172a;
+    }
+
+    .hh-outline-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+        color: #0f172a;
+    }
+
+    .hh-plan-card {
+        position: relative;
+        padding: 34px 28px;
+        border-radius: 32px;
+        border: 1px solid #e6edf8;
+        background: #ffffff;
+        box-shadow: 0 16px 34px rgba(15, 23, 42, 0.06);
+    }
+
+    .hh-plan-card.featured {
+        background: linear-gradient(180deg, rgba(34, 193, 238, 0.08) 0%, rgba(124, 58, 237, 0.08) 100%), #ffffff;
+        border-color: rgba(34, 193, 238, 0.3);
+        box-shadow: 0 24px 46px rgba(34, 193, 238, 0.12);
+    }
+
+    .hh-plan-chip {
+        display: inline-flex;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: #0f172a;
+        color: #ffffff;
+        font-size: 0.8rem;
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+
+    .hh-plan-card h3 {
+        margin: 0;
+        font-size: 1.2rem;
+        color: #0f172a;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .hh-plan-price {
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        margin: 18px 0 8px;
+    }
+
+    .hh-plan-price strong {
+        font-size: clamp(2.4rem, 5vw, 3.4rem);
+        line-height: 1;
+        color: #0f172a;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .hh-plan-price span {
+        color: #64748b;
+        padding-bottom: 8px;
+    }
+
+    .hh-plan-card p {
+        margin: 0 0 22px;
+        color: #64748b;
+        line-height: 1.7;
+    }
+
+    .hh-list {
+        display: grid;
+        gap: 12px;
+        margin: 0 0 24px;
+        padding: 0;
+        list-style: none;
+    }
+
+    .hh-list li {
+        display: flex;
+        gap: 10px;
+        align-items: flex-start;
+        color: #334155;
+        line-height: 1.6;
+    }
+
+    .hh-list i {
+        color: var(--hh-success);
+        margin-top: 4px;
+    }
+
+    .hh-dark-btn {
+        width: 100%;
+        height: 50px;
+        border-radius: 16px;
+        background: #0f172a;
+        color: #ffffff;
+    }
+
+    .hh-dark-btn.featured {
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+    }
+
+    .hh-review-wrap {
+        border-radius: 36px;
+        background: linear-gradient(180deg, #0b1730 0%, #101d3a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 44px;
+        box-shadow: var(--hh-shadow);
+    }
+
+    .hh-review-wrap .hh-section-heading h2,
+    .hh-review-wrap .hh-section-heading p {
+        color: #ffffff;
+    }
+
+    .hh-review-wrap .hh-section-heading p {
+        color: #bcd0ef;
+    }
+
+    .hh-review-card {
+        border-radius: 28px;
+        padding: 26px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        min-height: 100%;
+    }
+
+    .hh-review-card .quote {
+        font-size: 2rem;
+        line-height: 1;
+        color: #7dd3fc;
+        margin-bottom: 14px;
+    }
+
+    .hh-review-card p {
+        margin: 0 0 22px;
+        color: #dbeafe;
+        line-height: 1.9;
+    }
+
+    .hh-review-author {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .hh-review-author img {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .hh-review-author strong {
+        display: block;
+        color: #ffffff;
+    }
+
+    .hh-review-author span {
+        color: #b7c7e8;
+        font-size: 0.9rem;
+    }
+
+    .hh-destination-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        grid-auto-rows: 220px;
+        gap: 22px;
+    }
+
+    .hh-destination-card {
+        position: relative;
+        border-radius: 30px;
+        overflow: hidden;
+        box-shadow: 0 14px 28px rgba(15, 23, 42, 0.08);
+        min-height: 220px;
+    }
+
+    .hh-destination-card.large {
+        grid-column: span 2;
+    }
+
+    .hh-destination-card.tall {
+        grid-row: span 2;
+    }
+
+    .hh-destination-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.45s ease;
+    }
+
+    .hh-destination-card:hover img {
+        transform: scale(1.05);
+    }
+
+    .hh-destination-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.1) 0%, rgba(15, 23, 42, 0.72) 100%);
+    }
+
+    .hh-destination-copy {
+        position: absolute;
+        left: 22px;
+        bottom: 22px;
+        z-index: 2;
+        color: #ffffff;
+    }
+
+    .hh-destination-copy h3 {
+        margin: 0 0 4px;
+        font-size: 1.6rem;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .hh-destination-copy p {
+        margin: 0;
+        color: #dbeafe;
+    }
+
+    .hh-experience-card {
+        padding: 32px 24px;
+        border-radius: 28px;
+        border: 1px solid #e6edf8;
+        background: #ffffff;
+        text-align: center;
+        box-shadow: 0 16px 34px rgba(15, 23, 42, 0.05);
+    }
+
+    .hh-experience-icon {
+        width: 72px;
+        height: 72px;
+        margin: 0 auto 18px;
+        border-radius: 24px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(34, 193, 238, 0.12) 0%, rgba(124, 58, 237, 0.12) 100%);
+        color: #0f172a;
+        font-size: 1.5rem;
+    }
+
+    .hh-experience-card h3 {
+        margin: 0 0 8px;
+        font-size: 1.08rem;
+        color: #0f172a;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .hh-experience-card p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.75;
+        font-size: 0.95rem;
+    }
+
+    .hh-guide-card {
+        border-radius: 28px;
+        overflow: hidden;
+        border: 1px solid #e6edf8;
+        background: #ffffff;
+        box-shadow: 0 16px 34px rgba(15, 23, 42, 0.06);
+    }
+
+    .hh-guide-card img {
+        width: 100%;
+        height: 230px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .hh-guide-body {
+        padding: 24px;
+    }
+
+    .hh-guide-chip {
+        display: inline-flex;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 0.82rem;
+        font-weight: 700;
+        margin-bottom: 14px;
+    }
+
+    .hh-guide-body h3 {
+        margin: 0 0 14px;
+        font-size: 1.2rem;
+        line-height: 1.55;
+        color: #0f172a;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .hh-inline-btn {
+        gap: 10px;
+        color: #0f172a;
+        font-size: 0.95rem;
+        background: transparent;
+        padding: 0;
+    }
+
+    .hh-inline-btn:hover {
+        color: #1d4ed8;
+    }
+
+    .hh-trust-wrap {
+        border-radius: 36px;
+        padding: 42px;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(34, 193, 238, 0.12) 100%);
+        border: 1px solid rgba(16, 185, 129, 0.14);
+    }
+
+    .hh-trust-card {
+        padding: 26px;
+        border-radius: 28px;
+        background: rgba(255, 255, 255, 0.74);
+        border: 1px solid rgba(255, 255, 255, 0.7);
+        min-height: 100%;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.04);
+    }
+
+    .hh-trust-icon {
+        width: 58px;
+        height: 58px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        background: rgba(16, 185, 129, 0.12);
+        color: #047857;
+        font-size: 1.25rem;
+        margin-bottom: 16px;
+    }
+
+    .hh-trust-card h3 {
+        margin: 0 0 8px;
+        font-size: 1.08rem;
+        color: #0f172a;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .hh-trust-card p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.75;
+    }
+
+    .hh-cta-panel {
+        border-radius: 36px;
+        background: #ffffff;
+        padding: 42px;
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.08);
+        border: 1px solid #e6edf8;
+    }
+
+    .hh-cta-grid {
+        display: grid;
+        grid-template-columns: 1fr 0.92fr;
+        gap: 28px;
+        align-items: center;
+    }
+
+    .hh-cta-copy h2 {
+        margin: 16px 0 14px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2rem, 4vw, 3.2rem);
+        line-height: 1.08;
+        color: #0f172a;
+    }
+
+    .hh-cta-copy p {
+        margin: 0 0 20px;
+        color: #64748b;
+        line-height: 1.85;
+    }
+
+    .hh-checks {
+        display: grid;
+        gap: 10px;
+    }
+
+    .hh-checks span {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #334155;
+    }
+
+    .hh-checks i {
+        color: var(--hh-success);
+    }
+
+    .hh-cta-form {
+        padding: 24px;
+        border-radius: 28px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+    }
+
+    .hh-cta-form-grid {
+        display: grid;
+        gap: 14px;
+    }
+
+    .hh-cta-form-grid input,
+    .hh-cta-form-grid select {
+        width: 100%;
+        height: 52px;
+        border-radius: 16px;
+        border: 1px solid #dbe4f0;
+        background: #ffffff;
+        padding: 0 16px;
+        outline: none;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .hh-cta-form-grid .split {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .hh-cta-form-grid button {
+        height: 52px;
+        border-radius: 16px;
+        border: 0;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: #ffffff;
+        font-weight: 700;
+    }
+
+    .hh-hidden-listing {
+        display: none;
+    }
+
+    @media (max-width: 1199px) {
+        .hh-hero-grid,
+        .hh-feature-banner-grid,
+        .hh-cta-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-hero-visual {
+            min-height: auto;
+        }
+
+        .hh-showcase,
+        .hh-showcase img {
+            min-height: auto;
+            height: 560px;
+        }
+
+        .hh-card-grid-4 {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .hh-destination-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 991px) {
+        .hh-search-form {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .hh-hero-stats,
+        .hh-card-grid-3,
+        .hh-card-grid-2,
+        .hh-feature-boxes {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-floating-bottom {
+            right: 22px;
+        }
+
+        .hh-floating-price {
+            position: static;
+            width: 100%;
+            margin: 16px 22px 22px;
+        }
+
+        .hh-destination-card.large,
+        .hh-destination-card.tall {
+            grid-column: auto;
+            grid-row: auto;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .hh-home {
+            background:
+                radial-gradient(circle at top left, rgba(34, 193, 238, 0.18), transparent 22%),
+                radial-gradient(circle at top right, rgba(124, 58, 237, 0.18), transparent 20%),
+                linear-gradient(180deg, #071120 0%, #0b1730 20%, #f8fafc 20%, #f8fafc 100%);
+        }
+
+        .hh-hero {
+            padding: 92px 0 34px;
+        }
+
+        .hh-shell {
+            width: min(100% - 22px, 1280px);
+        }
+
+        .hh-search-form,
+        .hh-cta-form-grid .split,
+        .hh-card-grid-4,
+        .hh-destination-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-showcase,
+        .hh-showcase img {
+            height: 500px;
+        }
+
+        .hh-floating,
+        .hh-floating-bottom {
+            left: 16px;
+            right: 16px;
+        }
+
+        .hh-bullet-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-section,
+        .hh-section-tight {
+            padding: 70px 0;
+        }
+
+        .hh-feature-banner,
+        .hh-review-wrap,
+        .hh-trust-wrap,
+        .hh-cta-panel {
+            padding: 26px;
+        }
+
+        .hh-hero-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 575px) {
+        .hh-hero-copy h1 {
+            font-size: 2.4rem;
+        }
+
+        .hh-hero-copy p,
+        .hh-section-heading p {
+            font-size: 0.96rem;
+        }
+
+        .hh-showcase,
+        .hh-showcase img {
+            height: 460px;
+        }
+
+        .hh-hero-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-stat strong {
+            font-size: 1.55rem;
+        }
+
+        .hh-card-body,
+        .hh-plan-card,
+        .hh-experience-card,
+        .hh-guide-body,
+        .hh-review-card,
+        .hh-trust-card,
+        .hh-cta-form {
+            padding: 20px;
+        }
+
+        .hh-card-mini-actions {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-compare-dock {
+            width: calc(100% - 20px);
+            left: 10px;
+            transform: none;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+    }
+</style>
+
+<div class="hh-home">
+    <section class="hh-hero">
+        <div class="hh-shell hh-hero-grid">
+            <div class="hh-hero-copy">
+                
+                <h1>Your Journey Deserves a <span class="accent">Perfect Stay</span></h1>
+                <p>Find hostels, student residences, and family spaces through a cleaner search flow, stronger trust signals, and a more modern booking experience built for Pakistan.</p>
+
+                <div class="hh-search-card">
+                    <form id="heroSearchForm" action="/" method="GET">
+                        <div class="hh-search-form">
+                            <div class="hh-field">
+                                <i class="bi bi-search"></i>
+                                <input type="text" name="area" placeholder="Where do you want to stay?" value="<%= query?.area || '' %>">
+                            </div>
+                            <div class="hh-field">
+                                <i class="bi bi-house-door"></i>
+                                <select name="category">
+                                    <option value="">All categories</option>
+                                    <option value="Boys" <%= query?.category == 'Boys' ? 'selected' : '' %>>Boys Hostel</option>
+                                    <option value="Girls" <%= query?.category == 'Girls' ? 'selected' : '' %>>Girls Hostel</option>
+                                    <option value="Family" <%= query?.category == 'Family' ? 'selected' : '' %>>Family Flat</option>
+                                </select>
+                            </div>
+                            <div class="hh-field">
+                                <i class="bi bi-cash-stack"></i>
+                                <input type="number" name="price" placeholder="Max budget in PKR" value="<%= query?.price || '' %>">
+                            </div>
+                            <button type="submit" class="hh-search-btn">Search</button>
+                        </div>
+                    </form>
+                    <div class="hh-search-tags">
+                        <span onclick="applyQuickFilter({ price: '20000' })" style="cursor:pointer;">Budget friendly</span>
+                        <span onclick="applyQuickFilter({ category: 'Girls' })" style="cursor:pointer;">Girls hostel</span>
+                        <span onclick="applyQuickFilter({ category: 'Family' })" style="cursor:pointer;">Family flats</span>
+                        <span onclick="applyQuickFilter({ area: 'secure' })" style="cursor:pointer;">High security</span>
+                        <span onclick="applyQuickFilter({ area: 'university' })" style="cursor:pointer;">Near universities</span>
+                    </div>
+                </div>
+
+                
+            </div>
+
+            <div class="hh-hero-visual">
+                <div class="hh-orb"></div>
+                <div class="hh-orb-2"></div>
+                <div class="hh-showcase">
+                    <img src="https://images.unsplash.com/photo-1522798514-97ceb8c4f1c8?auto=format&fit=crop&w=1400&q=80" alt="Modern hostel interior">
+
+                    <div class="hh-floating">
+                        <small>Featured residence</small>
+                        <h3>Executive Student Living</h3>
+                        <div class="meta">
+                            <span><i class="bi bi-geo-alt"></i> Islamabad</span>
+                            <span><i class="bi bi-star-fill" style="color:#fbbf24;"></i> 4.9 rating</span>
+                            <span class="hh-mini-pill"><i class="bi bi-shield-check"></i> Verified</span>
+                        </div>
+                    </div>
+
+
+
+                    <div class="hh-floating-price">
+                        <span class="label">Starting from</span>
+                        <strong>PKR 9,000</strong>
+                        <span class="label">per month</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <section class="hh-section">
+        <div class="hh-shell">
+            <div class="hh-section-heading">
+                <h2>Featured stays</h2>
+                <p>Verified properties in your favorite categories</p>
+            </div>
+
+            <div class="hh-filter-row">
+                <div class="hh-pills">
+                    <a href="/" class="<%= !query?.category && !query?.price && !query?.area ? 'active' : '' %>">All</a>
+                    <a href="/?price=20000" class="<%= Number(query?.price || 0) === 20000 ? 'active' : '' %>">Budget friendly</a>
+                    <a href="/?category=Girls" class="<%= query?.category === 'Girls' ? 'active' : '' %>">Girls hostel</a>
+                    <a href="/?category=Family" class="<%= query?.category === 'Family' ? 'active' : '' %>">Family flats</a>
+                    <a href="/?area=secure" class="<%= (query?.area || '').toLowerCase() === 'secure' ? 'active' : '' %>">High security</a>
+                </div>
+                <a href="/" class="hh-outline-btn">View all <i class="bi bi-arrow-right ms-2"></i></a>
+            </div>
+
+            <div class="hh-card-grid-4">
+                <% if (hostels && hostels.length > 0) { %>
+                    <% hostels.forEach(function(hostel, index) { %>
+                        <% const isWishlisted = Array.isArray(wishlistIds) && wishlistIds.includes(String(hostel._id)); %>
+                        <div class="hh-card">
+                            <div class="hh-stay-top">
+                                <% if (hostel.image) { %>
+                                    <img src="/uploads/<%= hostel.image %>" alt="<%= hostel.name %>">
+                                <% } else { %>
+                                    <img src="https://via.placeholder.com/600x420?text=<%= encodeURIComponent(hostel.name) %>" alt="<%= hostel.name %>">
+                                <% } %>
+                                <span class="hh-card-tag"><%= hostel.category || 'Residence' %></span>
+                                <% if (user && user.role === 'student') { %>
+                                    <button type="button"
+                                            class="hh-wishlist-btn <%= isWishlisted ? 'active' : '' %>"
+                                            data-hostel-id="<%= hostel._id %>"
+                                            onclick="toggleWishlist(event, this)">
+                                        <i class="bi <%= isWishlisted ? 'bi-heart-fill' : 'bi-heart' %>"></i>
+                                    </button>
+                                <% } %>
+                                <span class="hh-card-price">PKR <%= Number(hostel.price || 0).toLocaleString() %></span>
+                            </div>
+                            <div class="hh-card-body">
+                                <div class="hh-card-title-row">
+                                    <div>
+                                        <h3><%= hostel.name %></h3>
+                                        <div class="hh-card-meta"><i class="bi bi-geo-alt"></i> <%= hostel.area || 'Pakistan' %></div>
+                                    </div>
+                                    <span class="hh-rating"><i class="bi bi-star-fill" style="color:#fbbf24;"></i> <%= (4.6 + ((index % 4) * 0.1)).toFixed(1) %></span>
+                                </div>
+
+                                <div class="hh-card-actions">
+                                    <a href="/details/<%= hostel._id %>" class="hh-card-btn">View details</a>
+                                    <div class="hh-card-mini-actions">
+                                        <% if (!user || user.role === 'student') { %>
+                                            <button type="button"
+                                                    class="hh-card-btn hh-card-btn-outline hh-favorite-toggle <%= isWishlisted ? 'active' : '' %>"
+                                                    data-hostel-id="<%= hostel._id %>"
+                                                    onclick="toggleWishlist(event, this)">
+                                                <i class="bi <%= isWishlisted ? 'bi-heart-fill' : 'bi-heart' %>"></i>
+                                                <span><%= isWishlisted ? 'Favorited' : 'Favorite' %></span>
+                                            </button>
+                                        <% } %>
+
+                                        <button type="button"
+                                                class="hh-card-btn hh-card-btn-outline hh-compare-toggle"
+                                                data-hostel-id="<%= hostel._id %>"
+                                                data-hostel-name="<%= hostel.name %>"
+                                                onclick="toggleCompare(this)">
+                                            <i class="bi bi-columns-gap"></i>
+                                            <span>Compare</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="hh-card" style="grid-column:1 / -1; padding:36px; text-align:center;">
+                        <h3 style="margin:0 0 10px; font-family:'Space Grotesk', sans-serif;">No hostels available right now</h3>
+                        <p style="margin:0; color:#64748b;">Once listings are added, they will appear here in the redesigned card layout.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </section>
+    
+    
+
+    <section class="hh-section">
+        <div class="hh-shell">
+            <div class="hh-section-heading">
+                <h2>Explore top destinations</h2>
+                <p>Discover verified stays in cities across Pakistan</p>
+            </div>
+
+            <div class="hh-destination-grid">
+                <div class="hh-destination-card large">
+                    <img src="https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=80" alt="Lahore">
+                    <div class="hh-destination-copy">
+                        <h3>Lahore</h3>
+                        <p>126 active stays</p>
+                    </div>
+                </div>
+                <div class="hh-destination-card tall">
+                    <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80" alt="Islamabad">
+                    <div class="hh-destination-copy">
+                        <h3>Islamabad</h3>
+                        <p>94 active stays</p>
+                    </div>
+                </div>
+                <div class="hh-destination-card">
+                    <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1200&q=80" alt="Karachi">
+                    <div class="hh-destination-copy">
+                        <h3>Karachi</h3>
+                        <p>82 active stays</p>
+                    </div>
+                </div>
+                <div class="hh-destination-card large">
+                    <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80" alt="Skardu">
+                    <div class="hh-destination-copy">
+                        <h3>Skardu</h3>
+                        <p>47 active stays</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+    <div class="hh-hidden-listing content-wrapper container my-5">
+        <div class="row">
+            <div class="col-12 col-lg-3 mb-5">
+                <div class="filter-card">
+                    <h5 class="fw-bold mb-4 text-dark"><i class="bi bi-sliders2 me-2"></i> Refine Search</h5>
+                    <form action="/" method="GET">
+                        <div class="mb-4">
+                            <label class="form-label">Location</label>
+                            <input type="text" name="area" class="form-control" placeholder="e.g. Madina Town" value="<%= query?.area || '' %>">
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Category</label>
+                            <select name="category" class="form-select">
+                                <option value="">All Categories</option>
+                                <option value="Boys" <%= query?.category == 'Boys' ? 'selected' : '' %>>Boys Hostel</option>
+                                <option value="Girls" <%= query?.category == 'Girls' ? 'selected' : '' %>>Girls Hostel</option>
+                                <option value="Family" <%= query?.category == 'Family' ? 'selected' : '' %>>Family Flat</option>
+                            </select>
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label">Max Budget (PKR)</label>
+                            <input type="number" name="price" class="form-control" placeholder="25000" value="<%= query?.price || '' %>">
+                        </div>
+                        <button class="btn w-100 py-3 fw-bold rounded-pill shadow-sm" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; border: none;">Apply Filters</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-12 col-lg-9">
+                <!-- Preserved hidden alternative listing area -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="compareDock" class="hh-compare-dock" style="display:none;">
+    <small id="compareDockText">Select two hostels to compare.</small>
+    <a id="compareNowBtn" href="/compare" class="hh-card-btn hh-compare-btn">Compare Now</a>
+    <button type="button" id="compareClearBtn" class="hh-card-btn hh-card-btn-outline hh-compare-btn" onclick="clearCompare()">Clear</button>
+</div>
+
+<script>
+    const COMPARE_KEY = 'hhCompareHostels';
+
+    function applyQuickFilter(values) {
+        const form = document.getElementById('heroSearchForm');
+        if (!form) return;
+
+        const areaInput = form.querySelector('input[name="area"]');
+        const categorySelect = form.querySelector('select[name="category"]');
+        const priceInput = form.querySelector('input[name="price"]');
+
+        if (values.area !== undefined && areaInput) areaInput.value = values.area;
+        if (values.category !== undefined && categorySelect) categorySelect.value = values.category;
+        if (values.price !== undefined && priceInput) priceInput.value = values.price;
+
+        form.submit();
+    }
+
+    function toggleWishlist(event, button) {
+        if (event) event.preventDefault();
+
+        const hostelId = button.getAttribute('data-hostel-id');
+        if (!hostelId) return;
+
+        fetch('/toggle_wishlist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ hostel_id: hostelId })
+        })
+            .then((response) => response.text())
+            .then((result) => {
+                if (result === 'login_required') {
+                    window.location.href = '/login?msg=' + encodeURIComponent('Please login to use wishlist');
+                    return;
+                }
+
+                if (result === 'added') {
+                    setWishlistState(hostelId, true);
+                    return;
+                }
+
+                if (result === 'removed') {
+                    setWishlistState(hostelId, false);
+                }
+            })
+            .catch((error) => {
+                console.error('Wishlist toggle error:', error);
+            });
+    }
+
+    function setWishlistState(hostelId, isActive) {
+        const nodes = document.querySelectorAll('.hh-wishlist-btn[data-hostel-id="' + hostelId + '"], .hh-favorite-toggle[data-hostel-id="' + hostelId + '"]');
+        nodes.forEach((node) => {
+            node.classList.toggle('active', isActive);
+
+            const icon = node.querySelector('i');
+            const label = node.querySelector('span');
+
+            if (icon && node.classList.contains('hh-wishlist-btn')) {
+                icon.className = isActive ? 'bi bi-heart-fill' : 'bi bi-heart';
+            }
+
+            if (icon && node.classList.contains('hh-favorite-toggle')) {
+                if (icon.classList.contains('bi-heart') || icon.classList.contains('bi-heart-fill')) {
+                    icon.className = isActive ? 'bi bi-heart-fill' : 'bi bi-heart';
+                }
+            }
+
+            if (label && node.classList.contains('hh-favorite-toggle')) {
+                if (label.textContent === 'Favorite' || label.textContent === 'Favorited') {
+                    label.textContent = isActive ? 'Favorited' : 'Favorite';
+                }
+            }
+        });
+    }
+
+    function getCompareList() {
+        try {
+            const raw = localStorage.getItem(COMPARE_KEY);
+            const list = raw ? JSON.parse(raw) : [];
+            return Array.isArray(list) ? list : [];
+        } catch (error) {
+            return [];
+        }
+    }
+
+    function saveCompareList(list) {
+        localStorage.setItem(COMPARE_KEY, JSON.stringify(list));
+    }
+
+    function toggleCompare(button) {
+        const hostelId = button.getAttribute('data-hostel-id');
+        const hostelName = button.getAttribute('data-hostel-name') || 'Hostel';
+        if (!hostelId) return;
+
+        const list = getCompareList();
+        const existingIndex = list.findIndex((row) => String(row.id) === String(hostelId));
+
+        if (existingIndex >= 0) {
+            list.splice(existingIndex, 1);
+        } else {
+            if (list.length >= 2) {
+                list.shift();
+            }
+            list.push({ id: hostelId, name: hostelName });
+        }
+
+        saveCompareList(list);
+        refreshCompareUI();
+    }
+
+    function clearCompare() {
+        saveCompareList([]);
+        refreshCompareUI();
+    }
+
+    function refreshCompareUI() {
+        const list = getCompareList();
+        const compareDock = document.getElementById('compareDock');
+        const compareText = document.getElementById('compareDockText');
+        const compareNowBtn = document.getElementById('compareNowBtn');
+
+        document.querySelectorAll('.hh-compare-toggle').forEach((btn) => {
+            const id = btn.getAttribute('data-hostel-id');
+            const selected = list.some((row) => String(row.id) === String(id));
+            btn.classList.toggle('active', selected);
+            const label = btn.querySelector('span');
+            if (label) {
+                label.textContent = selected ? 'Added' : 'Compare';
+            }
+        });
+
+        if (!compareDock || !compareText || !compareNowBtn) {
+            return;
+        }
+
+        compareDock.style.display = list.length > 0 ? 'flex' : 'none';
+
+        if (list.length < 2) {
+            compareText.textContent = 'Select ' + (2 - list.length) + ' more hostel to compare.';
+            compareNowBtn.setAttribute('disabled', 'disabled');
+            compareNowBtn.removeAttribute('href');
+            return;
+        }
+
+        compareText.textContent = list[0].name + ' vs ' + list[1].name;
+        compareNowBtn.removeAttribute('disabled');
+        compareNowBtn.href = '/compare?h1=' + encodeURIComponent(list[0].id) + '&h2=' + encodeURIComponent(list[1].id);
+    }
+
+    document.addEventListener('DOMContentLoaded', refreshCompareUI);
+</script>
+
+<%- include('partials/footer') %>

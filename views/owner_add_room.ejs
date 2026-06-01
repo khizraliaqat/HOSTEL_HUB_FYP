@@ -1,0 +1,620 @@
+<%- include('partials/header') %>
+
+<style>
+    :root {
+        --hh-bg: #071120;
+        --hh-bg-soft: #0b1730;
+        --hh-white: #ffffff;
+        --hh-text: #0f172a;
+        --hh-text-soft: #64748b;
+        --hh-line: rgba(255, 255, 255, 0.12);
+        --hh-primary: #0ea5e9;
+        --hh-secondary: #7c3aed;
+        --hh-accent: #14b8a6;
+        --hh-gold: #fbbf24;
+        --hh-success: #10b981;
+        --hh-shadow: 0 24px 60px rgba(2, 8, 23, 0.16);
+    }
+
+    body {
+        background: #f8fafc;
+        font-family: 'Outfit', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .hh-add-room-page {
+        background:
+            radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 26%),
+            radial-gradient(circle at top right, rgba(124, 58, 237, 0.16), transparent 24%),
+            linear-gradient(180deg, #071120 0%, #0b1730 22%, #f8fafc 22%, #f8fafc 100%);
+        min-height: 100vh;
+        padding: 108px 0 72px;
+    }
+
+    .hh-shell {
+        width: min(1180px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    .hh-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: #dbeafe;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        backdrop-filter: blur(14px);
+    }
+
+    .hh-btn,
+    .hh-btn-outline,
+    .hh-btn-dark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 50px;
+        padding: 0 18px;
+        border-radius: 16px;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        border: 0;
+        cursor: pointer;
+    }
+
+    .hh-btn {
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+        color: #ffffff;
+        box-shadow: 0 16px 32px rgba(14, 165, 233, 0.18);
+    }
+
+    .hh-btn:hover {
+        transform: translateY(-2px);
+        color: #ffffff;
+        box-shadow: 0 22px 38px rgba(14, 165, 233, 0.22);
+    }
+
+    .hh-btn-outline {
+        background: #ffffff;
+        border: 1px solid #dbe4f0;
+        color: #0f172a;
+    }
+
+    .hh-btn-dark {
+        background: #0f172a;
+        color: #ffffff;
+    }
+
+    .hh-btn-outline:hover,
+    .hh-btn-dark:hover {
+        transform: translateY(-2px);
+    }
+
+    .hh-hero {
+        position: relative;
+        border-radius: 36px;
+        overflow: hidden;
+        background: linear-gradient(180deg, #0c172c 0%, #101d3a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 24px 60px rgba(2, 8, 23, 0.2);
+        color: #ffffff;
+        padding: 34px;
+        margin-bottom: 24px;
+    }
+
+    .hh-hero::before {
+        content: '';
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        right: -80px;
+        top: -90px;
+        border-radius: 999px;
+        background: rgba(14, 165, 233, 0.14);
+        filter: blur(36px);
+        pointer-events: none;
+    }
+
+    .hh-hero-top {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+
+    .hh-hero-copy h1 {
+        margin: 18px 0 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2.2rem, 5vw, 3.7rem);
+        line-height: 1.02;
+        letter-spacing: -0.05em;
+        color: #ffffff;
+    }
+
+    .hh-hero-copy h1 .accent {
+        background: linear-gradient(90deg, #8be7ff 0%, #39bdf8 42%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hh-hero-copy p {
+        margin: 0;
+        color: #c8d6f0;
+        line-height: 1.85;
+        max-width: 760px;
+        font-size: 1rem;
+    }
+
+    .hh-hero-stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 26px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hh-stat {
+        padding: 18px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(14px);
+    }
+
+    .hh-stat strong {
+        display: block;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.5rem;
+        line-height: 1;
+        color: #ffffff;
+        margin-bottom: 7px;
+    }
+
+    .hh-stat span {
+        color: #c8d6f0;
+        font-size: 0.88rem;
+    }
+
+    .hh-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+        gap: 24px;
+        align-items: start;
+    }
+
+    .hh-card,
+    .hh-side-card {
+        border-radius: 30px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        box-shadow: var(--hh-shadow);
+        overflow: hidden;
+    }
+
+    .hh-form-card {
+        padding: 28px;
+    }
+
+    .hh-section-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 18px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.32rem;
+        color: #0f172a;
+    }
+
+    .hh-section-title .icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(124, 58, 237, 0.08) 100%);
+        color: #0f172a;
+    }
+
+    .hh-form-grid {
+        display: grid;
+        gap: 18px;
+    }
+
+    .hh-form-grid.three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .hh-field label {
+        display: block;
+        margin-bottom: 8px;
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .hh-field input,
+    .hh-field textarea {
+        width: 100%;
+        border: 1px solid #dbe4f0;
+        border-radius: 16px;
+        background: #ffffff;
+        padding: 14px 16px;
+        outline: none;
+        color: #0f172a;
+        font-family: 'Outfit', sans-serif;
+        transition: all 0.25s ease;
+    }
+
+    .hh-field input:focus,
+    .hh-field textarea:focus {
+        border-color: #7dd3fc;
+        box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.08);
+    }
+
+    .hh-field textarea {
+        min-height: 110px;
+        resize: vertical;
+    }
+
+    .hh-help {
+        margin-top: 8px;
+        color: #64748b;
+        font-size: 0.84rem;
+        line-height: 1.6;
+    }
+
+    .hh-upload-box {
+        position: relative;
+        padding: 24px;
+        border-radius: 24px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        border: 1px solid #e6eef8;
+        overflow: hidden;
+    }
+
+    .hh-upload-box::before {
+        content: '';
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        right: -50px;
+        top: -50px;
+        border-radius: 999px;
+        background: rgba(14, 165, 233, 0.08);
+        filter: blur(24px);
+        pointer-events: none;
+    }
+
+    .hh-upload-top {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+        margin-bottom: 16px;
+    }
+
+    .hh-upload-icon {
+        width: 62px;
+        height: 62px;
+        border-radius: 20px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(124, 58, 237, 0.08) 100%);
+        color: #0f172a;
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+
+    .hh-upload-top h4 {
+        margin: 0 0 6px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.12rem;
+        color: #0f172a;
+    }
+
+    .hh-upload-top p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.75;
+    }
+
+    .hh-upload-box input[type="file"] {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hh-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 22px;
+    }
+
+    .hh-side-card {
+        position: sticky;
+        top: 100px;
+        padding: 24px;
+        background: linear-gradient(180deg, #0c172c 0%, #101d3a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+    }
+
+    .hh-side-card::before {
+        content: '';
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        right: -40px;
+        top: -50px;
+        border-radius: 999px;
+        background: rgba(124, 58, 237, 0.16);
+        filter: blur(28px);
+        pointer-events: none;
+    }
+
+    .hh-side-head {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 18px;
+    }
+
+    .hh-side-icon {
+        width: 56px;
+        height: 56px;
+        border-radius: 18px;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        font-size: 1.35rem;
+        flex-shrink: 0;
+    }
+
+    .hh-side-head h3 {
+        margin: 0 0 4px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.2rem;
+        color: #ffffff;
+    }
+
+    .hh-side-head p {
+        margin: 0;
+        color: #c8d6f0;
+        font-size: 0.9rem;
+    }
+
+    .hh-side-points {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        gap: 12px;
+    }
+
+    .hh-point {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #dbeafe;
+        font-weight: 600;
+    }
+
+    .hh-point i {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.08);
+        color: #7dd3fc;
+        flex-shrink: 0;
+    }
+
+    .hh-note {
+        position: relative;
+        z-index: 1;
+        margin-top: 18px;
+        padding: 16px;
+        border-radius: 18px;
+        background: rgba(251, 191, 36, 0.12);
+        border: 1px solid rgba(251, 191, 36, 0.18);
+        color: #fde68a;
+        line-height: 1.7;
+        font-size: 0.9rem;
+    }
+
+    @media (max-width: 1199px) {
+        .hh-layout,
+        .hh-form-grid.three {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-side-card {
+            position: static;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .hh-add-room-page {
+            padding: 92px 0 54px;
+        }
+
+        .hh-shell {
+            width: min(100% - 20px, 1180px);
+        }
+
+        .hh-hero,
+        .hh-form-card,
+        .hh-side-card,
+        .hh-upload-box {
+            padding: 18px;
+        }
+
+        .hh-hero-stats {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .hh-hero-copy h1 {
+            font-size: 2rem;
+        }
+
+        .hh-actions,
+        .hh-hero-top {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .hh-btn,
+        .hh-btn-outline,
+        .hh-btn-dark {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="hh-add-room-page">
+    <div class="hh-shell">
+        <section class="hh-hero">
+            <div class="hh-hero-top">
+                <div class="hh-hero-copy">
+                    <span class="hh-badge"><i class="bi bi-door-open"></i> room management</span>
+                    <h1>Add a room to <span class="accent"><%= hostel.name %></span></h1>
+                    <p>Create a clear room listing with seat capacity, pricing, description, and images. This redesign keeps your add-room logic intact and presents it in the same premium system as the other HostelHub owner pages.</p>
+                </div>
+
+                <a href="/owner_dashboard" class="hh-btn-outline"><i class="bi bi-arrow-left"></i> Back to Dashboard</a>
+            </div>
+
+            <div class="hh-hero-stats">
+                <div class="hh-stat">
+                    <strong>3</strong>
+                    <span>Max room photos</span>
+                </div>
+                <div class="hh-stat">
+                    <strong>PKR</strong>
+                    <span>Pricing per seat</span>
+                </div>
+                <div class="hh-stat">
+                    <strong>Live</strong>
+                    <span>Saved to hostel inventory</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="hh-layout">
+            <section class="hh-card">
+                <div class="hh-form-card">
+                    <form action="/add_room/<%= hostel._id %>" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="hostel_id" value="<%= hostel._id %>">
+
+                        <h3 class="hh-section-title"><span class="icon"><i class="bi bi-sliders"></i></span> Room Configuration</h3>
+
+                        <div class="hh-form-grid">
+                            <div class="hh-field">
+                                <label>Room Name / Type</label>
+                                <input type="text" name="name" required placeholder="e.g. Standard Triple (A1)">
+                                <div class="hh-help">Use a short and clear identifier for this room.</div>
+                            </div>
+
+                            <div class="hh-field">
+                                <label>Room Description</label>
+                                <textarea name="description" rows="3" placeholder="Features like attached bath, balcony, storage, AC, study desk, or other details."></textarea>
+                            </div>
+                        </div>
+
+                        <div class="hh-form-grid three" style="margin-top:18px;">
+                            <div class="hh-field">
+                                <label>Total Seats</label>
+                                <input type="number" name="total_seats" required value="2" min="1">
+                                <div class="hh-help">Maximum capacity for this room.</div>
+                            </div>
+
+                            <div class="hh-field">
+                                <label>Occupied Seats</label>
+                                <input type="number" name="occupied_seats" value="0" min="0">
+                                <div class="hh-help">Seats already booked or assigned.</div>
+                            </div>
+
+                            <div class="hh-field">
+                                <label>Price Per Seat (PKR)</label>
+                                <input type="number" name="price_per_seat" required placeholder="e.g. 10000">
+                                <div class="hh-help">Monthly rent charged per seat.</div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:28px;">
+                            <h3 class="hh-section-title"><span class="icon"><i class="bi bi-images"></i></span> Room Photos</h3>
+                            <div class="hh-upload-box">
+                                <div class="hh-upload-top">
+                                    <div class="hh-upload-icon"><i class="bi bi-cloud-arrow-up"></i></div>
+                                    <div>
+                                        <h4>Select Images</h4>
+                                        <p>Upload up to 3 room images to show what this specific room looks like inside.</p>
+                                    </div>
+                                </div>
+
+                                <div class="hh-field">
+                                    <input type="file" name="room_images" multiple accept="image/*">
+                                    <div class="hh-help">Add clear interior images so students can understand the room layout and condition.</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="hh-actions">
+                            <a href="/owner_dashboard" class="hh-btn-outline">Cancel</a>
+                            <button type="submit" class="hh-btn"><i class="bi bi-check2-circle"></i> Save Room & Finish</button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <aside class="hh-side-card">
+                <div class="hh-side-head">
+                    <div class="hh-side-icon"><i class="bi bi-lightning-charge"></i></div>
+                    <div>
+                        <h3>Quick guidance</h3>
+                        <p>Keep room listings structured and easy to compare.</p>
+                    </div>
+                </div>
+
+                <div class="hh-side-points">
+                    <div class="hh-point"><i class="bi bi-tag"></i> Use a room name students can recognize quickly</div>
+                    <div class="hh-point"><i class="bi bi-people"></i> Keep seat counts accurate before publishing</div>
+                    <div class="hh-point"><i class="bi bi-cash-stack"></i> Enter the rent in PKR per seat</div>
+                    <div class="hh-point"><i class="bi bi-camera"></i> Add room-specific photos, not just hostel images</div>
+                </div>
+
+                <div class="hh-note">
+                    Once saved, this room becomes part of <strong><%= hostel.name %></strong> and can be used for seat booking and availability tracking.
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

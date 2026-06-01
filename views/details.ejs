@@ -1,0 +1,1360 @@
+<%- include('partials/header') %>
+
+<style>
+    :root {
+        --hh-bg: #071120;
+        --hh-bg-soft: #0b1730;
+        --hh-white: #ffffff;
+        --hh-text: #0f172a;
+        --hh-text-soft: #64748b;
+        --hh-line: rgba(255, 255, 255, 0.12);
+        --hh-primary: #0ea5e9;
+        --hh-secondary: #7c3aed;
+        --hh-accent: #14b8a6;
+        --hh-gold: #fbbf24;
+        --hh-success: #10b981;
+        --hh-danger: #ef4444;
+        --hh-shadow: 0 24px 60px rgba(2, 8, 23, 0.16);
+    }
+
+    body {
+        background: #f8fafc;
+        font-family: 'Outfit', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .hh-details-page {
+        background:
+            radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 26%),
+            radial-gradient(circle at top right, rgba(124, 58, 237, 0.16), transparent 24%),
+            linear-gradient(180deg, #071120 0%, #0b1730 18%, #f8fafc 18%, #f8fafc 100%);
+        min-height: 100vh;
+        padding: 96px 0 72px;
+    }
+
+    .hh-shell {
+        width: min(1360px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    .hh-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: #dbeafe;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        backdrop-filter: blur(14px);
+    }
+
+    .hh-back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 18px;
+        border-radius: 999px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        color: #0f172a;
+        text-decoration: none;
+        font-weight: 700;
+        box-shadow: 0 12px 26px rgba(2, 8, 23, 0.06);
+        transition: all 0.25s ease;
+    }
+
+    .hh-back-link:hover {
+        transform: translateY(-2px);
+        color: #0f172a;
+        box-shadow: 0 18px 30px rgba(2, 8, 23, 0.1);
+    }
+
+    .hh-main-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.75fr);
+        gap: 26px;
+        align-items: start;
+    }
+
+    .hh-panel,
+    .hh-card,
+    .hh-room-card,
+    .hh-sidebar-card,
+    .hh-review-card,
+    .hh-map-card {
+        border-radius: 34px;
+        overflow: hidden;
+        box-shadow: var(--hh-shadow);
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+    }
+
+    .hh-hero-card {
+        position: relative;
+        background: linear-gradient(180deg, #0c172c 0%, #101d3a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 34px;
+        overflow: hidden;
+        color: #ffffff;
+        box-shadow: 0 24px 60px rgba(2, 8, 23, 0.2);
+    }
+
+    .hh-hero-card::before {
+        content: '';
+        position: absolute;
+        width: 240px;
+        height: 240px;
+        right: -60px;
+        top: -80px;
+        border-radius: 999px;
+        background: rgba(14, 165, 233, 0.14);
+        filter: blur(36px);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .hh-carousel {
+        position: relative;
+        height: 500px;
+        overflow: hidden;
+        background: #111827;
+    }
+
+    .hh-carousel .carousel-item {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        transition: opacity 0.45s ease;
+    }
+
+    .hh-carousel .carousel-item.active {
+        opacity: 1;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hh-carousel img,
+    .hh-carousel .placeholder-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .hh-carousel::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(7, 17, 32, 0.05) 0%, rgba(7, 17, 32, 0.55) 100%);
+        pointer-events: none;
+        z-index: 1;
+    }
+
+    .hh-hero-topbar {
+        position: absolute;
+        top: 18px;
+        left: 18px;
+        right: 18px;
+        z-index: 2;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .hh-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(8, 17, 32, 0.68);
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(14px);
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .hh-carousel-btn {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 48px;
+        height: 48px;
+        border: 0;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.92);
+        color: #0f172a;
+        display: grid;
+        place-items: center;
+        box-shadow: 0 16px 28px rgba(2, 8, 23, 0.12);
+        z-index: 2;
+        transition: all 0.25s ease;
+    }
+
+    .hh-carousel-btn:hover {
+        transform: translateY(-50%) scale(1.06);
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+        color: #ffffff;
+    }
+
+    .hh-carousel-btn.prev { left: 18px; }
+    .hh-carousel-btn.next { right: 18px; }
+
+    .hh-dots {
+        position: absolute;
+        left: 50%;
+        bottom: 18px;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+        z-index: 2;
+    }
+
+    .hh-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.7);
+        border: 0;
+        transition: all 0.25s ease;
+    }
+
+    .hh-dot.active {
+        width: 28px;
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+    }
+
+    .hh-hero-content {
+        position: relative;
+        z-index: 1;
+        padding: 26px;
+    }
+
+    .hh-title-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+    }
+
+    .hh-title-wrap h1 {
+        margin: 0 0 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2rem, 4vw, 3.1rem);
+        line-height: 1.05;
+        letter-spacing: -0.05em;
+        color: #ffffff;
+    }
+
+    .hh-meta-line {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        color: #c8d6f0;
+        font-size: 0.94rem;
+    }
+
+    .hh-meta-line .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        font-size: 0.76rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .hh-facilities {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .hh-facility {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 9px 14px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #dbeafe;
+        font-size: 0.84rem;
+        font-weight: 700;
+    }
+
+    .hh-desc-card {
+        padding: 24px;
+        border-radius: 26px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        margin-bottom: 18px;
+    }
+
+    .hh-desc-card h3,
+    .hh-section-title {
+        margin: 0 0 14px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.3rem;
+        color: #ffffff;
+    }
+
+    .hh-desc-card p {
+        margin: 0;
+        color: #c8d6f0;
+        line-height: 1.9;
+    }
+
+    .hh-map-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        min-height: 54px;
+        padding: 0 20px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 700;
+        transition: all 0.25s ease;
+    }
+
+    .hh-map-link:hover {
+        transform: translateY(-2px);
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .hh-sidebar {
+        position: sticky;
+        top: 100px;
+        display: grid;
+        gap: 18px;
+    }
+
+    .hh-sidebar-card {
+        padding: 28px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+    }
+
+    .hh-sidebar-card.dark {
+        position: relative;
+        background: linear-gradient(180deg, #0c172c 0%, #101d3a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+    }
+
+    .hh-sidebar-card.dark::before {
+        content: '';
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        right: -50px;
+        top: -50px;
+        border-radius: 999px;
+        background: rgba(14, 165, 233, 0.14);
+        filter: blur(32px);
+        pointer-events: none;
+    }
+
+    .hh-rent-label {
+        margin: 0 0 8px;
+        color: #64748b;
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        text-align: center;
+    }
+
+    .hh-sidebar-card.dark .hh-rent-label {
+        color: #c8d6f0;
+    }
+
+    .hh-price {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2.4rem, 5vw, 3.4rem);
+        line-height: 1;
+        text-align: center;
+        margin: 0 0 20px;
+        color: #0f172a;
+    }
+
+    .hh-sidebar-card.dark .hh-price {
+        color: #ffffff;
+    }
+
+    .hh-price.gold {
+        color: #fbbf24 !important;
+    }
+
+    .hh-mess-box {
+        padding: 16px;
+        border-radius: 20px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        margin-bottom: 18px;
+    }
+
+    .hh-mess-box label {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        cursor: pointer;
+    }
+
+    .hh-mess-box input {
+        margin-top: 4px;
+        width: 18px;
+        height: 18px;
+        accent-color: #0ea5e9;
+    }
+
+    .hh-mess-box strong {
+        display: block;
+        color: #0f172a;
+        margin-bottom: 3px;
+    }
+
+    .hh-mess-box span {
+        color: #64748b;
+        font-size: 0.88rem;
+    }
+
+    .hh-btn,
+    .hh-btn-outline,
+    .hh-btn-dark {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        min-height: 52px;
+        padding: 0 20px;
+        border-radius: 18px;
+        border: 0;
+        text-decoration: none;
+        font-weight: 800;
+        transition: all 0.25s ease;
+        cursor: pointer;
+    }
+
+    .hh-btn {
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+        color: #ffffff;
+        box-shadow: 0 16px 30px rgba(14, 165, 233, 0.18);
+    }
+
+    .hh-btn:hover {
+        transform: translateY(-2px);
+        color: #ffffff;
+        box-shadow: 0 22px 38px rgba(14, 165, 233, 0.22);
+    }
+
+    .hh-btn-outline {
+        background: #ffffff;
+        border: 1px solid #dbe4f0;
+        color: #0f172a;
+    }
+
+    .hh-btn-outline:hover,
+    .hh-btn-dark:hover {
+        transform: translateY(-2px);
+        color: inherit;
+    }
+
+    .hh-btn-dark {
+        background: #0f172a;
+        color: #ffffff;
+    }
+
+    .hh-btn-wishlist.active {
+        background: #fee2e2;
+        border-color: #fecaca;
+        color: #b91c1c;
+    }
+
+    .hh-help-card {
+        padding: 22px;
+        border-radius: 26px;
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(124, 58, 237, 0.05) 100%);
+        border: 1px solid #dbeafe;
+    }
+
+    .hh-help-card h4 {
+        margin: 0 0 8px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.06rem;
+        color: #0f172a;
+    }
+
+    .hh-help-card p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.75;
+        font-size: 0.92rem;
+    }
+
+    .hh-block-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin: 0 0 18px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.4rem;
+        color: #0f172a;
+    }
+
+    .hh-block-title .icon {
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(124, 58, 237, 0.08) 100%);
+        color: #0f172a;
+    }
+
+    .hh-map-card {
+        padding: 8px;
+    }
+
+    .hh-map-card .embed {
+        border-radius: 26px;
+        overflow: hidden;
+        height: 340px;
+    }
+
+    .hh-map-card iframe {
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+    }
+
+    .hh-mess-table-wrap {
+        overflow-x: auto;
+    }
+
+    .hh-mess-table {
+        width: 100%;
+        min-width: 760px;
+        border-collapse: collapse;
+        overflow: hidden;
+        border-radius: 22px;
+    }
+
+    .hh-mess-table thead {
+        background: linear-gradient(135deg, #0ea5e9 0%, #7c3aed 100%);
+        color: #ffffff;
+    }
+
+    .hh-mess-table th,
+    .hh-mess-table td {
+        padding: 14px 16px;
+        text-align: center;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+    .hh-mess-table th {
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        font-weight: 800;
+    }
+
+    .hh-mess-table td {
+        color: #334155;
+        background: #ffffff;
+    }
+
+    .hh-room-list {
+        display: grid;
+        gap: 18px;
+    }
+
+    .hh-room-card {
+        display: grid;
+        grid-template-columns: 280px minmax(0, 1fr);
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        transition: all 0.28s ease;
+    }
+
+    .hh-room-card:hover,
+    .hh-review-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 36px rgba(2, 8, 23, 0.1);
+    }
+
+    .hh-room-media {
+        position: relative;
+        min-height: 220px;
+        overflow: hidden;
+        background: #e5e7eb;
+    }
+
+    .hh-room-media img,
+    .hh-room-media .placeholder-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.45s ease;
+    }
+
+    .hh-room-card:hover .hh-room-media img {
+        transform: scale(1.06);
+    }
+
+    .hh-room-body {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        gap: 14px;
+    }
+
+    .hh-room-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .hh-room-head h4 {
+        margin: 0 0 8px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.25rem;
+        color: #0f172a;
+    }
+
+    .hh-room-head p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.75;
+        font-size: 0.94rem;
+    }
+
+    .hh-room-price {
+        display: inline-flex;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(16, 185, 129, 0.1);
+        color: #047857;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .hh-room-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .hh-room-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 0.82rem;
+        font-weight: 700;
+    }
+
+    .hh-room-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .hh-reviews-wrap {
+        display: grid;
+        gap: 18px;
+    }
+
+    .hh-rating-summary {
+        display: grid;
+        grid-template-columns: 180px minmax(0, 1fr);
+        gap: 22px;
+        align-items: center;
+        padding: 22px;
+        border-radius: 26px;
+        background: linear-gradient(135deg, #f8fafc 0%, #ffffff 100%);
+        border: 1px solid #e6eef8;
+    }
+
+    .hh-rating-score {
+        text-align: center;
+    }
+
+    .hh-rating-score strong {
+        display: block;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 4rem;
+        line-height: 1;
+        color: #0f172a;
+    }
+
+    .hh-stars {
+        display: flex;
+        gap: 2px;
+        flex-wrap: wrap;
+        color: #fbbf24;
+    }
+
+    .hh-review-form label {
+        display: block;
+        margin-bottom: 8px;
+        color: #64748b;
+        font-size: 0.82rem;
+        font-weight: 800;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+    }
+
+    .hh-review-form .rating-input {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 12px;
+        cursor: pointer;
+    }
+
+    .hh-review-form .rating-star {
+        font-size: 1.9rem;
+        color: #cbd5e1;
+        transition: color 0.2s ease, transform 0.2s ease;
+    }
+
+    .hh-review-form .rating-star:hover {
+        color: #fbbf24;
+        transform: scale(1.06);
+    }
+
+    .hh-review-form-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .hh-review-form-row input {
+        width: 100%;
+        min-height: 52px;
+        padding: 0 16px;
+        border-radius: 16px;
+        border: 1px solid #dbe4f0;
+        background: #ffffff;
+        outline: none;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .hh-review-form-row input:focus {
+        border-color: #7dd3fc;
+        box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.08);
+    }
+
+    .hh-review-list {
+        display: grid;
+        gap: 14px;
+    }
+
+    .hh-review-card {
+        padding: 20px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        transition: all 0.25s ease;
+    }
+
+    .hh-review-top {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 10px;
+    }
+
+    .hh-review-avatar {
+        width: 46px;
+        height: 46px;
+        border-radius: 999px;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: #eff6ff;
+        border: 2px solid #dbeafe;
+        display: grid;
+        place-items: center;
+    }
+
+    .hh-review-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .hh-review-meta h5 {
+        margin: 0 0 6px;
+        font-family: 'Space Grotesk', sans-serif;
+        color: #0f172a;
+        font-size: 1rem;
+    }
+
+    .hh-review-meta p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.75;
+        font-size: 0.94rem;
+    }
+
+    @media (max-width: 1199px) {
+        .hh-main-grid,
+        .hh-rating-summary,
+        .hh-room-card {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-sidebar {
+            position: static;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .hh-details-page {
+            padding: 88px 0 54px;
+        }
+
+        .hh-shell {
+            width: min(100% - 20px, 1360px);
+        }
+
+        .hh-carousel {
+            height: 360px;
+        }
+
+        .hh-carousel-btn {
+            width: 42px;
+            height: 42px;
+        }
+
+        .hh-hero-content,
+        .hh-sidebar-card,
+        .hh-card,
+        .hh-room-body,
+        .hh-review-card,
+        .hh-rating-summary,
+        .hh-desc-card {
+            padding: 18px;
+        }
+
+        .hh-room-actions,
+        .hh-review-form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .hh-title-wrap h1 {
+            font-size: 1.9rem;
+        }
+
+        .hh-carousel {
+            height: 280px;
+        }
+
+        .hh-meta-line,
+        .hh-facilities {
+            gap: 8px;
+        }
+
+        .hh-rating-score strong {
+            font-size: 3rem;
+        }
+    }
+</style>
+
+<div class="hh-details-page">
+    <div class="hh-shell">
+        <div style="margin-bottom: 22px;">
+            <a href="/" class="hh-back-link"><i class="bi bi-arrow-left"></i> Back to Search</a>
+        </div>
+
+        <div class="hh-main-grid">
+            <div class="hh-left-col" style="display:grid; gap:22px;">
+                <section class="hh-hero-card">
+                    <div class="hh-carousel" id="mainCarousel">
+                        <% if(images.length > 0) { %>
+                            <% images.forEach((img, index) => { %>
+                                <div class="carousel-item <%= index === 0 ? 'active' : '' %>">
+                                    <img src="/uploads/<%= typeof img === 'string' ? img : img.image_path %>" alt="Hostel Image">
+                                </div>
+                            <% }); %>
+                        <% } else if(hostel.image) { %>
+                            <div class="carousel-item active">
+                                <img src="/uploads/<%= hostel.image %>" alt="Default Hostel Image">
+                            </div>
+                        <% } else { %>
+                            <div class="carousel-item active">
+                                <div class="placeholder-img placeholder-hostel" style="width:100%;height:100%;font-size:4rem;"></div>
+                            </div>
+                        <% } %>
+
+                        <div class="hh-hero-topbar">
+                            <span class="hh-chip">Hostel View</span>
+                            <% if(hostel.is_verified) { %>
+                                <span class="hh-chip"><i class="bi bi-patch-check-fill"></i> Verified</span>
+                            <% } %>
+                        </div>
+
+                        <% if(images.length > 1) { %>
+                            <button type="button" onclick="moveSlide(-1)" aria-label="Previous image" class="hh-carousel-btn prev">
+                                <i class="bi bi-chevron-left"></i>
+                            </button>
+                            <button type="button" onclick="moveSlide(1)" aria-label="Next image" class="hh-carousel-btn next">
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+
+                            <div class="hh-dots">
+                                <% for(let i = 0; i < images.length; i++) { %>
+                                    <button type="button" onclick="goToSlide(<%= i %>)" class="hh-dot <%= i === 0 ? 'active' : '' %> indicator-dot" data-index="<%= i %>"></button>
+                                <% } %>
+                            </div>
+                        <% } %>
+                    </div>
+
+                    <div class="hh-hero-content">
+                        <div class="hh-title-row">
+                            <div class="hh-title-wrap">
+                                <h1><%= hostel.name %></h1>
+                                <div class="hh-meta-line">
+                                    <span><i class="bi bi-geo-alt-fill text-danger"></i> <%= hostel.area %></span>
+                                    <span class="pill"><%= hostel.category %></span>
+                                </div>
+                            </div>
+
+                            <div class="hh-facilities">
+                                <% if(hostel.facilities) { 
+                                    const facilities = Array.isArray(hostel.facilities) ? hostel.facilities : hostel.facilities.split(',');
+                                    facilities.slice(0, 4).forEach(f => { %>
+                                        <span class="hh-facility"><i class="bi bi-check2-circle"></i> <%= f.trim() %></span>
+                                <% }); } %>
+                            </div>
+                        </div>
+
+                        <div class="hh-desc-card">
+                            <h3>Description</h3>
+                            <p><%= hostel.description %></p>
+                        </div>
+
+                        <% 
+                            const map_query = encodeURIComponent(hostel.name + ' ' + hostel.area + ' Faisalabad');
+                            const google_maps_link = 'https://www.google.com/maps/search/?api=1&query=' + map_query;
+                        %>
+                        <a href="<%= google_maps_link %>" target="_blank" class="hh-map-link">
+                            <i class="bi bi-map"></i> View Location on Google Maps App
+                        </a>
+                    </div>
+                </section>
+
+                <% if(hostel.map_embed && hostel.map_embed.trim() !== '') { %>
+                    <section class="hh-map-card">
+                        <div class="embed">
+                            <%- hostel.map_embed %>
+                        </div>
+                    </section>
+                <% } %>
+
+                <% if(mess && mess.length > 0) { %>
+                    <section class="hh-card" style="padding:26px;">
+                        <h3 class="hh-block-title"><span class="icon"><i class="bi bi-egg-fried"></i></span> Weekly Mess Menu</h3>
+                        <div class="hh-mess-table-wrap">
+                            <table class="hh-mess-table">
+                                <thead>
+                                    <tr>
+                                        <th>Day</th>
+                                        <th>Breakfast</th>
+                                        <th>Lunch</th>
+                                        <th>Dinner</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% mess.forEach(m => { %>
+                                        <tr>
+                                            <td><strong><%= m.day_name %></strong></td>
+                                            <td><%= m.breakfast || '-' %></td>
+                                            <td><%= m.lunch || '-' %></td>
+                                            <td><%= m.dinner || '-' %></td>
+                                        </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                <% } %>
+
+                <% if (rooms && rooms.length > 0) { %>
+                    <section class="hh-card" style="padding:26px;">
+                        <h3 class="hh-block-title"><span class="icon"><i class="bi bi-door-open"></i></span> Available Rooms</h3>
+                        <div class="hh-room-list">
+                            <% rooms.forEach(room => { %>
+                                <div class="hh-room-card">
+                                    <div class="hh-room-media">
+                                        <% if (room.images && room.images.length > 0) { %>
+                                            <img src="/uploads/<%= typeof room.images[0] === 'string' ? room.images[0] : room.images[0].image_path %>" alt="Room Image">
+                                        <% } else { %>
+                                            <div class="placeholder-img placeholder-room" style="width:100%;height:100%;"></div>
+                                        <% } %>
+                                    </div>
+
+                                    <div class="hh-room-body">
+                                        <div>
+                                            <div class="hh-room-head">
+                                                <div>
+                                                    <h4><%= room.name || 'Room ' + room._id %></h4>
+                                                    <p><%= room.description %></p>
+                                                </div>
+                                                <span class="hh-room-price">Rs. <%= Number(room.price_per_seat).toLocaleString() %></span>
+                                            </div>
+
+                                            <div class="hh-room-tags">
+                                                <% if (typeof room.available !== 'undefined') { %>
+                                                    <span class="hh-room-tag"><i class="bi bi-circle-fill"></i> <%= room.available %> Seats Available</span>
+                                                <% } %>
+                                                <span class="hh-room-tag"><i class="bi bi-house"></i> Room Detail</span>
+                                            </div>
+                                        </div>
+
+                                        <div class="hh-room-actions">
+                                            <a href="/room_details/<%= room._id %>" class="hh-btn-outline">View Details</a>
+                                            <form action="/book_seat" method="POST" onsubmit="setRoomMessValue('<%= room._id %>')">
+                                                <input type="hidden" name="room_id" value="<%= room._id %>">
+                                                <input type="hidden" name="with_mess" id="hiddenMessInput_<%= room._id %>">
+                                                <button type="submit" class="hh-btn <%= room.available <= 0 ? 'opacity-50' : '' %>" <% if (room.available <= 0) { %>disabled<% } %>>Book Seat</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                    </section>
+                <% } %>
+
+                <section class="hh-card" style="padding:26px;">
+                    <h3 class="hh-block-title"><span class="icon"><i class="bi bi-star-fill"></i></span> Reviews</h3>
+
+                    <div class="hh-reviews-wrap">
+                        <div class="hh-rating-summary">
+                            <div class="hh-rating-score">
+                                <strong><%= rating.avg ? Number(rating.avg).toFixed(1) : '0.0' %></strong>
+                                <div class="hh-stars" style="justify-content:center; margin:8px 0;">
+                                    <% for(let i=1; i<=5; i++) { %>
+                                        <i class="bi <%= i <= (rating.avg || 0) ? 'bi-star-fill' : 'bi-star' %>"></i>
+                                    <% } %>
+                                </div>
+                                <span style="color:#64748b; font-size:0.84rem; font-weight:700;"><%= rating.count || 0 %> Verified Reviews</span>
+                            </div>
+
+                            <div>
+                                <% if(user && user.role === 'student' && !is_owner) { %>
+                                    <form action="/submit_review" method="POST" class="hh-review-form">
+                                        <input type="hidden" name="hostel_id" value="<%= hostel._id %>">
+                                        <label>Rate Experience</label>
+                                        <div class="rating-input" data-rating="0">
+                                            <% for(let i=1; i<=5; i++) { %>
+                                                <span class="rating-star bi bi-star" data-value="<%= i %>" onclick="setRating(this)"></span>
+                                            <% } %>
+                                            <input type="hidden" name="rating" id="reviewRating" value="0" required>
+                                        </div>
+                                        <div class="hh-review-form-row">
+                                            <input name="comment" placeholder="Share your experience..." required>
+                                            <button type="submit" class="hh-btn-dark" style="width:auto; min-width:120px;">Submit</button>
+                                        </div>
+                                    </form>
+                                <% } else if (reviews.length === 0) { %>
+                                    <p style="margin:0; color:#64748b; line-height:1.8;">No reviews yet. Be the first to leave a review.</p>
+                                <% } %>
+                            </div>
+                        </div>
+
+                        <% if(reviews.length > 0) { %>
+                            <div class="hh-review-list">
+                                <% reviews.forEach(r => { %>
+                                    <div class="hh-review-card">
+                                        <div class="hh-review-top">
+                                            <div class="hh-review-avatar">
+                                                <% if(r.profile_pic) { %>
+                                                    <img src="/uploads/<%= r.profile_pic %>" alt="<%= r.name %>">
+                                                <% } else { %>
+                                                    <div class="placeholder-img placeholder-avatar" style="width:100%;height:100%;"></div>
+                                                <% } %>
+                                            </div>
+                                            <div class="hh-review-meta">
+                                                <h5><%= r.name %></h5>
+                                                <div class="hh-stars" style="margin-bottom:6px;">
+                                                    <% for(let i=1; i<=5; i++) { %>
+                                                        <i class="bi <%= i <= r.rating ? 'bi-star-fill' : 'bi-star' %>"></i>
+                                                    <% } %>
+                                                </div>
+                                                <p><%= r.comment %></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% }) %>
+                            </div>
+                        <% } %>
+                    </div>
+                </section>
+            </div>
+
+            <aside class="hh-sidebar">
+                <div class="hh-sidebar-card dark">
+                    <p class="hh-rent-label">Monthly Rent</p>
+                    <h2 class="hh-price" id="displayPrice">Rs. <%= Number(hostel.price).toLocaleString() %></h2>
+
+                    <% if(hostel.mess_fee > 0) { %>
+                        <div class="hh-mess-box">
+                            <label>
+                                <input type="checkbox" id="messToggleGeneral" onchange="updatePrice()">
+                                <div>
+                                    <strong>Include Mess / Food</strong>
+                                    <span>+ Rs. <%= Number(hostel.mess_fee).toLocaleString() %> / month</span>
+                                </div>
+                            </label>
+                        </div>
+                    <% } %>
+
+                    <% if (is_owner) { %>
+                        <div style="padding:14px 16px; border-radius:18px; background:rgba(59,130,246,0.14); color:#dbeafe; border:1px solid rgba(59,130,246,0.24); font-weight:700; margin-bottom:14px; text-align:center;">
+                            <i class="bi bi-info-circle me-2"></i> You own this property
+                        </div>
+                        <a href="/owner_dashboard" class="hh-btn-dark">Dashboard</a>
+                    <% } else { %>
+                        <% if(user) { %>
+                            <form action="/book_hostel" method="POST" style="margin-bottom:12px;">
+                                <input type="hidden" name="hostel_id" value="<%= hostel._id %>">
+                                <input type="hidden" name="with_mess" id="hiddenMessInputGeneral">
+                                <button type="submit" onclick="setGeneralMessValue()" class="hh-btn">Book General Spot <i class="bi bi-arrow-right"></i></button>
+                            </form>
+                            <a href="/chat/<%= hostel.owner._id %>" class="hh-btn-outline">Chat with Owner</a>
+
+                            <% if (user.role === 'student') { %>
+                                <button
+                                    type="button"
+                                    class="hh-btn-outline hh-btn-wishlist <%= isWishlisted ? 'active' : '' %>"
+                                    id="wishlistToggleButton"
+                                    data-hostel-id="<%= hostel._id %>"
+                                    style="margin-top:12px;"
+                                    onclick="toggleWishlistFromDetails(this)">
+                                    <i class="bi <%= isWishlisted ? 'bi-heart-fill' : 'bi-heart' %>"></i>
+                                    <span><%= isWishlisted ? 'Saved in Wishlist' : 'Save to Wishlist' %></span>
+                                </button>
+                            <% } %>
+                        <% } else { %>
+                            <a href="/login" class="hh-btn">Login to Book <i class="bi bi-box-arrow-in-right"></i></a>
+                        <% } %>
+                    <% } %>
+
+                    <p style="text-align:center; color:#b9c9e6; font-size:0.84rem; line-height:1.7; margin:16px 0 0;">Prices are subject to change. Contact owner for final confirmation.</p>
+                </div>
+
+                <div class="hh-help-card">
+                    <div style="display:flex; gap:14px; align-items:flex-start;">
+                        <div style="width:44px; height:44px; border-radius:14px; background:#ffffff; display:grid; place-items:center; color:#2563eb; flex-shrink:0; border:1px solid #dbeafe;">
+                            <i class="bi bi-headset"></i>
+                        </div>
+                        <div>
+                            <h4>Need help?</h4>
+                            <p>Chat directly with the owner to ask specific questions about rooms, rent, facilities, and booking details.</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</div>
+
+<script>
+    const baseRent = <%= hostel.price %>;
+    const messFee = <%= hostel.mess_fee || 0 %>;
+
+    function updatePrice() {
+        const checkbox = document.getElementById('messToggleGeneral');
+        const display = document.getElementById('displayPrice');
+        let total = baseRent;
+
+        if (checkbox && checkbox.checked) {
+            total = baseRent + messFee;
+            display.classList.add('gold');
+        } else {
+            display.classList.remove('gold');
+        }
+
+        display.innerText = 'Rs. ' + total.toLocaleString();
+    }
+
+    function setGeneralMessValue() {
+        const checkbox = document.getElementById('messToggleGeneral');
+        const hiddenInput = document.getElementById('hiddenMessInputGeneral');
+        if (hiddenInput) hiddenInput.value = (checkbox && checkbox.checked) ? 'on' : 'off';
+    }
+
+    function toggleWishlistFromDetails(button) {
+        if (!button) return;
+
+        const hostelId = button.getAttribute('data-hostel-id');
+        if (!hostelId) return;
+
+        fetch('/toggle_wishlist', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ hostel_id: hostelId })
+        })
+            .then((response) => response.text())
+            .then((result) => {
+                const icon = button.querySelector('i');
+                const textNode = button.querySelector('span');
+
+                if (result === 'login_required') {
+                    window.location.href = '/login?msg=' + encodeURIComponent('Please login to use wishlist');
+                    return;
+                }
+
+                if (result === 'added') {
+                    button.classList.add('active');
+                    if (icon) icon.className = 'bi bi-heart-fill';
+                    if (textNode) textNode.textContent = 'Saved in Wishlist';
+                    return;
+                }
+
+                if (result === 'removed') {
+                    button.classList.remove('active');
+                    if (icon) icon.className = 'bi bi-heart';
+                    if (textNode) textNode.textContent = 'Save to Wishlist';
+                }
+            })
+            .catch((error) => {
+                console.error('Wishlist toggle error:', error);
+            });
+    }
+
+    function setRoomMessValue(roomId) {
+        const checkbox = document.getElementById('messToggleGeneral');
+        const hiddenInput = document.getElementById(`hiddenMessInput_${roomId}`);
+        if (hiddenInput) hiddenInput.value = (checkbox && checkbox.checked) ? 'on' : 'off';
+    }
+
+    let currentSlide = 0;
+    const slides = document.querySelectorAll('#mainCarousel .carousel-item');
+    const dots = document.querySelectorAll('.indicator-dot');
+    const totalSlides = slides.length;
+
+    function moveSlide(direction) {
+        if (!totalSlides) return;
+        goToSlide((currentSlide + direction + totalSlides) % totalSlides);
+    }
+
+    function goToSlide(index) {
+        if (!totalSlides) return;
+
+        slides[currentSlide].classList.remove('active');
+        if (dots.length > 0) {
+            dots[currentSlide].classList.remove('active');
+        }
+
+        currentSlide = index;
+        slides[currentSlide].classList.add('active');
+        if (dots.length > 0) {
+            dots[currentSlide].classList.add('active');
+        }
+
+        resetAutoAdvance();
+    }
+
+    let autoAdvanceTimer;
+    function autoAdvanceCarousel() {
+        if (totalSlides > 1) {
+            autoAdvanceTimer = setInterval(() => {
+                moveSlide(1);
+            }, 5000);
+        }
+    }
+
+    function resetAutoAdvance() {
+        clearInterval(autoAdvanceTimer);
+        autoAdvanceCarousel();
+    }
+
+    autoAdvanceCarousel();
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'ArrowLeft') moveSlide(-1);
+        if (e.key === 'ArrowRight') moveSlide(1);
+    });
+
+    (function setupTouchSwipe() {
+        let touchStartX = null;
+        const carousel = document.getElementById('mainCarousel');
+        if (!carousel) return;
+
+        carousel.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        carousel.addEventListener('touchend', function(e) {
+            if (touchStartX === null) return;
+            const touchEndX = e.changedTouches[0].screenX;
+            const diff = touchEndX - touchStartX;
+            if (Math.abs(diff) > 40) {
+                if (diff > 0) moveSlide(-1); else moveSlide(1);
+            }
+            touchStartX = null;
+        }, { passive: true });
+    })();
+
+    function setRating(star) {
+        const ratingValue = parseInt(star.getAttribute('data-value'));
+        const container = star.closest('.rating-input');
+        document.getElementById('reviewRating').value = ratingValue;
+
+        container.querySelectorAll('.rating-star').forEach(s => {
+            const sValue = parseInt(s.getAttribute('data-value'));
+            if (sValue <= ratingValue) {
+                s.classList.remove('bi-star');
+                s.classList.add('bi-star-fill');
+                s.style.color = '#fbbf24';
+            } else {
+                s.classList.remove('bi-star-fill');
+                s.classList.add('bi-star');
+                s.style.color = '#cbd5e1';
+            }
+        });
+    }
+</script>
+
+<%- include('partials/footer') %>

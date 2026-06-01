@@ -1,0 +1,1086 @@
+<%- include('partials/header') %>
+
+<link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+<style>
+    :root {
+        --hh-bg: #071120;
+        --hh-bg-soft: #0b1730;
+        --hh-card: rgba(255, 255, 255, 0.08);
+        --hh-card-2: rgba(255, 255, 255, 0.06);
+        --hh-line: rgba(255, 255, 255, 0.12);
+        --hh-text: #0f172a;
+        --hh-text-soft: #64748b;
+        --hh-white: #ffffff;
+        --hh-primary: #0ea5e9;
+        --hh-secondary: #7c3aed;
+        --hh-accent: #14b8a6;
+        --hh-gold: #fbbf24;
+        --hh-success: #10b981;
+        --hh-shadow: 0 24px 60px rgba(2, 8, 23, 0.25);
+        --hh-radius-xl: 36px;
+        --hh-radius-lg: 28px;
+        --hh-radius-md: 22px;
+        --hh-radius-sm: 16px;
+    }
+
+    body {
+        background: #f8fafc;
+    }
+
+    .hh-about-page {
+        background:
+            radial-gradient(circle at top left, rgba(14, 165, 233, 0.18), transparent 26%),
+            radial-gradient(circle at top right, rgba(124, 58, 237, 0.18), transparent 24%),
+            linear-gradient(180deg, #071120 0%, #0b1730 24%, #f8fafc 24%, #f8fafc 100%);
+        color: var(--hh-text);
+    }
+
+    .hh-shell {
+        width: min(1240px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    .hh-section {
+        padding: 92px 0;
+    }
+
+    .hh-section-tight {
+        padding: 70px 0;
+    }
+
+    .hh-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: #dbeafe;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        backdrop-filter: blur(14px);
+    }
+
+    .hh-section-heading {
+        max-width: 760px;
+        margin: 0 auto 52px;
+        text-align: center;
+    }
+
+    .hh-section-heading h2 {
+        margin: 12px 0 12px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2rem, 4vw, 3.4rem);
+        line-height: 1.06;
+        letter-spacing: -0.04em;
+        color: #0f172a;
+    }
+
+    .hh-section-heading p {
+        margin: 0;
+        color: var(--hh-text-soft);
+        font-size: 1rem;
+        line-height: 1.85;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .hh-about-hero {
+        position: relative;
+        padding: 110px 0 72px;
+        overflow: hidden;
+    }
+
+    .hh-about-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
+        gap: 34px;
+        align-items: center;
+    }
+
+    .hh-about-copy {
+        color: #ffffff;
+        position: relative;
+        z-index: 2;
+    }
+
+    .hh-about-copy h1 {
+        margin: 18px 0 18px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(3rem, 7vw, 5.2rem);
+        line-height: 0.98;
+        letter-spacing: -0.055em;
+        color: #ffffff;
+        max-width: 700px;
+    }
+
+    .hh-about-copy h1 .accent {
+        background: linear-gradient(90deg, #8be7ff 0%, #3cb6ff 40%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hh-about-copy p {
+        max-width: 620px;
+        margin: 0 0 26px;
+        color: #c8d6f0;
+        font-size: 1.08rem;
+        line-height: 1.9;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .hh-hero-points {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+        max-width: 620px;
+    }
+
+    .hh-hero-point {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 18px;
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(14px);
+        color: #e2ecff;
+        font-weight: 600;
+    }
+
+    .hh-hero-point i {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.08);
+        color: #7dd3fc;
+        font-size: 1rem;
+    }
+
+    .hh-about-visual {
+        position: relative;
+        min-height: 620px;
+    }
+
+    .hh-orb,
+    .hh-orb-2 {
+        position: absolute;
+        border-radius: 999px;
+        filter: blur(60px);
+        z-index: 0;
+    }
+
+    .hh-orb {
+        width: 180px;
+        height: 180px;
+        left: -20px;
+        top: 40px;
+        background: rgba(14, 165, 233, 0.22);
+    }
+
+    .hh-orb-2 {
+        width: 220px;
+        height: 220px;
+        right: -10px;
+        bottom: 10px;
+        background: rgba(124, 58, 237, 0.24);
+    }
+
+    .hh-showcase {
+        position: relative;
+        z-index: 1;
+        min-height: 620px;
+        border-radius: 38px;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: #081120;
+        box-shadow: var(--hh-shadow);
+    }
+
+    .hh-showcase img {
+        width: 100%;
+        height: 620px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .hh-showcase::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(7, 17, 32, 0.1) 0%, rgba(7, 17, 32, 0.5) 52%, rgba(7, 17, 32, 0.92) 100%);
+    }
+
+    .hh-floating-card,
+    .hh-floating-bottom,
+    .hh-floating-metric {
+        position: absolute;
+        z-index: 2;
+        border-radius: 26px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        background: rgba(8, 17, 32, 0.62);
+        color: #ffffff;
+        backdrop-filter: blur(16px);
+        box-shadow: 0 18px 38px rgba(2, 8, 23, 0.32);
+    }
+
+    .hh-floating-card {
+        top: 22px;
+        left: 22px;
+        right: 22px;
+        padding: 20px;
+    }
+
+    .hh-floating-card small {
+        display: block;
+        color: #c3d4f1;
+        margin-bottom: 5px;
+    }
+
+    .hh-floating-card h3 {
+        margin: 0 0 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.45rem;
+    }
+
+    .hh-inline-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        color: #dbeafe;
+        font-size: 0.92rem;
+    }
+
+    .hh-inline-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .hh-floating-bottom {
+        left: 22px;
+        right: 22px;
+        bottom: 22px;
+        padding: 20px;
+    }
+
+    .hh-floating-bottom h4 {
+        margin: 0 0 12px;
+        font-size: 1.08rem;
+        color: #ffffff;
+    }
+
+    .hh-mini-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .hh-mini-grid div {
+        padding: 14px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.07);
+        color: #dbeafe;
+        font-size: 0.88rem;
+        line-height: 1.6;
+    }
+
+    .hh-stat-band {
+        margin-top: 16px;
+        border-radius: 34px;
+        padding: 24px;
+        background: linear-gradient(135deg, #0c172c 0%, #17253f 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: var(--hh-shadow);
+    }
+
+    .hh-stat-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .hh-stat-box {
+        text-align: center;
+        padding: 20px 16px;
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .hh-stat-box strong {
+        display: block;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2rem, 4vw, 3rem);
+        line-height: 1;
+        color: #fbbf24;
+        margin-bottom: 10px;
+    }
+
+    .hh-stat-box span {
+        color: #c4d5f2;
+        font-size: 0.88rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .hh-mission-grid,
+    .hh-cta-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        align-items: center;
+    }
+
+    .hh-image-frame {
+        position: relative;
+        padding: 22px;
+    }
+
+    .hh-image-frame::before,
+    .hh-image-frame::after {
+        content: '';
+        position: absolute;
+        width: 110px;
+        height: 110px;
+        border-color: var(--hh-primary);
+        z-index: 0;
+    }
+
+    .hh-image-frame::before {
+        top: 0;
+        left: 0;
+        border-top: 5px solid var(--hh-primary);
+        border-left: 5px solid var(--hh-primary);
+    }
+
+    .hh-image-frame::after {
+        right: 0;
+        bottom: 0;
+        border-right: 5px solid var(--hh-primary);
+        border-bottom: 5px solid var(--hh-primary);
+    }
+
+    .hh-image-frame img {
+        width: 100%;
+        border-radius: 30px;
+        box-shadow: 0 20px 50px rgba(15, 23, 42, 0.12);
+        position: relative;
+        z-index: 1;
+        display: block;
+    }
+
+    .hh-copy-card {
+        padding: 10px 0 10px 18px;
+    }
+
+    .hh-copy-card h5,
+    .hh-eyebrow {
+        margin: 0 0 14px;
+        color: var(--hh-gold);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 800;
+        font-size: 0.9rem;
+    }
+
+    .hh-copy-card h2 {
+        margin: 0 0 18px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2rem, 4vw, 3.2rem);
+        line-height: 1.08;
+        letter-spacing: -0.04em;
+        color: #0f172a;
+    }
+
+    .hh-copy-card p {
+        margin: 0 0 22px;
+        color: var(--hh-text-soft);
+        font-size: 1.02rem;
+        line-height: 1.9;
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .hh-feature-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .hh-feature-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 16px 18px;
+        border-radius: 20px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        box-shadow: 0 12px 28px rgba(15, 23, 42, 0.04);
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .hh-feature-item i {
+        width: 42px;
+        height: 42px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: rgba(251, 191, 36, 0.14);
+        color: #b45309;
+        font-size: 1rem;
+        flex-shrink: 0;
+    }
+
+    .hh-value-card {
+        min-height: 100%;
+        padding: 34px 28px;
+        border-radius: 30px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        box-shadow: 0 18px 36px rgba(15, 23, 42, 0.06);
+        transition: transform 0.28s ease, box-shadow 0.28s ease;
+        text-align: center;
+    }
+
+    .hh-value-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 24px 42px rgba(15, 23, 42, 0.1);
+    }
+
+    .hh-value-icon {
+        width: 84px;
+        height: 84px;
+        margin: 0 auto 20px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(124, 58, 237, 0.08) 100%);
+        color: #0f172a;
+        font-size: 2rem;
+    }
+
+    .hh-value-card h3 {
+        margin: 0 0 12px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.32rem;
+        color: #0f172a;
+    }
+
+    .hh-value-card p {
+        margin: 0;
+        color: var(--hh-text-soft);
+        line-height: 1.8;
+        font-size: 0.96rem;
+    }
+
+    .hh-team-wrap {
+        border-radius: 38px;
+        padding: 42px;
+        background: linear-gradient(180deg, #0c172c 0%, #101d3a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: var(--hh-shadow);
+    }
+
+    .hh-team-wrap .hh-section-heading h2,
+    .hh-team-wrap .hh-section-heading p {
+        color: #ffffff;
+    }
+
+    .hh-team-wrap .hh-section-heading p {
+        color: #c0d4f3;
+    }
+
+    .hh-team-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 280px));
+        justify-content: center;
+        gap: 26px;
+    }
+
+    .hh-team-card {
+        position: relative;
+        min-height: 340px;
+        perspective: 1000px;
+    }
+
+    .hh-team-card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        transition: transform 0.7s;
+        transform-style: preserve-3d;
+    }
+
+    .hh-team-card:hover .hh-team-card-inner {
+        transform: rotateY(180deg);
+    }
+
+    .hh-team-face {
+        position: absolute;
+        inset: 0;
+        border-radius: 28px;
+        overflow: hidden;
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+    }
+
+    .hh-team-front {
+        background: linear-gradient(180deg, #111827 0%, #0f172a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 16px 34px rgba(2, 8, 23, 0.22);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .hh-team-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 2px solid rgba(59, 130, 246, 0.35);
+        display: grid;
+        place-items: center;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 3.6rem;
+        color: #fbbf24;
+        box-shadow: 0 12px 26px rgba(2, 8, 23, 0.26);
+    }
+
+    .hh-team-front h4,
+    .hh-team-back h4 {
+        margin: 0;
+        color: #ffffff;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.36rem;
+    }
+
+    .hh-team-front span,
+    .hh-team-back small {
+        color: #7dd3fc;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+    }
+
+    .hh-team-back {
+        transform: rotateY(180deg);
+        background: linear-gradient(135deg, #111827 0%, #1e293b 100%);
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .hh-team-back p {
+        margin: 12px 0 18px;
+        color: #c6d4ee;
+        line-height: 1.8;
+        font-size: 0.95rem;
+    }
+
+    .hh-socials {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .hh-socials a {
+        width: 42px;
+        height: 42px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.08);
+        color: #fbbf24;
+        text-decoration: none;
+        transition: all 0.25s ease;
+    }
+
+    .hh-socials a:hover {
+        transform: translateY(-2px);
+        background: var(--hh-primary);
+        color: #081120;
+    }
+
+    .hh-cta-wrap {
+        border-radius: 36px;
+        background: linear-gradient(135deg, #0c172c 0%, #1f3b78 100%);
+        box-shadow: var(--hh-shadow);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .hh-cta-wrap::before {
+        content: '';
+        position: absolute;
+        inset: auto auto -120px -120px;
+        width: 280px;
+        height: 280px;
+        border-radius: 999px;
+        background: rgba(14, 165, 233, 0.14);
+        filter: blur(20px);
+    }
+
+    .hh-cta-wrap::after {
+        content: '';
+        position: absolute;
+        top: -100px;
+        right: -100px;
+        width: 260px;
+        height: 260px;
+        border-radius: 999px;
+        background: rgba(124, 58, 237, 0.18);
+        filter: blur(20px);
+    }
+
+    .hh-cta-content {
+        position: relative;
+        z-index: 1;
+        padding: 42px;
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+
+    .hh-cta-copy h2 {
+        margin: 0 0 12px;
+        font-family: 'Space Grotesk', sans-serif;
+        color: #ffffff;
+        font-size: clamp(1.9rem, 4vw, 3rem);
+        line-height: 1.08;
+        letter-spacing: -0.04em;
+    }
+
+    .hh-cta-copy p {
+        margin: 0;
+        color: #d6e5ff;
+        line-height: 1.85;
+        font-size: 1rem;
+    }
+
+    .hh-btn-row {
+        display: flex;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .hh-btn,
+    .hh-btn-outline {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-width: 180px;
+        height: 54px;
+        padding: 0 26px;
+        border-radius: 999px;
+        font-weight: 700;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        border: 0;
+    }
+
+    .hh-btn {
+        background: #ffffff;
+        color: #0f172a;
+        box-shadow: 0 14px 30px rgba(2, 8, 23, 0.18);
+    }
+
+    .hh-btn:hover {
+        transform: translateY(-2px);
+        color: #0f172a;
+    }
+
+    .hh-btn-outline {
+        background: transparent;
+        color: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.24);
+    }
+
+    .hh-btn-outline:hover {
+        transform: translateY(-2px);
+        color: #ffffff;
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    @media (max-width: 1199px) {
+        .hh-about-grid,
+        .hh-mission-grid,
+        .hh-cta-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-about-visual,
+        .hh-showcase,
+        .hh-showcase img {
+            min-height: auto;
+            height: 560px;
+        }
+    }
+
+    @media (max-width: 991px) {
+        .hh-stat-grid,
+        .hh-hero-points,
+        .hh-feature-list {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .hh-mini-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .hh-about-page {
+            background:
+                radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 20%),
+                radial-gradient(circle at top right, rgba(124, 58, 237, 0.16), transparent 18%),
+                linear-gradient(180deg, #071120 0%, #0b1730 18%, #f8fafc 18%, #f8fafc 100%);
+        }
+
+        .hh-shell {
+            width: min(100% - 22px, 1240px);
+        }
+
+        .hh-about-hero {
+            padding: 92px 0 54px;
+        }
+
+        .hh-showcase,
+        .hh-showcase img {
+            height: 500px;
+        }
+
+        .hh-stat-grid,
+        .hh-hero-points,
+        .hh-feature-list,
+        .hh-team-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-copy-card {
+            padding-left: 0;
+        }
+
+        .hh-team-wrap,
+        .hh-cta-content {
+            padding: 26px;
+        }
+
+        .hh-section,
+        .hh-section-tight {
+            padding: 72px 0;
+        }
+
+        .hh-floating-card,
+        .hh-floating-bottom {
+            left: 16px;
+            right: 16px;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .hh-about-copy h1 {
+            font-size: 2.4rem;
+        }
+
+        .hh-about-copy p,
+        .hh-section-heading p,
+        .hh-copy-card p,
+        .hh-cta-copy p {
+            font-size: 0.96rem;
+        }
+
+        .hh-showcase,
+        .hh-showcase img {
+            height: 460px;
+        }
+
+        .hh-stat-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-image-frame {
+            padding: 14px;
+        }
+
+        .hh-value-card,
+        .hh-team-back,
+        .hh-cta-content {
+            padding: 22px;
+        }
+    }
+</style>
+
+<div class="hh-about-page">
+    <section class="hh-about-hero">
+        <div class="hh-shell hh-about-grid">
+            <div class="hh-about-copy" data-aos="fade-up" data-aos-duration="900">
+                <span class="hh-badge"><i class="bi bi-stars"></i> who we are</span>
+                <h1>About <span class="accent">HostelHub</span></h1>
+                <p>We are building a better way to discover student living in Pakistan through trusted listings, simpler digital experiences, and a stronger link between comfort, affordability, and transparency.</p>
+
+                <div class="hh-hero-points">
+                    <div class="hh-hero-point">
+                        <i class="bi bi-patch-check"></i>
+                        <span>Verified listings</span>
+                    </div>
+                    <div class="hh-hero-point">
+                        <i class="bi bi-shield-check"></i>
+                        <span>Safer discovery</span>
+                    </div>
+                    <div class="hh-hero-point">
+                        <i class="bi bi-chat-dots"></i>
+                        <span>Direct contact</span>
+                    </div>
+                    <div class="hh-hero-point">
+                        <i class="bi bi-lightning-charge"></i>
+                        <span>Faster booking flow</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hh-about-visual" data-aos="zoom-in" data-aos-duration="1000">
+                <div class="hh-orb"></div>
+                <div class="hh-orb-2"></div>
+                <div class="hh-showcase">
+                    <img src="https://images.unsplash.com/photo-1555854877-bab0e564b8d5?q=80&w=1200" alt="Modern hostel room">
+
+                    <div class="hh-floating-card">
+                        <small>Modern student living</small>
+                        <h3>Designed to reduce friction in hostel search</h3>
+                        <div class="hh-inline-meta">
+                            <span><i class="bi bi-geo-alt"></i> Pakistan-wide focus</span>
+                            <span><i class="bi bi-star-fill" style="color:#fbbf24;"></i> 4.9 user rating</span>
+                        </div>
+                    </div>
+
+                    <div class="hh-floating-bottom">
+                        <h4>What this redesign improves</h4>
+                        <div class="hh-mini-grid">
+                            <div>Clearer hierarchy from the first section</div>
+                            <div>Stronger visual trust and social proof</div>
+                            <div>More polished storytelling across the page</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hh-section-tight">
+        <div class="hh-shell">
+            <div class="hh-stat-band" id="stats-section">
+                <div class="hh-stat-grid">
+                    <div class="hh-stat-box" data-aos="fade-up" data-aos-delay="0">
+                        <strong class="counter" data-target="208">0</strong>
+                        <span>Happy students</span>
+                    </div>
+                    <div class="hh-stat-box" data-aos="fade-up" data-aos-delay="100">
+                        <strong class="counter" data-target="26">0</strong>
+                        <span>Verified hostels</span>
+                    </div>
+                    <div class="hh-stat-box" data-aos="fade-up" data-aos-delay="200">
+                        <strong class="counter" data-target="26">0</strong>
+                        <span>Areas covered</span>
+                    </div>
+                    <div class="hh-stat-box" data-aos="fade-up" data-aos-delay="300">
+                        <strong>4.9</strong>
+                        <span>Average rating</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hh-section">
+        <div class="hh-shell hh-mission-grid">
+            <div class="hh-image-frame" data-aos="fade-right" data-aos-duration="1000">
+                <img src="https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?q=80&w=1200" alt="Shared hostel room">
+            </div>
+            <div class="hh-copy-card" data-aos="fade-left" data-aos-duration="1000">
+                <h5>Our mission</h5>
+                <h2>Bridging the gap between comfort and affordability</h2>
+                <p>HostelHub grew from a simple observation. Students should not struggle to find a place that feels safe, affordable, and easy to evaluate. We connect students with more trustworthy options and make the decision process clearer from search to contact.</p>
+                <div class="hh-feature-list">
+                    <div class="hh-feature-item"><i class="bi bi-patch-check-fill"></i> Verified listings</div>
+                    <div class="hh-feature-item"><i class="bi bi-shield-lock-fill"></i> 100% secure flow</div>
+                    <div class="hh-feature-item"><i class="bi bi-chat-dots-fill"></i> Direct chat</div>
+                    <div class="hh-feature-item"><i class="bi bi-lightning-charge-fill"></i> Fast booking</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hh-section" style="background:linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);">
+        <div class="hh-shell">
+            <div class="hh-section-heading" data-aos="fade-up">
+                <span class="hh-badge" style="background:#eef6ff; color:#1d4ed8; border-color:#dbeafe;"><i class="bi bi-grid"></i> why choose us</span>
+                <h2>Core values that shape the platform</h2>
+                <p>The section now feels cleaner, more premium, and easier to scan, while preserving your original message around safety, affordability, and community.</p>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="0">
+                    <div class="hh-value-card">
+                        <div class="hh-value-icon"><i class="bi bi-shield-check"></i></div>
+                        <h3>Safety first</h3>
+                        <p>We verify owner identity and listing context to help create a more secure environment for students searching online.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="150">
+                    <div class="hh-value-card">
+                        <div class="hh-value-icon"><i class="bi bi-wallet2"></i></div>
+                        <h3>Zero commission</h3>
+                        <p>Students connect directly with owners. No unnecessary agent fees, no hidden layers, and a clearer rent conversation.</p>
+                    </div>
+                </div>
+                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
+                    <div class="hh-value-card">
+                        <div class="hh-value-icon"><i class="bi bi-people-fill"></i></div>
+                        <h3>Community</h3>
+                        <p>Area-based interaction, roommate discovery, and practical user feedback help make choices more grounded and informed.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hh-section">
+        <div class="hh-shell">
+            <div class="hh-team-wrap">
+                <div class="hh-section-heading" data-aos="fade-up">
+                    <span class="hh-badge"><i class="bi bi-person-badge"></i> team</span>
+                    <h2>Meet the people behind HostelHub</h2>
+                    <p>The team area is redesigned with stronger presentation, better spacing, and more polished flip-card interaction.</p>
+                </div>
+
+                <div class="hh-team-grid">
+                    <div class="hh-team-card" data-aos="zoom-in" data-aos-delay="0">
+                        <div class="hh-team-card-inner">
+                            <div class="hh-team-face hh-team-front">
+                                <div class="hh-team-avatar">UA</div>
+                                <h4>Usman Ali</h4>
+                                <span>Lead Developer</span>
+                            </div>
+                            <div class="hh-team-face hh-team-back">
+                                <small>Lead Developer</small>
+                                <h4>Usman Ali</h4>
+                                <p>Passionate full stack developer focused on Node.js, platform usability, and modern UI systems for digital products.</p>
+                                <div class="hh-socials">
+                                    <a href="#"><i class="bi bi-linkedin"></i></a>
+                                    <a href="#"><i class="bi bi-github"></i></a>
+                                    <a href="#"><i class="bi bi-envelope-fill"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="hh-team-card" data-aos="zoom-in" data-aos-delay="150">
+                        <div class="hh-team-card-inner">
+                            <div class="hh-team-face hh-team-front">
+                                <div class="hh-team-avatar">PS</div>
+                                <h4>Supervisor</h4>
+                                <span>Mentor and Guide</span>
+                            </div>
+                            <div class="hh-team-face hh-team-back">
+                                <small>Mentor and Guide</small>
+                                <h4>Project Supervisor</h4>
+                                <p>Provides technical oversight, design guidance, and strategic direction for product quality and development decisions.</p>
+                                <div class="hh-socials">
+                                    <a href="#"><i class="bi bi-linkedin"></i></a>
+                                    <a href="#"><i class="bi bi-globe2"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="hh-section-tight">
+        <div class="hh-shell">
+            <div class="hh-cta-wrap" data-aos="zoom-in">
+                <div class="hh-cta-content">
+                    <div class="hh-cta-copy">
+                        <span class="hh-badge"><i class="bi bi-lightning-charge"></i> ready to start</span>
+                        <h2>Ready to find your perfect place?</h2>
+                        <p>Join students and owners across Pakistan on a platform designed to make hostel discovery more trustworthy, more direct, and easier to use.</p>
+                    </div>
+                    <div class="hh-btn-row">
+                        <a href="/" class="hh-btn">Browse hostels</a>
+                        <a href="/register" class="hh-btn-outline">Register now</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+<script>
+    AOS.init({
+        once: true,
+        offset: 100,
+        duration: 800
+    });
+
+    const counters = document.querySelectorAll('.counter');
+
+    const animateCounters = () => {
+        counters.forEach(counter => {
+            const target = +counter.getAttribute('data-target');
+            let current = 0;
+            const increment = Math.max(1, Math.ceil(target / 60));
+
+            const updateCounter = () => {
+                current += increment;
+                if (current < target) {
+                    counter.innerText = current;
+                    requestAnimationFrame(updateCounter);
+                } else {
+                    counter.innerText = target;
+                }
+            };
+
+            updateCounter();
+        });
+    };
+
+    const statsSection = document.getElementById('stats-section');
+    if (statsSection) {
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.4 });
+
+        observer.observe(statsSection);
+    }
+</script>
+
+<%- include('partials/footer') %>

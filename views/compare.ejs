@@ -1,0 +1,808 @@
+<%- include('partials/header') %>
+
+<style>
+    :root {
+        --hh-bg: #071120;
+        --hh-bg-soft: #0b1730;
+        --hh-white: #ffffff;
+        --hh-text: #0f172a;
+        --hh-text-soft: #64748b;
+        --hh-line: rgba(255, 255, 255, 0.12);
+        --hh-primary: #0ea5e9;
+        --hh-secondary: #7c3aed;
+        --hh-accent: #14b8a6;
+        --hh-gold: #fbbf24;
+        --hh-success: #10b981;
+        --hh-danger: #ef4444;
+        --hh-shadow: 0 24px 60px rgba(2, 8, 23, 0.16);
+    }
+
+    body {
+        background: #f8fafc;
+        font-family: 'Outfit', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .hh-compare-page {
+        background:
+            radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 26%),
+            radial-gradient(circle at top right, rgba(124, 58, 237, 0.16), transparent 24%),
+            linear-gradient(180deg, #071120 0%, #0b1730 20%, #f8fafc 20%, #f8fafc 100%);
+        min-height: 100vh;
+        padding: 108px 0 72px;
+    }
+
+    .hh-shell {
+        width: min(1320px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    .hh-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: #dbeafe;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        backdrop-filter: blur(14px);
+    }
+
+    .hh-btn,
+    .hh-btn-outline,
+    .hh-btn-dark,
+    .hh-btn-light {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 50px;
+        padding: 0 18px;
+        border-radius: 16px;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        border: 0;
+        cursor: pointer;
+    }
+
+    .hh-btn {
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+        color: #ffffff;
+        box-shadow: 0 16px 32px rgba(14, 165, 233, 0.18);
+    }
+
+    .hh-btn:hover {
+        transform: translateY(-2px);
+        color: #ffffff;
+        box-shadow: 0 22px 38px rgba(14, 165, 233, 0.22);
+    }
+
+    .hh-btn-outline,
+    .hh-btn-light {
+        background: #ffffff;
+        border: 1px solid #dbe4f0;
+        color: #0f172a;
+    }
+
+    .hh-btn-dark {
+        background: #0f172a;
+        color: #ffffff;
+    }
+
+    .hh-btn-outline:hover,
+    .hh-btn-dark:hover,
+    .hh-btn-light:hover {
+        transform: translateY(-2px);
+    }
+
+    .hh-hero {
+        position: relative;
+        border-radius: 36px;
+        overflow: hidden;
+        background: linear-gradient(180deg, #0c172c 0%, #101d3a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 24px 60px rgba(2, 8, 23, 0.2);
+        color: #ffffff;
+        padding: 34px;
+        margin-bottom: 24px;
+    }
+
+    .hh-hero::before {
+        content: '';
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        right: -80px;
+        top: -90px;
+        border-radius: 999px;
+        background: rgba(14, 165, 233, 0.14);
+        filter: blur(36px);
+        pointer-events: none;
+    }
+
+    .hh-hero-top {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+
+    .hh-hero-copy h1 {
+        margin: 18px 0 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2.2rem, 5vw, 3.8rem);
+        line-height: 1.02;
+        letter-spacing: -0.05em;
+        color: #ffffff;
+    }
+
+    .hh-hero-copy h1 .accent {
+        background: linear-gradient(90deg, #8be7ff 0%, #39bdf8 42%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hh-hero-copy p {
+        margin: 0;
+        color: #c8d6f0;
+        line-height: 1.85;
+        max-width: 760px;
+        font-size: 1rem;
+    }
+
+    .hh-vs-wrap {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+        margin-top: 28px;
+        align-items: stretch;
+    }
+
+    .hh-vs-circle {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 88px;
+        height: 88px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+        color: #ffffff;
+        display: grid;
+        place-items: center;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 800;
+        letter-spacing: -0.04em;
+        font-size: 1.08rem;
+        border: 6px solid rgba(255, 255, 255, 0.95);
+        box-shadow: 0 18px 36px rgba(14, 165, 233, 0.24);
+        z-index: 3;
+    }
+
+    .hh-hostel-card {
+        position: relative;
+        border-radius: 30px;
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 18px 38px rgba(2, 8, 23, 0.14);
+        transition: all 0.3s ease;
+    }
+
+    .hh-hostel-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 24px 46px rgba(2, 8, 23, 0.18);
+    }
+
+    .hh-hostel-media {
+        position: relative;
+        height: 250px;
+        overflow: hidden;
+        background: #1f2937;
+    }
+
+    .hh-hostel-media img,
+    .hh-hostel-media .placeholder-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.45s ease;
+    }
+
+    .hh-hostel-card:hover .hh-hostel-media img {
+        transform: scale(1.08);
+    }
+
+    .hh-hostel-media::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, rgba(15, 23, 42, 0.08) 0%, rgba(15, 23, 42, 0.6) 100%);
+        pointer-events: none;
+    }
+
+    .hh-price-badge {
+        position: absolute;
+        left: 16px;
+        bottom: 16px;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: rgba(8, 17, 32, 0.88);
+        color: #ffffff;
+        font-size: 0.88rem;
+        font-weight: 800;
+        box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+    }
+
+    .hh-hostel-body {
+        padding: 22px;
+        text-align: center;
+    }
+
+    .hh-hostel-body h3 {
+        margin: 0 0 8px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.35rem;
+        color: #0f172a;
+        letter-spacing: -0.03em;
+    }
+
+    .hh-hostel-body p {
+        margin: 0 0 12px;
+        color: #64748b;
+        line-height: 1.75;
+    }
+
+    .hh-hostel-type {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #334155;
+        font-size: 0.76rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .hh-card {
+        border-radius: 30px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        box-shadow: var(--hh-shadow);
+        overflow: hidden;
+        margin-bottom: 22px;
+    }
+
+    .hh-card-head {
+        padding: 22px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #edf2f7;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    }
+
+    .hh-card-head h3 {
+        margin: 0;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.3rem;
+        color: #0f172a;
+    }
+
+    .hh-head-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        background: #0f172a;
+        color: #ffffff;
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .hh-card-body {
+        padding: 24px;
+    }
+
+    .hh-table-wrap {
+        overflow-x: auto;
+        border-radius: 24px;
+        border: 1px solid #e6eef8;
+        background: #ffffff;
+    }
+
+    .hh-table {
+        width: 100%;
+        min-width: 860px;
+        border-collapse: collapse;
+    }
+
+    .hh-table thead {
+        background: linear-gradient(135deg, #0ea5e9 0%, #7c3aed 100%);
+        color: #ffffff;
+    }
+
+    .hh-table th,
+    .hh-table td {
+        padding: 16px 18px;
+        text-align: center;
+        border-bottom: 1px solid #edf2f7;
+        vertical-align: middle;
+    }
+
+    .hh-table th {
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-weight: 800;
+    }
+
+    .hh-table td {
+        color: #0f172a;
+        font-size: 0.94rem;
+        background: #ffffff;
+    }
+
+    .hh-table tbody tr:hover td {
+        background: #f8fbff;
+    }
+
+    .hh-feature-cell {
+        text-align: left !important;
+        font-weight: 800;
+        color: #64748b !important;
+        min-width: 150px;
+    }
+
+    .hh-winner-cell {
+        background: rgba(16, 185, 129, 0.08) !important;
+        border-left: 3px solid #10b981;
+        color: #111827;
+        font-weight: 700;
+    }
+
+    .hh-tag {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #334155;
+        font-size: 0.76rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+
+    .hh-cheaper {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: 999px;
+        background: rgba(16, 185, 129, 0.12);
+        color: #047857;
+        font-size: 0.75rem;
+        font-weight: 800;
+        margin-left: 8px;
+        margin-top: 6px;
+        flex-wrap: wrap;
+    }
+
+    .hh-facilities-wrap {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+    }
+
+    .hh-facility {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 10px;
+        border-radius: 999px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #334155;
+        font-size: 0.76rem;
+        font-weight: 700;
+    }
+
+    .hh-verdict-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+        margin-bottom: 20px;
+    }
+
+    .hh-verdict-box {
+        padding: 22px;
+        border-radius: 24px;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+        border: 1px solid #e6eef8;
+        box-shadow: 0 10px 24px rgba(2, 8, 23, 0.05);
+    }
+
+    .hh-verdict-box h4 {
+        margin: 0 0 12px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.14rem;
+        color: #0f172a;
+    }
+
+    .hh-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: grid;
+        gap: 10px;
+    }
+
+    .hh-list li {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #64748b;
+        line-height: 1.7;
+    }
+
+    .hh-alert-mini {
+        margin-top: 14px;
+        padding: 12px 14px;
+        border-radius: 16px;
+        font-size: 0.86rem;
+        font-weight: 700;
+    }
+
+    .hh-alert-mini.success {
+        background: rgba(16, 185, 129, 0.1);
+        color: #047857;
+    }
+
+    .hh-alert-mini.info {
+        background: rgba(14, 165, 233, 0.1);
+        color: #0369a1;
+    }
+
+    .hh-final-note {
+        text-align: center;
+        padding-top: 8px;
+    }
+
+    .hh-final-note p {
+        margin: 0 0 16px;
+        color: #64748b;
+        line-height: 1.8;
+    }
+
+    @media (max-width: 1199px) {
+        .hh-verdict-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .hh-compare-page {
+            padding: 92px 0 54px;
+        }
+
+        .hh-shell {
+            width: min(100% - 20px, 1320px);
+        }
+
+        .hh-hero,
+        .hh-card-head,
+        .hh-card-body,
+        .hh-hostel-body,
+        .hh-verdict-box {
+            padding-left: 18px;
+            padding-right: 18px;
+        }
+
+        .hh-hero,
+        .hh-card-head,
+        .hh-card-body,
+        .hh-hostel-body,
+        .hh-verdict-box {
+            padding-top: 18px;
+            padding-bottom: 18px;
+        }
+
+        .hh-stats-grid,
+        .hh-vs-wrap {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-vs-circle {
+            position: relative;
+            left: auto;
+            top: auto;
+            transform: none;
+            margin: -6px auto -2px;
+            width: 70px;
+            height: 70px;
+            font-size: 0.95rem;
+            order: 2;
+        }
+
+        .hh-hostel-card:first-child {
+            order: 1;
+        }
+
+        .hh-hostel-card:last-child {
+            order: 3;
+        }
+
+        .hh-table thead {
+            display: none;
+        }
+
+        .hh-table,
+        .hh-table tbody,
+        .hh-table tr,
+        .hh-table td {
+            display: block;
+            width: 100%;
+        }
+
+        .hh-table tr {
+            padding: 14px;
+            border-bottom: 1px solid #edf2f7;
+        }
+
+        .hh-table td {
+            text-align: left !important;
+            padding: 8px 0;
+            border: none;
+            background: transparent !important;
+        }
+
+        .hh-btn,
+        .hh-btn-outline,
+        .hh-btn-dark,
+        .hh-btn-light {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .hh-hero-copy h1 {
+            font-size: 2rem;
+        }
+
+        .hh-card-head,
+        .hh-hero-top,
+        .hh-hostel-top {
+            flex-direction: column;
+            align-items: stretch;
+        }
+    }
+</style>
+
+<div class="hh-compare-page">
+    <div class="hh-shell">
+        <% 
+            const f1_array = Array.isArray(h1.facilities) ? h1.facilities : (h1.facilities ? h1.facilities.split(',') : []);
+            const f2_array = Array.isArray(h2.facilities) ? h2.facilities : (h2.facilities ? h2.facilities.split(',') : []);
+            const f1_count = f1_array.length;
+            const f2_count = f2_array.length;
+        %>
+
+        <section class="hh-hero">
+            <div class="hh-hero-top">
+                <div class="hh-hero-copy">
+                    <span class="hh-badge"><i class="bi bi-columns-gap"></i> side by side</span>
+                    <h1>Comparison <span class="accent">showdown</span></h1>
+                    <p>Compare both hostels by price, category, amenities, and overall value in one cleaner premium layout. This redesign keeps your comparison logic, winner highlights, verdict blocks, and details routes intact.</p>
+                </div>
+
+                <a href="/" class="hh-btn-outline"><i class="bi bi-arrow-repeat"></i> Compare Different Hostels</a>
+            </div>
+
+            <div class="hh-stats-grid">
+                <div class="hh-stat">
+                    <strong><%= priceWinner === h1._id.toString() ? h1.name : h2.name %></strong>
+                    <span>Best on price</span>
+                </div>
+                <div class="hh-stat">
+                    <strong><%= Math.max(f1_count, f2_count) %></strong>
+                    <span>Highest amenity count</span>
+                </div>
+                <div class="hh-stat">
+                    <strong>2</strong>
+                    <span>Properties compared</span>
+                </div>
+            </div>
+
+            <div class="hh-vs-wrap">
+                <div class="hh-hostel-card">
+                    <div class="hh-hostel-media">
+                        <% if(h1.image) { %>
+                            <img src="/uploads/<%= h1.image %>" alt="<%= h1.name %>">
+                        <% } else { %>
+                            <div class="placeholder-img placeholder-hostel"></div>
+                        <% } %>
+                        <div class="hh-price-badge">Rs. <%= h1.price.toLocaleString() %></div>
+                    </div>
+                    <div class="hh-hostel-body">
+                        <h3><%= h1.name %></h3>
+                        <p><i class="bi bi-geo-alt-fill text-warning me-1"></i> <%= h1.area %></p>
+                        <span class="hh-hostel-type"><%= h1.category %></span>
+                    </div>
+                </div>
+
+                <div class="hh-vs-circle">VS</div>
+
+                <div class="hh-hostel-card">
+                    <div class="hh-hostel-media">
+                        <% if(h2.image) { %>
+                            <img src="/uploads/<%= h2.image %>" alt="<%= h2.name %>">
+                        <% } else { %>
+                            <div class="placeholder-img placeholder-hostel"></div>
+                        <% } %>
+                        <div class="hh-price-badge">Rs. <%= h2.price.toLocaleString() %></div>
+                    </div>
+                    <div class="hh-hostel-body">
+                        <h3><%= h2.name %></h3>
+                        <p><i class="bi bi-geo-alt-fill text-warning me-1"></i> <%= h2.area %></p>
+                        <span class="hh-hostel-type"><%= h2.category %></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="hh-card">
+            <div class="hh-card-head">
+                <h3><i class="bi bi-table me-2"></i> Detailed Comparison</h3>
+                <span class="hh-head-pill">Feature by Feature</span>
+            </div>
+
+            <div class="hh-card-body">
+                <div class="hh-table-wrap">
+                    <table class="hh-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%;">Feature</th>
+                                <th style="width: 40%;"><%= h1.name %></th>
+                                <th style="width: 40%;"><%= h2.name %></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="hh-feature-cell">Monthly Rent</td>
+                                <td class="<%= h1._id.toString() === priceWinner ? 'hh-winner-cell' : '' %>">
+                                    Rs. <%= Number(h1.price).toLocaleString() %>
+                                    <% if(h1._id.toString() === priceWinner) { %>
+                                        <div class="hh-cheaper"><i class="bi bi-check-circle-fill"></i> Cheaper option</div>
+                                    <% } %>
+                                </td>
+                                <td class="<%= h2._id.toString() === priceWinner ? 'hh-winner-cell' : '' %>">
+                                    Rs. <%= Number(h2.price).toLocaleString() %>
+                                    <% if(h2._id.toString() === priceWinner) { %>
+                                        <div class="hh-cheaper"><i class="bi bi-check-circle-fill"></i> Cheaper option</div>
+                                    <% } %>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="hh-feature-cell">Type</td>
+                                <td><span class="hh-tag"><%= h1.category %></span></td>
+                                <td><span class="hh-tag"><%= h2.category %></span></td>
+                            </tr>
+
+                            <tr>
+                                <td class="hh-feature-cell">Amenities</td>
+                                <td class="<%= f1_count > f2_count ? 'hh-winner-cell' : '' %>">
+                                    <div class="hh-facilities-wrap">
+                                        <% if(f1_count > 0) { f1_array.forEach(f => { %>
+                                            <span class="hh-facility"><%= f %></span>
+                                        <% }) } else { %>
+                                            <span class="hh-facility">No facilities listed</span>
+                                        <% } %>
+                                    </div>
+                                    <div style="margin-top:10px; color:#64748b; font-size:0.84rem;"><%= f1_count %> Features</div>
+                                </td>
+                                <td class="<%= f2_count > f1_count ? 'hh-winner-cell' : '' %>">
+                                    <div class="hh-facilities-wrap">
+                                        <% if(f2_count > 0) { f2_array.forEach(f => { %>
+                                            <span class="hh-facility"><%= f %></span>
+                                        <% }) } else { %>
+                                            <span class="hh-facility">No facilities listed</span>
+                                        <% } %>
+                                    </div>
+                                    <div style="margin-top:10px; color:#64748b; font-size:0.84rem;"><%= f2_count %> Features</div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td class="hh-feature-cell">Action</td>
+                                <td>
+                                    <a href="/details/<%= h1._id %>" class="hh-btn-dark" style="min-height:42px; padding:0 14px; width:auto;">View Details</a>
+                                </td>
+                                <td>
+                                    <a href="/details/<%= h2._id %>" class="hh-btn-dark" style="min-height:42px; padding:0 14px; width:auto;">View Details</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section class="hh-card">
+            <div class="hh-card-head">
+                <h3><i class="bi bi-trophy-fill me-2"></i> Final Verdict</h3>
+                <span class="hh-head-pill">Decision Support</span>
+            </div>
+
+            <div class="hh-card-body">
+                <div class="hh-verdict-grid">
+                    <div class="hh-verdict-box">
+                        <h4><%= h1.name %></h4>
+                        <ul class="hh-list">
+                            <li><i class="bi bi-tag-fill text-success"></i> Price: Rs. <%= h1.price.toLocaleString() %></li>
+                            <li><i class="bi bi-grid-fill text-primary"></i> <%= f1_count %> Facilities</li>
+                        </ul>
+                        <% if(h1._id.toString() === priceWinner) { %>
+                            <div class="hh-alert-mini success"><i class="bi bi-piggy-bank-fill me-2"></i>Best for budget</div>
+                        <% } %>
+                        <% if(f1_count > f2_count) { %>
+                            <div class="hh-alert-mini info"><i class="bi bi-stars me-2"></i>Most features</div>
+                        <% } %>
+                    </div>
+
+                    <div class="hh-verdict-box">
+                        <h4><%= h2.name %></h4>
+                        <ul class="hh-list">
+                            <li><i class="bi bi-tag-fill text-success"></i> Price: Rs. <%= h2.price.toLocaleString() %></li>
+                            <li><i class="bi bi-grid-fill text-primary"></i> <%= f2_count %> Facilities</li>
+                        </ul>
+                        <% if(h2._id.toString() === priceWinner) { %>
+                            <div class="hh-alert-mini success"><i class="bi bi-piggy-bank-fill me-2"></i>Best for budget</div>
+                        <% } %>
+                        <% if(f2_count > f1_count) { %>
+                            <div class="hh-alert-mini info"><i class="bi bi-stars me-2"></i>Most features</div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <div class="hh-final-note">
+                    <p>Based on your preference for <strong>price versus features</strong>, choose the hostel that fits your actual priorities, not just the lowest rent or highest feature count.</p>
+                    <a href="/" class="hh-btn">Compare Different Hostels</a>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
+
+</body>
+</html>

@@ -1,0 +1,1070 @@
+<%- include('partials/header') %>
+
+<style>
+    :root {
+        --hh-bg: #071120;
+        --hh-bg-soft: #0b1730;
+        --hh-white: #ffffff;
+        --hh-text: #0f172a;
+        --hh-text-soft: #64748b;
+        --hh-line: rgba(255, 255, 255, 0.12);
+        --hh-primary: #0ea5e9;
+        --hh-secondary: #7c3aed;
+        --hh-accent: #14b8a6;
+        --hh-gold: #fbbf24;
+        --hh-success: #10b981;
+        --hh-danger: #ef4444;
+        --hh-warning: #f59e0b;
+        --hh-shadow: 0 24px 60px rgba(2, 8, 23, 0.16);
+    }
+
+    body {
+        background: #f8fafc;
+        font-family: 'Outfit', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .hh-owner-page {
+        background:
+            radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 26%),
+            radial-gradient(circle at top right, rgba(124, 58, 237, 0.16), transparent 24%),
+            linear-gradient(180deg, #071120 0%, #0b1730 22%, #f8fafc 22%, #f8fafc 100%);
+        min-height: 100vh;
+        padding: 108px 0 72px;
+    }
+
+    .hh-shell {
+        width: min(1380px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    .hh-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: #dbeafe;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        backdrop-filter: blur(14px);
+    }
+
+    .hh-alert {
+        padding: 16px 18px;
+        border-radius: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .hh-alert.success {
+        background: rgba(16, 185, 129, 0.1);
+        color: #047857;
+        border-left: 4px solid #10b981;
+    }
+
+    .hh-alert.warning {
+        background: rgba(245, 158, 11, 0.12);
+        color: #92400e;
+        border-left: 4px solid #f59e0b;
+    }
+
+    .hh-hero {
+        position: relative;
+        border-radius: 36px;
+        overflow: hidden;
+        background: linear-gradient(180deg, #0c172c 0%, #101d3a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 24px 60px rgba(2, 8, 23, 0.2);
+        color: #ffffff;
+        padding: 34px;
+        margin-bottom: 24px;
+    }
+
+    .hh-hero::before {
+        content: '';
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        right: -80px;
+        top: -90px;
+        border-radius: 999px;
+        background: rgba(14, 165, 233, 0.14);
+        filter: blur(36px);
+        pointer-events: none;
+    }
+
+    .hh-hero-top {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+
+    .hh-hero-copy h1 {
+        margin: 18px 0 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2.2rem, 5vw, 3.8rem);
+        line-height: 1.02;
+        letter-spacing: -0.05em;
+        color: #ffffff;
+    }
+
+    .hh-hero-copy h1 .accent {
+        background: linear-gradient(90deg, #8be7ff 0%, #39bdf8 42%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hh-hero-copy p {
+        margin: 0;
+        color: #c8d6f0;
+        line-height: 1.85;
+        max-width: 760px;
+        font-size: 1rem;
+    }
+
+    .hh-action-row {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .hh-btn,
+    .hh-btn-outline,
+    .hh-btn-danger,
+    .hh-btn-dark,
+    .hh-btn-light {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 50px;
+        padding: 0 18px;
+        border-radius: 16px;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        border: 0;
+        cursor: pointer;
+    }
+
+    .hh-btn {
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+        color: #ffffff;
+        box-shadow: 0 16px 32px rgba(14, 165, 233, 0.18);
+    }
+
+    .hh-btn:hover {
+        transform: translateY(-2px);
+        color: #ffffff;
+        box-shadow: 0 22px 38px rgba(14, 165, 233, 0.22);
+    }
+
+    .hh-btn-outline {
+        background: #ffffff;
+        border: 1px solid #dbe4f0;
+        color: #0f172a;
+    }
+
+    .hh-btn-outline:hover,
+    .hh-btn-danger:hover,
+    .hh-btn-dark:hover,
+    .hh-btn-light:hover {
+        transform: translateY(-2px);
+    }
+
+    .hh-btn-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: #ffffff;
+    }
+
+    .hh-btn-dark {
+        background: #0f172a;
+        color: #ffffff;
+    }
+
+    .hh-btn-light {
+        background: #f8fafc;
+        color: #0f172a;
+        border: 1px solid #e2e8f0;
+    }
+
+    .hh-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 26px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hh-stat {
+        padding: 18px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(14px);
+    }
+
+    .hh-stat strong {
+        display: block;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.6rem;
+        line-height: 1;
+        color: #ffffff;
+        margin-bottom: 7px;
+    }
+
+    .hh-stat span {
+        color: #c8d6f0;
+        font-size: 0.88rem;
+    }
+
+    .hh-grid {
+        display: grid;
+        gap: 22px;
+    }
+
+    .hh-grid-2 {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+        gap: 22px;
+    }
+
+    .hh-card {
+        border-radius: 30px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        box-shadow: var(--hh-shadow);
+        overflow: hidden;
+    }
+
+    .hh-card-head {
+        padding: 22px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #edf2f7;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    }
+
+    .hh-card-head h3 {
+        margin: 0;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.3rem;
+        color: #0f172a;
+    }
+
+    .hh-card-body {
+        padding: 24px;
+    }
+
+    .hh-filter-form {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 14px;
+        align-items: end;
+    }
+
+    .hh-field label {
+        display: block;
+        margin-bottom: 8px;
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .hh-field input,
+    .hh-field select {
+        width: 100%;
+        min-height: 48px;
+        border: 1px solid #dbe4f0;
+        border-radius: 14px;
+        background: #ffffff;
+        padding: 0 14px;
+        outline: none;
+        color: #0f172a;
+        font-family: 'Outfit', sans-serif;
+        transition: all 0.25s ease;
+    }
+
+    .hh-field input:focus,
+    .hh-field select:focus {
+        border-color: #7dd3fc;
+        box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.08);
+    }
+
+    .hh-chart-wrap {
+        height: 320px;
+        position: relative;
+    }
+
+    .hh-table-wrap {
+        overflow-x: auto;
+    }
+
+    .hh-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 860px;
+    }
+
+    .hh-table thead {
+        background: linear-gradient(135deg, #0ea5e9 0%, #7c3aed 100%);
+        color: #ffffff;
+    }
+
+    .hh-table th,
+    .hh-table td {
+        padding: 14px 16px;
+        text-align: left;
+        border-bottom: 1px solid #edf2f7;
+        vertical-align: middle;
+    }
+
+    .hh-table th {
+        font-size: 0.82rem;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        font-weight: 800;
+    }
+
+    .hh-table td {
+        color: #0f172a;
+        font-size: 0.94rem;
+    }
+
+    .hh-table tbody tr:hover {
+        background: #f8fbff;
+    }
+
+    .hh-status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+    }
+
+    .hh-status.pending {
+        background: rgba(245, 158, 11, 0.14);
+        color: #b45309;
+    }
+
+    .hh-status.approved,
+    .hh-status.verified {
+        background: rgba(16, 185, 129, 0.12);
+        color: #047857;
+    }
+
+    .hh-status.rejected {
+        background: rgba(239, 68, 68, 0.12);
+        color: #b91c1c;
+    }
+
+    .hh-user-chip {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .hh-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.12) 0%, rgba(124, 58, 237, 0.1) 100%);
+        color: #0f172a;
+        display: grid;
+        place-items: center;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+
+    .hh-user-chip strong {
+        display: block;
+        color: #0f172a;
+        margin-bottom: 3px;
+    }
+
+    .hh-user-chip small {
+        color: #64748b;
+    }
+
+    .hh-empty {
+        padding: 56px 24px;
+        text-align: center;
+        color: #64748b;
+    }
+
+    .hh-empty i {
+        width: 74px;
+        height: 74px;
+        margin: 0 auto 16px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(124, 58, 237, 0.08) 100%);
+        color: #0f172a;
+        font-size: 1.8rem;
+    }
+
+    .hh-empty h4 {
+        margin: 0 0 8px;
+        font-family: 'Space Grotesk', sans-serif;
+        color: #0f172a;
+    }
+
+    .hh-tabs {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+
+    .hh-tab-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 0 16px;
+        border-radius: 16px;
+        border: 1px solid #dbe4f0;
+        background: #ffffff;
+        color: #0f172a;
+        font-weight: 800;
+        transition: all 0.25s ease;
+    }
+
+    .hh-tab-btn.active {
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+        color: #ffffff;
+        border-color: transparent;
+        box-shadow: 0 16px 30px rgba(14, 165, 233, 0.18);
+    }
+
+    .hh-tab-pane {
+        display: none;
+    }
+
+    .hh-tab-pane.active {
+        display: block;
+    }
+
+    .hh-properties-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .hh-property-card {
+        border-radius: 24px;
+        overflow: hidden;
+        border: 1px solid #e6eef8;
+        background: #ffffff;
+        box-shadow: 0 12px 26px rgba(2, 8, 23, 0.06);
+        transition: all 0.25s ease;
+    }
+
+    .hh-property-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 36px rgba(2, 8, 23, 0.1);
+    }
+
+    .hh-property-media {
+        position: relative;
+        height: 190px;
+        overflow: hidden;
+        background: #e5e7eb;
+    }
+
+    .hh-property-media img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.45s ease;
+    }
+
+    .hh-property-card:hover .hh-property-media img {
+        transform: scale(1.06);
+    }
+
+    .hh-delete-btn {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        width: 42px;
+        height: 42px;
+        border-radius: 999px;
+        background: rgba(239, 68, 68, 0.96);
+        color: #ffffff;
+        display: grid;
+        place-items: center;
+        text-decoration: none;
+        box-shadow: 0 12px 24px rgba(239, 68, 68, 0.2);
+        transition: all 0.25s ease;
+    }
+
+    .hh-delete-btn:hover {
+        transform: scale(1.06);
+        color: #ffffff;
+    }
+
+    .hh-property-body {
+        padding: 18px;
+    }
+
+    .hh-property-body h4 {
+        margin: 0 0 8px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.08rem;
+        color: #0f172a;
+    }
+
+    .hh-property-body p {
+        margin: 0 0 14px;
+        color: #64748b;
+        line-height: 1.75;
+        font-size: 0.9rem;
+    }
+
+    .hh-property-actions {
+        display: grid;
+        gap: 10px;
+    }
+
+    .hh-property-actions-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    @media (max-width: 1299px) {
+        .hh-properties-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 1199px) {
+        .hh-grid-2,
+        .hh-filter-form {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-properties-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @media (max-width: 767px) {
+        .hh-owner-page {
+            padding: 92px 0 54px;
+        }
+
+        .hh-shell {
+            width: min(100% - 20px, 1380px);
+        }
+
+        .hh-hero,
+        .hh-card-body,
+        .hh-card-head,
+        .hh-property-body {
+            padding-left: 18px;
+            padding-right: 18px;
+        }
+
+        .hh-hero,
+        .hh-card-body,
+        .hh-card-head,
+        .hh-property-body {
+            padding-top: 18px;
+            padding-bottom: 18px;
+        }
+
+        .hh-stats-grid,
+        .hh-properties-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-action-row,
+        .hh-property-actions-row {
+            grid-template-columns: 1fr;
+            display: grid;
+        }
+
+        .hh-btn,
+        .hh-btn-outline,
+        .hh-btn-danger,
+        .hh-btn-dark,
+        .hh-btn-light {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="hh-owner-page">
+    <div class="hh-shell">
+
+        <% if (typeof query !== 'undefined' && query.msg) { %>
+            <% if (query.msg === 'rent_approved') { %>
+                <div class="hh-alert success">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span><strong>Rent payment verified.</strong> The payment has been marked as paid.</span>
+                </div>
+            <% } else if (query.msg === 'saved') { %>
+                <div class="hh-alert success">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span><strong>Payment settings saved.</strong> Students can now see your updated payment details.</span>
+                </div>
+            <% } else if (query.msg === 'announcement_updated') { %>
+                <div class="hh-alert success">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span><strong>Announcement updated.</strong> Your latest alert has been published successfully.</span>
+                </div>
+            <% } else if (query.msg === 'mess_updated') { %>
+                <div class="hh-alert success">
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span><strong>Mess menu updated.</strong> The weekly menu has been saved successfully.</span>
+                </div>
+            <% } else if (query.msg === 'no_hostels_to_manage') { %>
+                <div class="hh-alert warning">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span><strong>No hostels found.</strong> Add a hostel first, then manage announcements.</span>
+                </div>
+            <% } else if (query.msg === 'manage_redirect_error') { %>
+                <div class="hh-alert warning">
+                    <i class="bi bi-exclamation-triangle-fill"></i>
+                    <span><strong>Could not open Manage Hostels.</strong> Please try again from the dashboard.</span>
+                </div>
+            <% } %>
+        <% } %>
+
+        <section class="hh-hero">
+            <div class="hh-hero-top">
+                <div class="hh-hero-copy">
+                    <span class="hh-badge"><i class="bi bi-building"></i> owner dashboard</span>
+                    <h1>Manage your <span class="accent">properties</span></h1>
+                    <p>Track bookings, verify rent payments, review property performance, and manage hostels from one cleaner premium dashboard built in the same design system as the rest of HostelHub.</p>
+                </div>
+
+                <div class="hh-action-row">
+                    <a href="/payment_settings" class="hh-btn-outline"><i class="bi bi-wallet2"></i> Payment Method</a>
+                    <a href="/owner_complaints" class="hh-btn-danger"><i class="bi bi-tools"></i> View Complaints</a>
+                    <a href="/add_hostel" class="hh-btn"><i class="bi bi-plus-lg"></i> Add Hostel</a>
+                </div>
+            </div>
+
+            <div class="hh-stats-grid">
+                <div class="hh-stat">
+                    <strong><%= stats.totalViews || 0 %></strong>
+                    <span>Total views</span>
+                </div>
+                <div class="hh-stat">
+                    <strong><%= stats.pending || 0 %></strong>
+                    <span>Pending requests</span>
+                </div>
+                <div class="hh-stat">
+                    <strong><%= stats.approved || 0 %></strong>
+                    <span>Approved bookings</span>
+                </div>
+                <div class="hh-stat">
+                    <strong><%= stats.rejected || 0 %></strong>
+                    <span>Rejected bookings</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="hh-grid">
+            <section class="hh-card">
+                <div class="hh-card-head">
+                    <h3><i class="bi bi-graph-up-arrow me-2"></i> Booking Performance</h3>
+                    <span class="hh-badge" style="background:#eef6ff; color:#1d4ed8; border-color:#dbeafe;">Analytics</span>
+                </div>
+                <div class="hh-card-body">
+                    <div class="hh-chart-wrap">
+                        <canvas id="bookingChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <section class="hh-card">
+                <div class="hh-card-head">
+                    <h3><i class="bi bi-funnel me-2"></i> Filter Dashboard Data</h3>
+                    <span class="hh-badge" style="background:#eef6ff; color:#1d4ed8; border-color:#dbeafe;">Refine results</span>
+                </div>
+                <div class="hh-card-body">
+                    <form action="/owner_dashboard" method="GET" class="hh-filter-form">
+                        <div class="hh-field">
+                            <label>Filter by Hostel</label>
+                            <select name="hostel_id">
+                                <option value="">All Properties</option>
+                                <% my_hostels.forEach(h => { %>
+                                    <option value="<%= h._id %>" <%= query.hostel_id == h._id ? 'selected' : '' %>><%= h.name %></option>
+                                <% }) %>
+                            </select>
+                        </div>
+                        <div class="hh-field">
+                            <label>Filter by Date</label>
+                            <input type="date" name="date" value="<%= query.date || '' %>">
+                        </div>
+                        <div class="hh-field">
+                            <label>Booking Status</label>
+                            <select name="status">
+                                <option value="">All Statuses</option>
+                                <option value="Pending" <%= query.status == 'Pending' ? 'selected' : '' %>>Pending</option>
+                                <option value="Approved" <%= query.status == 'Approved' ? 'selected' : '' %>>Approved</option>
+                                <option value="Rejected" <%= query.status == 'Rejected' ? 'selected' : '' %>>Rejected</option>
+                            </select>
+                        </div>
+                        <div class="hh-action-row" style="justify-content:flex-start;">
+                            <button type="submit" class="hh-btn"><i class="bi bi-funnel"></i> Apply</button>
+                            <a href="/owner_dashboard" class="hh-btn-light"><i class="bi bi-x-lg"></i> Reset</a>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <div class="hh-grid-2">
+                <section class="hh-card">
+                    <div class="hh-card-head">
+                        <h3><i class="bi bi-wallet2 me-2"></i> Pending Rent Verifications</h3>
+                        <span class="hh-badge" style="background:#ecfdf5; color:#047857; border-color:#bbf7d0;">Payments</span>
+                    </div>
+                    <div class="hh-card-body">
+                        <div class="hh-table-wrap">
+                            <table class="hh-table">
+                                <thead>
+                                    <tr>
+                                        <th>Student & Hostel</th>
+                                        <th>Rent Cycle</th>
+                                        <th>Amount</th>
+                                        <th>Submission Date</th>
+                                        <th>Proof</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% if (rent_requests && rent_requests.length > 0) { %>
+                                        <% rent_requests.forEach(rent => { 
+                                            const dateObj = new Date(rent.created_at);
+                                            const dateStr = dateObj.toLocaleDateString('en-US', { day: 'numeric', month: 'short', year: 'numeric' });
+                                        %>
+                                            <tr>
+                                                <td>
+                                                    <div class="hh-user-chip">
+                                                        <div class="hh-avatar"><%= rent.student_name.charAt(0).toUpperCase() %></div>
+                                                        <div>
+                                                            <strong><%= rent.student_name %></strong>
+                                                            <small><i class="bi bi-building me-1"></i><%= rent.hostel_name %></small>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td><span class="hh-status pending"><%= rent.month_year %></span></td>
+                                                <td><strong style="color:#047857;">Rs. <%= rent.amount.toLocaleString() %></strong></td>
+                                                <td><%= dateStr %></td>
+                                                <td>
+                                                    <a href="/uploads/<%= rent.proof_image %>" target="_blank" class="hh-btn-outline" style="min-height:40px; padding:0 14px;"><i class="bi bi-file-earmark-image"></i> View</a>
+                                                </td>
+                                                <td>
+                                                    <a href="/approve_rent/<%= rent._id %>" class="hh-btn" style="min-height:40px; padding:0 14px;" onclick="return confirm('Confirm payment received?');"><i class="bi bi-check2-circle"></i> Verify</a>
+                                                </td>
+                                            </tr>
+                                        <% }) %>
+                                    <% } else { %>
+                                        <tr>
+                                            <td colspan="6">
+                                                <div class="hh-empty">
+                                                    <i class="bi bi-wallet2"></i>
+                                                    <h4>No pending payments</h4>
+                                                    <p>There are no rent submissions waiting for verification right now.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="hh-card">
+                    <div class="hh-card-head">
+                        <h3><i class="bi bi-journal-check me-2"></i> Booking Management</h3>
+                        <span class="hh-badge" style="background:#eef6ff; color:#1d4ed8; border-color:#dbeafe;">Requests & history</span>
+                    </div>
+                    <div class="hh-card-body">
+                        <div class="hh-tabs">
+                            <button class="hh-tab-btn active" data-tab="pendingPane"><i class="bi bi-hourglass-split"></i> Pending <% if(stats.pending > 0) { %><span class="hh-status rejected" style="padding:4px 8px;"><%= stats.pending %></span><% } %></button>
+                            <button class="hh-tab-btn" data-tab="approvedPane"><i class="bi bi-check-circle-fill"></i> Approved & History</button>
+                        </div>
+
+                        <div id="pendingPane" class="hh-tab-pane active">
+                            <div class="hh-table-wrap">
+                                <table class="hh-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Student</th>
+                                            <th>Hostel / Room</th>
+                                            <th>Date</th>
+                                            <th>Rent</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% const pendingBookings = bookings.filter(b => b.status === 'Pending'); %>
+                                        <% if (pendingBookings.length > 0) { %>
+                                            <% pendingBookings.forEach(row => { %>
+                                                <tr>
+                                                    <td>
+                                                        <div class="hh-user-chip">
+                                                            <div class="hh-avatar"><%= row.student_name.charAt(0).toUpperCase() %></div>
+                                                            <div>
+                                                                <strong><%= row.student_name %></strong>
+                                                                <small><%= row.email %></small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <strong style="display:block;"><%= row.hostel_name %></strong>
+                                                        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:6px;">
+                                                            <% if(row.room_name) { %>
+                                                                <span class="hh-status approved"><%= row.room_name %></span>
+                                                            <% } %>
+                                                            <% if(row.includes_mess) { %>
+                                                                <span class="hh-status pending">Mess</span>
+                                                            <% } %>
+                                                        </div>
+                                                    </td>
+                                                    <td><%= new Date(row.created_at).toLocaleDateString() %></td>
+                                                    <td><strong style="color:#047857;">Rs. <%= row.final_rent ? row.final_rent.toLocaleString() : 'N/A' %></strong></td>
+                                                    <td>
+                                                        <div class="hh-action-row" style="justify-content:flex-start; gap:8px;">
+                                                            <a href="/update_booking/<%= row.booking_id %>/Approved" class="hh-btn" style="min-height:40px; padding:0 14px;"><i class="bi bi-check-lg"></i> Approve</a>
+                                                            <a href="/update_booking/<%= row.booking_id %>/Rejected" class="hh-btn-danger" style="min-height:40px; padding:0 14px;"><i class="bi bi-x-lg"></i> Reject</a>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="5">
+                                                    <div class="hh-empty">
+                                                        <i class="bi bi-inbox"></i>
+                                                        <h4>No pending requests</h4>
+                                                        <p>No pending booking requests matched the current filter.</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div id="approvedPane" class="hh-tab-pane">
+                            <div class="hh-table-wrap">
+                                <table class="hh-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Student</th>
+                                            <th>Hostel / Room</th>
+                                            <th>Booking Date</th>
+                                            <th>Rent Amount</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <% const historyBookings = bookings.filter(b => b.status !== 'Pending'); %>
+                                        <% if (historyBookings.length > 0) { %>
+                                            <% historyBookings.forEach(row => { %>
+                                                <tr>
+                                                    <td><strong><%= row.student_name %></strong></td>
+                                                    <td>
+                                                        <strong style="display:block;"><%= row.hostel_name %></strong>
+                                                        <% if(row.room_name) { %>
+                                                            <span class="hh-status approved" style="margin-top:6px;"><%= row.room_name %></span>
+                                                        <% } %>
+                                                    </td>
+                                                    <td><%= new Date(row.created_at).toLocaleDateString() %></td>
+                                                    <td>Rs. <%= row.final_rent ? row.final_rent.toLocaleString() : 'N/A' %></td>
+                                                    <td>
+                                                        <% if(row.status === 'Approved') { %>
+                                                            <span class="hh-status approved">Active / Approved</span>
+                                                        <% } else { %>
+                                                            <span class="hh-status rejected">Rejected</span>
+                                                        <% } %>
+                                                    </td>
+                                                </tr>
+                                            <% }); %>
+                                        <% } else { %>
+                                            <tr>
+                                                <td colspan="5">
+                                                    <div class="hh-empty">
+                                                        <i class="bi bi-clock-history"></i>
+                                                        <h4>No booking history</h4>
+                                                        <p>No history records matched the current filter.</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        <% } %>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <section class="hh-card">
+                <div class="hh-card-head">
+                    <h3><i class="bi bi-house-door me-2"></i> My Properties</h3>
+                    <span class="hh-badge" style="background:#eef6ff; color:#1d4ed8; border-color:#dbeafe;">Portfolio</span>
+                </div>
+                <div class="hh-card-body">
+                    <% if (my_hostels.length > 0) { %>
+                        <div class="hh-properties-grid">
+                            <% my_hostels.forEach(h => { 
+                                let img = h.image ? '/uploads/' + h.image : 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100"%3E%3Crect fill="%23667eea" width="100" height="100"/%3E%3Ctext x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" font-size="40" fill="white" opacity="0.5"%3E📷%3C/text%3E%3C/svg%3E';
+                            %>
+                                <div class="hh-property-card">
+                                    <div class="hh-property-media">
+                                        <img src="<%= img %>" alt="<%= h.name %>">
+                                        <a href="/delete_hostel/<%= h._id %>" class="hh-delete-btn" onclick="return confirm('⚠️ Are you sure? \n\nThis will delete the Hostel, all Rooms, and all Bookings associated with it. This action cannot be undone.');" title="Delete Hostel">
+                                            <i class="bi bi-trash-fill"></i>
+                                        </a>
+                                    </div>
+
+                                    <div class="hh-property-body">
+                                        <h4><%= h.name %></h4>
+                                        <p><i class="bi bi-geo-alt me-1"></i><%= h.area %></p>
+
+                                        <div class="hh-property-actions">
+                                            <a href="/add_room/<%= h._id %>" class="hh-btn-outline"><i class="bi bi-door-open"></i> Manage Rooms</a>
+                                            <a href="/edit_hostel/<%= h._id %>" class="hh-btn-dark">Edit Details</a>
+                                            <div class="hh-property-actions-row">
+                                                <a href="/manage_mess/<%= h._id %>" class="hh-btn-light"><i class="bi bi-egg-fried"></i> Edit Menu</a>
+                                                <a href="/manage_hostel/<%= h._id %>" class="hh-btn-light" style="color:#dc2626;"><i class="bi bi-megaphone"></i> Alert</a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="hh-empty">
+                            <i class="bi bi-building-add"></i>
+                            <h4>No hostels listed yet</h4>
+                            <p>You have not listed any hostels yet. Add your first property to start receiving bookings.</p>
+                            <div style="margin-top:16px;">
+                                <a href="/add_hostel" class="hh-btn" style="width:auto; min-width:200px;"><i class="bi bi-plus-lg"></i> List Your First Hostel</a>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const monthsData = <%- JSON.stringify(locals.months || []) %>;
+    const countsData = <%- JSON.stringify(locals.counts || []) %>;
+    const initialStatusFilter = <%- JSON.stringify((query && query.status) ? query.status : '') %>;
+
+    if (document.getElementById('bookingChart')) {
+        const ctx = document.getElementById('bookingChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: monthsData.length ? monthsData : ['No Data'],
+                datasets: [{
+                    label: 'Bookings',
+                    data: countsData.length ? countsData : [0],
+                    borderColor: '#0ea5e9',
+                    backgroundColor: 'rgba(14, 165, 233, 0.12)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        labels: {
+                            boxWidth: 12,
+                            usePointStyle: true
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            precision: 0
+                        },
+                        grid: {
+                            color: 'rgba(148, 163, 184, 0.15)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    const tabButtons = document.querySelectorAll('.hh-tab-btn');
+    const tabPanes = document.querySelectorAll('.hh-tab-pane');
+
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.dataset.tab;
+            tabButtons.forEach(b => b.classList.remove('active'));
+            tabPanes.forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(target).classList.add('active');
+        });
+    });
+
+    if (initialStatusFilter === 'Approved' || initialStatusFilter === 'Rejected') {
+        const approvedBtn = document.querySelector('.hh-tab-btn[data-tab="approvedPane"]');
+        const approvedPane = document.getElementById('approvedPane');
+        if (approvedBtn && approvedPane) {
+            tabButtons.forEach(b => b.classList.remove('active'));
+            tabPanes.forEach(p => p.classList.remove('active'));
+            approvedBtn.classList.add('active');
+            approvedPane.classList.add('active');
+        }
+    }
+</script>
+
+<%- include('partials/footer') %>

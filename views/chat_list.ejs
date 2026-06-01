@@ -1,0 +1,584 @@
+<%- include('partials/header') %>
+
+<style>
+    :root {
+        --hh-bg: #071120;
+        --hh-bg-soft: #0b1730;
+        --hh-white: #ffffff;
+        --hh-text: #0f172a;
+        --hh-text-soft: #64748b;
+        --hh-line: rgba(255, 255, 255, 0.12);
+        --hh-primary: #0ea5e9;
+        --hh-secondary: #7c3aed;
+        --hh-accent: #14b8a6;
+        --hh-shadow: 0 24px 60px rgba(2, 8, 23, 0.25);
+    }
+
+    body {
+        background: #f8fafc;
+        font-family: 'Outfit', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .hh-chatlist-page {
+        background:
+            radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 26%),
+            radial-gradient(circle at top right, rgba(124, 58, 237, 0.16), transparent 24%),
+            linear-gradient(180deg, #071120 0%, #0b1730 26%, #f8fafc 26%, #f8fafc 100%);
+        min-height: 100vh;
+        padding: 108px 0 72px;
+    }
+
+    .hh-shell {
+        width: min(1320px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    .hh-layout {
+        display: grid;
+        grid-template-columns: 340px minmax(0, 1fr);
+        gap: 28px;
+        align-items: start;
+    }
+
+    .hh-side-panel,
+    .hh-main-panel {
+        border-radius: 34px;
+        overflow: hidden;
+        box-shadow: var(--hh-shadow);
+    }
+
+    .hh-side-panel {
+        background: linear-gradient(180deg, #0c172c 0%, #101d3a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #ffffff;
+        position: sticky;
+        top: 110px;
+    }
+
+    .hh-side-body {
+        padding: 28px;
+    }
+
+    .hh-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: #dbeafe;
+        font-size: 0.8rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        backdrop-filter: blur(14px);
+    }
+
+    .hh-side-body h1 {
+        margin: 18px 0 14px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2rem, 4vw, 3rem);
+        line-height: 1.02;
+        letter-spacing: -0.05em;
+        color: #ffffff;
+    }
+
+    .hh-side-body h1 .accent {
+        background: linear-gradient(90deg, #8be7ff 0%, #39bdf8 42%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hh-side-body p {
+        margin: 0 0 22px;
+        color: #c8d6f0;
+        font-size: 0.98rem;
+        line-height: 1.85;
+    }
+
+    .hh-point-list {
+        display: grid;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .hh-point {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 14px 16px;
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        color: #dbeafe;
+        font-weight: 600;
+    }
+
+    .hh-point i {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        display: grid;
+        place-items: center;
+        background: rgba(255, 255, 255, 0.08);
+        color: #7dd3fc;
+    }
+
+    .hh-side-link {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        width: 100%;
+        height: 50px;
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 700;
+        transition: all 0.25s ease;
+    }
+
+    .hh-side-link:hover {
+        color: #ffffff;
+        transform: translateY(-2px);
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .hh-main-panel {
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        min-height: 760px;
+    }
+
+    .hh-main-top {
+        padding: 26px 26px 20px;
+        border-bottom: 1px solid #edf2f7;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    }
+
+    .hh-main-title-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+    }
+
+    .hh-main-title h2 {
+        margin: 0 0 8px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        line-height: 1.08;
+        letter-spacing: -0.04em;
+        color: #0f172a;
+    }
+
+    .hh-main-title p {
+        margin: 0;
+        color: #64748b;
+        line-height: 1.8;
+        font-size: 0.96rem;
+    }
+
+    .hh-chat-count {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-weight: 800;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    .hh-stats-row {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 20px;
+    }
+
+    .hh-stat-box {
+        padding: 18px;
+        border-radius: 22px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        box-shadow: 0 12px 26px rgba(15, 23, 42, 0.04);
+    }
+
+    .hh-stat-box strong {
+        display: block;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.5rem;
+        line-height: 1;
+        color: #0f172a;
+        margin-bottom: 8px;
+    }
+
+    .hh-stat-box span {
+        color: #64748b;
+        font-size: 0.88rem;
+        font-weight: 600;
+    }
+
+    .hh-chat-list {
+        padding: 20px;
+    }
+
+    .hh-chat-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 18px;
+        border-radius: 24px;
+        border: 1px solid #e6eef8;
+        background: #ffffff;
+        box-shadow: 0 12px 26px rgba(15, 23, 42, 0.04);
+        text-decoration: none;
+        transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+    }
+
+    .hh-chat-item + .hh-chat-item {
+        margin-top: 14px;
+    }
+
+    .hh-chat-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 34px rgba(15, 23, 42, 0.08);
+        border-color: #cfe0fb;
+    }
+
+    .hh-avatar {
+        width: 62px;
+        height: 62px;
+        min-width: 62px;
+        border-radius: 999px;
+        overflow: hidden;
+        border: 2px solid #dbeafe;
+        background: #eff6ff;
+        display: grid;
+        place-items: center;
+        color: #0f172a;
+        font-family: 'Space Grotesk', sans-serif;
+        font-weight: 800;
+        font-size: 1.05rem;
+    }
+
+    .hh-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .hh-chat-info {
+        min-width: 0;
+        flex: 1;
+    }
+
+    .hh-chat-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        flex-wrap: wrap;
+    }
+
+    .hh-chat-name {
+        margin: 0;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.1rem;
+        line-height: 1.2;
+        color: #0f172a;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .hh-chat-role {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #334155;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .hh-chat-status {
+        margin: 0;
+        color: #64748b;
+        font-size: 0.92rem;
+        line-height: 1.7;
+    }
+
+    .hh-chat-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+
+    .hh-chat-meta span {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: #eff6ff;
+        color: #1d4ed8;
+        font-size: 0.8rem;
+        font-weight: 700;
+    }
+
+    .hh-chat-arrow {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+        border-radius: 14px;
+        display: grid;
+        place-items: center;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        font-size: 1.05rem;
+        transition: all 0.25s ease;
+    }
+
+    .hh-chat-item:hover .hh-chat-arrow {
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+        color: #ffffff;
+        border-color: transparent;
+        transform: translateX(2px);
+    }
+
+    .hh-empty-state {
+        padding: 70px 24px;
+        text-align: center;
+        color: #64748b;
+    }
+
+    .hh-empty-icon {
+        width: 88px;
+        height: 88px;
+        margin: 0 auto 18px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(124, 58, 237, 0.08) 100%);
+        color: #0f172a;
+        font-size: 2rem;
+    }
+
+    .hh-empty-state h3 {
+        margin: 0 0 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.45rem;
+        color: #0f172a;
+    }
+
+    .hh-empty-state p {
+        margin: 0 0 20px;
+        line-height: 1.8;
+    }
+
+    .hh-empty-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-width: 180px;
+        height: 52px;
+        padding: 0 24px;
+        border-radius: 999px;
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: 800;
+        box-shadow: 0 16px 30px rgba(14, 165, 233, 0.16);
+        transition: all 0.25s ease;
+    }
+
+    .hh-empty-btn:hover {
+        color: #ffffff;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 1199px) {
+        .hh-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-side-panel {
+            position: static;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .hh-chatlist-page {
+            padding: 92px 0 54px;
+        }
+
+        .hh-shell {
+            width: min(100% - 20px, 1320px);
+        }
+
+        .hh-main-top,
+        .hh-chat-list,
+        .hh-side-body {
+            padding: 18px;
+        }
+
+        .hh-stats-row {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-chat-item {
+            padding: 14px;
+            gap: 12px;
+        }
+
+        .hh-avatar {
+            width: 56px;
+            height: 56px;
+            min-width: 56px;
+        }
+    }
+
+    @media (max-width: 575px) {
+        .hh-side-body h1 {
+            font-size: 2.2rem;
+        }
+
+        .hh-chat-header {
+            align-items: flex-start;
+        }
+
+        .hh-chat-name {
+            font-size: 1rem;
+        }
+
+        .hh-chat-role {
+            font-size: 0.72rem;
+            padding: 7px 10px;
+        }
+
+        .hh-chat-status {
+            font-size: 0.88rem;
+        }
+
+        .hh-chat-meta {
+            gap: 8px;
+        }
+
+        .hh-chat-meta span {
+            font-size: 0.76rem;
+            padding: 7px 10px;
+        }
+    }
+</style>
+
+<div class="hh-chatlist-page">
+    <div class="hh-shell">
+        <div class="hh-layout">
+            <aside class="hh-side-panel">
+                <div class="hh-side-body">
+                    <span class="hh-badge"><i class="bi bi-chat-left-text"></i> inbox</span>
+                    <h1>Your <span class="accent">messages</span></h1>
+                    <p>This redesign keeps your existing chat list logic, then presents conversations in a cleaner and more premium layout that matches the rest of the HostelHub design system.</p>
+
+                    <div class="hh-point-list">
+                        <div class="hh-point"><i class="bi bi-people-fill"></i> Better contact presentation</div>
+                        <div class="hh-point"><i class="bi bi-lightning-charge-fill"></i> Faster access to active chats</div>
+                        <div class="hh-point"><i class="bi bi-shield-check"></i> Consistent premium interface</div>
+                    </div>
+
+                    <a href="/" class="hh-side-link"><i class="bi bi-arrow-left"></i> Back to home</a>
+                </div>
+            </aside>
+
+            <section class="hh-main-panel">
+                <div class="hh-main-top">
+                    <div class="hh-main-title-row">
+                        <div class="hh-main-title">
+                            <h2>Conversation list</h2>
+                            <p>Open any conversation to continue messaging with students, owners, or other connected users.</p>
+                        </div>
+                        <div class="hh-chat-count"><i class="bi bi-chat-dots-fill"></i> <%= chats.length %> chats</div>
+                    </div>
+
+                    <div class="hh-stats-row">
+                        <div class="hh-stat-box">
+                            <strong><%= chats.length %></strong>
+                            <span>Total conversations</span>
+                        </div>
+                        <div class="hh-stat-box">
+                            <strong><%= chats.filter(chat => (chat.role || '').toLowerCase() === 'owner').length %></strong>
+                            <span>Owner chats</span>
+                        </div>
+                        <div class="hh-stat-box">
+                            <strong><%= chats.filter(chat => (chat.role || '').toLowerCase() !== 'owner').length %></strong>
+                            <span>Other contacts</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hh-chat-list">
+                    <% if (chats.length > 0) { %>
+                        <% chats.forEach(chat => { %>
+                            <a href="/chat/<%= chat.id %>" class="hh-chat-item">
+                                <div class="hh-avatar">
+                                    <% if(chat.profile_pic) { %>
+                                        <img src="/uploads/<%= chat.profile_pic %>" alt="<%= chat.name %>">
+                                    <% } else { %>
+                                        <span><%= (chat.name || 'U').charAt(0).toUpperCase() %></span>
+                                    <% } %>
+                                </div>
+
+                                <div class="hh-chat-info">
+                                    <div class="hh-chat-header">
+                                        <h3 class="hh-chat-name"><%= chat.name %></h3>
+                                        <span class="hh-chat-role"><i class="bi bi-person-badge"></i> <%= chat.role.toUpperCase() %></span>
+                                    </div>
+                                    <p class="hh-chat-status">Click to open chat and continue the conversation.</p>
+                                    <div class="hh-chat-meta">
+                                        <span><i class="bi bi-chat-square-text"></i> Direct message</span>
+                                        <span><i class="bi bi-arrow-up-right"></i> Open thread</span>
+                                    </div>
+                                </div>
+
+                                <div class="hh-chat-arrow">
+                                    <i class="bi bi-chevron-right"></i>
+                                </div>
+                            </a>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="hh-empty-state">
+                            <div class="hh-empty-icon"><i class="bi bi-chat-square-text"></i></div>
+                            <h3>No conversations yet</h3>
+                            <p>Once you start chatting with users on HostelHub, your active conversations will appear here in this redesigned inbox.</p>
+                            <a href="/" class="hh-empty-btn"><i class="bi bi-house-door"></i> Browse platform</a>
+                        </div>
+                    <% } %>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

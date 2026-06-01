@@ -1,0 +1,953 @@
+<%- include('partials/header') %>
+
+<style>
+    :root {
+        --hh-bg: #071120;
+        --hh-bg-soft: #0b1730;
+        --hh-white: #ffffff;
+        --hh-text: #0f172a;
+        --hh-text-soft: #64748b;
+        --hh-line: rgba(255, 255, 255, 0.12);
+        --hh-primary: #0ea5e9;
+        --hh-secondary: #7c3aed;
+        --hh-accent: #14b8a6;
+        --hh-gold: #fbbf24;
+        --hh-success: #10b981;
+        --hh-danger: #ef4444;
+        --hh-warning: #f59e0b;
+        --hh-shadow: 0 24px 60px rgba(2, 8, 23, 0.16);
+    }
+
+    body {
+        background: #f8fafc;
+        font-family: 'Outfit', sans-serif;
+        overflow-x: hidden;
+    }
+
+    .hh-bookings-page {
+        background:
+            radial-gradient(circle at top left, rgba(14, 165, 233, 0.16), transparent 26%),
+            radial-gradient(circle at top right, rgba(124, 58, 237, 0.16), transparent 24%),
+            linear-gradient(180deg, #071120 0%, #0b1730 22%, #f8fafc 22%, #f8fafc 100%);
+        min-height: 100vh;
+        padding: 108px 0 72px;
+    }
+
+    .hh-shell {
+        width: min(1320px, calc(100% - 32px));
+        margin: 0 auto;
+    }
+
+    .hh-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 16px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        color: #dbeafe;
+        font-size: 0.82rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        backdrop-filter: blur(14px);
+    }
+
+    .hh-btn,
+    .hh-btn-outline,
+    .hh-btn-dark,
+    .hh-btn-danger,
+    .hh-btn-warning,
+    .hh-btn-success {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 0 18px;
+        border-radius: 16px;
+        font-weight: 800;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        border: 0;
+        cursor: pointer;
+    }
+
+    .hh-btn {
+        background: linear-gradient(135deg, var(--hh-primary) 0%, var(--hh-secondary) 100%);
+        color: #ffffff;
+        box-shadow: 0 16px 32px rgba(14, 165, 233, 0.18);
+    }
+
+    .hh-btn:hover {
+        transform: translateY(-2px);
+        color: #ffffff;
+        box-shadow: 0 22px 38px rgba(14, 165, 233, 0.22);
+    }
+
+    .hh-btn-outline {
+        background: #ffffff;
+        border: 1px solid #dbe4f0;
+        color: #0f172a;
+    }
+
+    .hh-btn-dark {
+        background: #0f172a;
+        color: #ffffff;
+    }
+
+    .hh-btn-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: #ffffff;
+    }
+
+    .hh-btn-warning {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        color: #111827;
+    }
+
+    .hh-btn-success {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+    }
+
+    .hh-btn-outline:hover,
+    .hh-btn-dark:hover,
+    .hh-btn-danger:hover,
+    .hh-btn-warning:hover,
+    .hh-btn-success:hover {
+        transform: translateY(-2px);
+    }
+
+    .hh-hero {
+        position: relative;
+        border-radius: 36px;
+        overflow: hidden;
+        background: linear-gradient(180deg, #0c172c 0%, #101d3a 100%);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 24px 60px rgba(2, 8, 23, 0.2);
+        color: #ffffff;
+        padding: 34px;
+        margin-bottom: 24px;
+    }
+
+    .hh-hero::before {
+        content: '';
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        right: -80px;
+        top: -90px;
+        border-radius: 999px;
+        background: rgba(14, 165, 233, 0.14);
+        filter: blur(36px);
+        pointer-events: none;
+    }
+
+    .hh-hero-top {
+        position: relative;
+        z-index: 1;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        flex-wrap: wrap;
+    }
+
+    .hh-hero-copy h1 {
+        margin: 18px 0 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: clamp(2.2rem, 5vw, 3.8rem);
+        line-height: 1.02;
+        letter-spacing: -0.05em;
+        color: #ffffff;
+    }
+
+    .hh-hero-copy h1 .accent {
+        background: linear-gradient(90deg, #8be7ff 0%, #39bdf8 42%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hh-hero-copy p {
+        margin: 0;
+        color: #c8d6f0;
+        line-height: 1.85;
+        max-width: 760px;
+        font-size: 1rem;
+    }
+
+    .hh-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-top: 26px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .hh-stat {
+        padding: 18px;
+        border-radius: 22px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(14px);
+    }
+
+    .hh-stat strong {
+        display: block;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.6rem;
+        line-height: 1;
+        color: #ffffff;
+        margin-bottom: 7px;
+    }
+
+    .hh-stat span {
+        color: #c8d6f0;
+        font-size: 0.88rem;
+    }
+
+    .hh-card {
+        border-radius: 30px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        box-shadow: var(--hh-shadow);
+        overflow: hidden;
+    }
+
+    .hh-card-head {
+        padding: 22px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        flex-wrap: wrap;
+        border-bottom: 1px solid #edf2f7;
+        background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+    }
+
+    .hh-card-head h3 {
+        margin: 0;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.3rem;
+        color: #0f172a;
+    }
+
+    .hh-card-body {
+        padding: 24px;
+    }
+
+    .hh-tabs {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .hh-tab-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        min-height: 48px;
+        padding: 0 18px;
+        border-radius: 999px;
+        border: 1px solid #dbe4f0;
+        background: #ffffff;
+        color: #0f172a;
+        font-weight: 800;
+        transition: all 0.25s ease;
+    }
+
+    .hh-tab-btn.active {
+        background: #0f172a;
+        color: #ffffff;
+        border-color: #0f172a;
+        box-shadow: 0 12px 24px rgba(2, 8, 23, 0.16);
+    }
+
+    .hh-tab-pane {
+        display: none;
+    }
+
+    .hh-tab-pane.active {
+        display: block;
+    }
+
+    .hh-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .hh-booking-card {
+        border-radius: 24px;
+        background: #ffffff;
+        border: 1px solid #e6eef8;
+        box-shadow: 0 12px 26px rgba(2, 8, 23, 0.06);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+
+    .hh-booking-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 20px 36px rgba(124, 58, 237, 0.12);
+    }
+
+    .hh-status-bar {
+        height: 5px;
+        width: 100%;
+    }
+
+    .status-approved { background: #10b981; }
+    .status-pending { background: #f59e0b; }
+    .status-rejected { background: #ef4444; }
+
+    .hh-booking-body {
+        padding: 20px;
+    }
+
+    .hh-booking-top {
+        display: flex;
+        align-items: flex-start;
+        gap: 14px;
+    }
+
+    .hh-booking-media {
+        width: 88px;
+        height: 88px;
+        border-radius: 20px;
+        overflow: hidden;
+        flex-shrink: 0;
+        background: #e5e7eb;
+        box-shadow: 0 10px 22px rgba(2, 8, 23, 0.08);
+    }
+
+    .hh-booking-media img,
+    .hh-booking-media .placeholder-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+    .hh-booking-main {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .hh-booking-main h4 {
+        margin: 0 0 8px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.08rem;
+        color: #0f172a;
+        line-height: 1.3;
+    }
+
+    .hh-booking-main p {
+        margin: 0 0 8px;
+        color: #64748b;
+        font-size: 0.9rem;
+        line-height: 1.7;
+    }
+
+    .hh-price {
+        color: #047857;
+        font-weight: 800;
+        font-size: 1rem;
+    }
+
+    .hh-price small {
+        color: #64748b;
+        font-weight: 600;
+    }
+
+    .hh-status {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 7px 12px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 800;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .hh-status.approved {
+        background: rgba(16, 185, 129, 0.12);
+        color: #047857;
+    }
+
+    .hh-status.pending {
+        background: rgba(245, 158, 11, 0.14);
+        color: #b45309;
+    }
+
+    .hh-status.rejected {
+        background: rgba(239, 68, 68, 0.12);
+        color: #b91c1c;
+    }
+
+    .hh-divider {
+        height: 1px;
+        background: #edf2f7;
+        margin: 16px 0;
+    }
+
+    .hh-action-group {
+        background: #f8fafc;
+        padding: 12px;
+        border-radius: 18px;
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .hh-ticket-list {
+        display: grid;
+        gap: 14px;
+        max-width: 920px;
+        margin: 0 auto;
+    }
+
+    .hh-ticket-card {
+        border-left: 4px solid #ddd;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 0 18px 18px 0;
+        box-shadow: 0 8px 20px rgba(2, 8, 23, 0.04);
+        border-top: 1px solid #e6eef8;
+        border-right: 1px solid #e6eef8;
+        border-bottom: 1px solid #e6eef8;
+    }
+
+    .hh-ticket-card.resolved { border-left-color: #10b981; }
+    .hh-ticket-card.pending { border-left-color: #ef4444; }
+
+    .hh-ticket-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .hh-ticket-top h4 {
+        margin: 0 0 8px;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1rem;
+        color: #0f172a;
+    }
+
+    .hh-ticket-top p {
+        margin: 0 0 10px;
+        color: #64748b;
+        line-height: 1.75;
+        font-size: 0.9rem;
+    }
+
+    .hh-ticket-date {
+        color: #64748b;
+        font-size: 0.82rem;
+    }
+
+    .hh-empty {
+        padding: 70px 24px;
+        text-align: center;
+        color: #64748b;
+    }
+
+    .hh-empty i {
+        width: 88px;
+        height: 88px;
+        margin: 0 auto 18px;
+        border-radius: 999px;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg, rgba(14, 165, 233, 0.1) 0%, rgba(124, 58, 237, 0.08) 100%);
+        color: #0f172a;
+        font-size: 2rem;
+    }
+
+    .hh-empty h3,
+    .hh-empty h4 {
+        margin: 0 0 10px;
+        font-family: 'Space Grotesk', sans-serif;
+        color: #0f172a;
+    }
+
+    .hh-empty p {
+        margin: 0 0 20px;
+        line-height: 1.8;
+    }
+
+    .hh-modal .modal-content {
+        border: 0;
+        border-radius: 28px;
+        overflow: hidden;
+        box-shadow: 0 28px 60px rgba(2, 8, 23, 0.2);
+    }
+
+    .hh-modal .modal-header {
+        border-bottom: 0;
+        padding: 18px 20px;
+    }
+
+    .hh-modal .modal-body {
+        padding: 22px 20px;
+    }
+
+    .hh-modal .modal-footer {
+        border-top: 0;
+        padding: 0 20px 20px;
+    }
+
+    .hh-modal-danger {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: #ffffff;
+    }
+
+    .hh-modal-dark {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: #ffffff;
+    }
+
+    .hh-choice-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .hh-choice-label {
+        border-radius: 999px;
+        padding: 8px 14px;
+        border: 1px solid #dbe4f0;
+        background: #ffffff;
+        color: #0f172a;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.25s ease;
+    }
+
+    .btn-check:checked + .hh-choice-label {
+        background: #0f172a;
+        color: #ffffff;
+        border-color: #0f172a;
+    }
+
+    .hh-field label {
+        display: block;
+        margin-bottom: 8px;
+        color: #64748b;
+        font-size: 0.8rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+    }
+
+    .hh-field textarea,
+    .hh-field input {
+        width: 100%;
+        border: 1px solid #dbe4f0;
+        border-radius: 16px;
+        background: #ffffff;
+        padding: 14px 16px;
+        outline: none;
+        color: #0f172a;
+        font-family: 'Outfit', sans-serif;
+        transition: all 0.25s ease;
+    }
+
+    .hh-field textarea:focus,
+    .hh-field input:focus {
+        border-color: #7dd3fc;
+        box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.08);
+    }
+
+    .hh-payment-box {
+        background: #f8fafc;
+        border: 1px dashed #cbd5e1;
+        border-radius: 18px;
+        padding: 16px;
+        text-align: center;
+    }
+
+    .hh-payment-method {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 12px;
+        border-radius: 14px;
+        border: 1px solid #e2e8f0;
+        background: #ffffff;
+        color: #0f172a;
+        text-align: left;
+    }
+
+    .hh-payment-method + .hh-payment-method {
+        margin-top: 10px;
+    }
+
+    .hh-payment-method.jc { border-left: 4px solid #ef4444; }
+    .hh-payment-method.ep { border-left: 4px solid #10b981; }
+    .hh-payment-method.bank { border-left: 4px solid #2563eb; }
+
+    .hh-payment-method strong,
+    .hh-payment-method span {
+        color: #0f172a;
+    }
+
+    @media (max-width: 1199px) {
+        .hh-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .hh-bookings-page {
+            padding: 92px 0 54px;
+        }
+
+        .hh-shell {
+            width: min(100% - 20px, 1320px);
+        }
+
+        .hh-hero,
+        .hh-card-head,
+        .hh-card-body,
+        .hh-booking-body,
+        .hh-ticket-card {
+            padding-left: 18px;
+            padding-right: 18px;
+        }
+
+        .hh-hero,
+        .hh-card-head,
+        .hh-card-body,
+        .hh-booking-body,
+        .hh-ticket-card {
+            padding-top: 18px;
+            padding-bottom: 18px;
+        }
+
+        .hh-stats-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .hh-tabs,
+        .hh-action-group {
+            flex-direction: column;
+        }
+
+        .hh-booking-top,
+        .hh-ticket-top,
+        .hh-hero-top {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .hh-btn,
+        .hh-btn-outline,
+        .hh-btn-dark,
+        .hh-btn-danger,
+        .hh-btn-warning,
+        .hh-btn-success {
+            width: 100%;
+        }
+    }
+</style>
+
+<div class="hh-bookings-page">
+    <div class="hh-shell">
+        <section class="hh-hero">
+            <div class="hh-hero-top">
+                <div class="hh-hero-copy">
+                    <span class="hh-badge"><i class="bi bi-calendar-check"></i> booking center</span>
+                    <h1>My <span class="accent">bookings</span></h1>
+                    <p>Manage your stays, upload payment proof, view receipts, and track support issues from one cleaner premium page that matches the rest of the HostelHub system.</p>
+                </div>
+
+                <div class="hh-tabs" id="hhTabs">
+                    <button class="hh-tab-btn active" data-tab="pills-bookings"><i class="bi bi-calendar-check"></i> Bookings</button>
+                    <button class="hh-tab-btn" data-tab="pills-issues"><i class="bi bi-tools"></i> Support</button>
+                </div>
+            </div>
+
+            <div class="hh-stats-grid">
+                <div class="hh-stat">
+                    <strong><%= bookings.length %></strong>
+                    <span>Total bookings</span>
+                </div>
+                <div class="hh-stat">
+                    <strong><%= bookings.filter(row => row.status === 'Approved').length %></strong>
+                    <span>Approved stays</span>
+                </div>
+                <div class="hh-stat">
+                    <strong><%= typeof complaints !== 'undefined' ? complaints.length : 0 %></strong>
+                    <span>Support tickets</span>
+                </div>
+            </div>
+        </section>
+
+        <% if (msg) { %>
+            <% const msgMap = {
+                complaint_sent: 'Complaint submitted successfully.',
+                complaint_error: 'Could not submit complaint. Please try again.',
+                rent_proof_uploaded: 'Payment proof uploaded successfully.',
+                rent_upload_error: 'Could not upload payment proof. Please try again.',
+                cancelled: 'Booking cancelled successfully.',
+                cancel_error: 'Could not cancel booking. Please try again.'
+            }; %>
+            <% const isErrorMsg = ['complaint_error', 'rent_upload_error', 'cancel_error'].includes(msg); %>
+            <div class="alert <%= isErrorMsg ? 'alert-danger' : 'alert-success' %> rounded-4 border-0 shadow-sm mb-4" role="alert">
+                <%= msgMap[msg] || msg %>
+            </div>
+        <% } %>
+
+        <section class="hh-card">
+            <div class="hh-card-head">
+                <h3><i class="bi bi-grid me-2"></i> Stay and Support Management</h3>
+                <span class="hh-badge" style="background:#eef6ff; color:#1d4ed8; border-color:#dbeafe;">Live actions</span>
+            </div>
+
+            <div class="hh-card-body">
+                <div id="pills-bookings" class="hh-tab-pane active">
+                    <% if(bookings.length > 0) { %>
+                        <div class="hh-grid">
+                            <% bookings.forEach(row => { 
+                                let statusColor = row.status === 'Approved' ? 'status-approved' : (row.status === 'Pending' ? 'status-pending' : 'status-rejected');
+                                let badgeClass = row.status === 'Approved' ? 'approved' : (row.status === 'Pending' ? 'pending' : 'rejected');
+                            %>
+                            <div class="hh-booking-card">
+                                <div class="hh-status-bar <%= statusColor %>"></div>
+                                <div class="hh-booking-body">
+                                    <div class="hh-booking-top">
+                                        <div class="hh-booking-media">
+                                            <% if(row.image) { %>
+                                                <img src="/uploads/<%= row.image %>" alt="<%= row.name %>">
+                                            <% } else { %>
+                                                <div class="placeholder-img placeholder-hostel" style="width:100%;height:100%;"></div>
+                                            <% } %>
+                                        </div>
+
+                                        <div class="hh-booking-main">
+                                            <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start; flex-wrap:wrap; margin-bottom:8px;">
+                                                <h4><%= row.name %></h4>
+                                                <span class="hh-status <%= badgeClass %>"><%= row.status %></span>
+                                            </div>
+
+                                            <p><i class="bi bi-geo-alt-fill text-warning me-1"></i> <%= row.area %></p>
+                                            <div class="hh-price">Rs. <%= row.price.toLocaleString() %> <small>/month</small></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="hh-divider"></div>
+
+                                    <div class="hh-action-group">
+                                        <button class="hh-btn-outline" onclick="openComplaint('<%= row.hostel_id %>')">
+                                            <i class="bi bi-exclamation-circle-fill"></i> Report
+                                        </button>
+
+                                        <% if (row.status === 'Approved') { %>
+                                            <% if (row.payment_proof) { %>
+                                                <div class="hh-btn-success" style="pointer-events:none;"><i class="bi bi-check-circle-fill"></i> Paid</div>
+                                                <a href="/receipt/<%= row.id %>" target="_blank" class="hh-btn-dark">
+                                                    <i class="bi bi-receipt"></i> Receipt
+                                                </a>
+                                            <% } else { %>
+                                                <button type="button" class="hh-btn-warning"
+                                                        data-id="<%= row.id %>"
+                                                        data-jcname="<%= row.jazzcash_name || '' %>"
+                                                        data-jcno="<%= row.jazzcash_no || '' %>"
+                                                        data-epname="<%= row.easypaisa_name || '' %>"
+                                                        data-epno="<%= row.easypaisa_no || '' %>"
+                                                        data-bankname="<%= row.bank_name || '' %>"
+                                                        data-banktitle="<%= row.bank_acc_title || '' %>"
+                                                        data-bankiban="<%= row.bank_iban || '' %>"
+                                                        onclick="showPaymentModal(this)">
+                                                    <i class="bi bi-upload"></i> Pay Rent
+                                                </button>
+                                            <% } %>
+                                        <% } else { %>
+                                            <div class="hh-btn-outline" style="pointer-events:none;"><i class="bi bi-hourglass-split"></i> Awaiting Approval</div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="hh-empty">
+                            <i class="bi bi-journal-x"></i>
+                            <h3>No bookings found</h3>
+                            <p>You do not have any active or past bookings yet. Browse available hostels to get started.</p>
+                            <a href="/" class="hh-btn" style="width:auto; min-width:220px;">Browse Hostels</a>
+                        </div>
+                    <% } %>
+                </div>
+
+                <div id="pills-issues" class="hh-tab-pane">
+                    <% if (typeof complaints !== 'undefined' && complaints.length > 0) { %>
+                        <div class="hh-ticket-list">
+                            <% complaints.forEach(c => { 
+                                let ticketClass = c.status === 'Resolved' ? 'resolved' : 'pending';
+                                let statusIcon = c.status === 'Resolved' ? 'bi-check-circle-fill text-success' : 'bi-hourglass-split text-danger';
+                            %>
+                            <div class="hh-ticket-card <%= ticketClass %>">
+                                <div class="hh-ticket-top">
+                                    <div>
+                                        <h4><i class="bi bi-ticket-detailed me-2 text-muted"></i><%= c.issue_type %></h4>
+                                        <p><%= c.description %></p>
+                                        <div class="hh-ticket-date"><i class="bi bi-clock me-1"></i><%= new Date(c.created_at).toLocaleDateString() %></div>
+                                    </div>
+                                    <div style="text-align:right;">
+                                        <div style="font-size:1.4rem; margin-bottom:4px;"><i class="<%= statusIcon %>"></i></div>
+                                        <span class="hh-status <%= c.status === 'Resolved' ? 'approved' : 'rejected' %>"><%= c.status %></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <% }); %>
+                        </div>
+                    <% } else { %>
+                        <div class="hh-empty">
+                            <i class="bi bi-emoji-smile"></i>
+                            <h4>No issues reported</h4>
+                            <p>You have not reported any support issue yet. Everything looks good.</p>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div class="modal fade hh-modal" id="complaintModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <form action="/submit_complaint" method="POST" class="modal-content">
+            <div class="modal-header hh-modal-danger">
+                <h5 class="modal-title fw-bold"><i class="bi bi-tools me-2"></i> Report Issue</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" name="hostel_id" id="comp_hid">
+
+                <div class="hh-field" style="margin-bottom:16px;">
+                    <label>What’s wrong?</label>
+                    <div class="hh-choice-row">
+                        <input type="radio" class="btn-check" name="issue" id="i1" value="Electricity" checked>
+                        <label class="hh-choice-label" for="i1">Electricity</label>
+
+                        <input type="radio" class="btn-check" name="issue" id="i2" value="WiFi">
+                        <label class="hh-choice-label" for="i2">WiFi</label>
+
+                        <input type="radio" class="btn-check" name="issue" id="i3" value="Plumbing">
+                        <label class="hh-choice-label" for="i3">Water</label>
+
+                        <input type="radio" class="btn-check" name="issue" id="i4" value="Cleanliness">
+                        <label class="hh-choice-label" for="i4">Cleaning</label>
+                    </div>
+                </div>
+
+                <div class="hh-field">
+                    <label>Details</label>
+                    <textarea name="desc" rows="4" placeholder="Describe the issue..." required></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="hh-btn-danger w-100">Submit Report</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal fade hh-modal" id="paymentModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <form action="/upload_payment" method="POST" enctype="multipart/form-data" class="modal-content">
+            <div class="modal-header hh-modal-dark">
+                <h5 class="modal-title"><i class="bi bi-wallet2 me-2"></i> Make Payment</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="paymentDetailsBox" class="hh-payment-box mb-4">
+                    <p class="text-muted small mb-0">Loading payment details...</p>
+                </div>
+
+                <div class="hh-field">
+                    <label>Upload Receipt</label>
+                    <input type="hidden" name="booking_id" id="modal_booking_id">
+                    <input type="file" name="proof" required accept="image/*">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="hh-btn w-100">Confirm Payment</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const hhTabButtons = document.querySelectorAll('.hh-tab-btn');
+    const hhTabPanes = document.querySelectorAll('.hh-tab-pane');
+
+    hhTabButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const target = btn.dataset.tab;
+            hhTabButtons.forEach(b => b.classList.remove('active'));
+            hhTabPanes.forEach(p => p.classList.remove('active'));
+            btn.classList.add('active');
+            document.getElementById(target).classList.add('active');
+        });
+    });
+
+    function openComplaint(hostelId) {
+        document.getElementById('comp_hid').value = hostelId;
+        const myModal = new bootstrap.Modal(document.getElementById('complaintModal'));
+        myModal.show();
+    }
+
+    function showPaymentModal(btn) {
+        const id = btn.getAttribute('data-id');
+        const jcName = btn.getAttribute('data-jcname');
+        const jcNo = btn.getAttribute('data-jcno');
+        const epName = btn.getAttribute('data-epname');
+        const epNo = btn.getAttribute('data-epno');
+        const bankName = btn.getAttribute('data-bankname');
+        const bankTitle = btn.getAttribute('data-banktitle');
+        const bankIban = btn.getAttribute('data-bankiban');
+
+        let html = '<p class="small text-center mb-3 text-muted">Transfer rent to one of these accounts:</p>';
+        let hasMethod = false;
+
+        if (jcNo && jcNo !== 'null') {
+            html += `<div class="hh-payment-method jc"><i class="bi bi-phone fs-4"></i><div><strong>JazzCash</strong><br><span class="small">${jcNo} (${jcName})</span></div></div>`;
+            hasMethod = true;
+        }
+        if (epNo && epNo !== 'null') {
+            html += `<div class="hh-payment-method ep"><i class="bi bi-wallet2 fs-4"></i><div><strong>EasyPaisa</strong><br><span class="small">${epNo} (${epName})</span></div></div>`;
+            hasMethod = true;
+        }
+        if (bankIban && bankIban !== 'null') {
+            html += `<div class="hh-payment-method bank"><i class="bi bi-bank fs-4"></i><div><strong>${bankName}</strong><br><span class="small">${bankIban}<br>${bankTitle}</span></div></div>`;
+            hasMethod = true;
+        }
+
+        if (!hasMethod) {
+            html = '<div class="alert alert-warning text-center">Owner has not provided payment details.<br>Please chat with them directly.</div>';
+        }
+
+        document.getElementById('paymentDetailsBox').innerHTML = html;
+        document.getElementById('modal_booking_id').value = id;
+
+        const modal = new bootstrap.Modal(document.getElementById('paymentModal'));
+        modal.show();
+    }
+</script>
+
+<%- include('partials/footer') %>
+
+</body>
+</html>
