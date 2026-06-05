@@ -1,4 +1,4 @@
-# HostelHub - MVC Refactored
+# HostelHub - A web Based Hostel Management System.
 
 A modernized hostel management system built with Node.js, Express, and MongoDB following MVC architecture.
 
