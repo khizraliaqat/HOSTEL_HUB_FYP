@@ -621,6 +621,54 @@
             width: 100%;
         }
     }
+
+.hh-hostel-title {
+display: flex;
+align-items: center;
+gap: 8px;
+flex-wrap: wrap;
+}
+
+.hh-hostel-title h1,
+.hh-hostel-title h3,
+.hh-hostel-title h4 {
+margin: 0;
+}
+
+.hh-verified-badge {
+display: inline-flex;
+align-items: center;
+gap: 5px;
+padding: 5px 9px;
+border-radius: 999px;
+background: rgba(16, 185, 129, 0.12);
+border: 1px solid rgba(16, 185, 129, 0.25);
+color: #047857;
+font-size: 0.72rem;
+font-weight: 800;
+line-height: 1;
+white-space: nowrap;
+}
+
+.hh-verified-badge i {
+font-size: 0.8rem;
+}
+
+.hh-pending-badge {
+display: inline-flex;
+align-items: center;
+padding: 5px 9px;
+border-radius: 999px;
+background: rgba(245, 158, 11, 0.14);
+border: 1px solid rgba(245, 158, 11, 0.25);
+color: #b45309;
+font-size: 0.72rem;
+font-weight: 800;
+line-height: 1;
+white-space: nowrap;
+}
+
+
 </style>
 
 <div class="hh-owner-page">
@@ -956,7 +1004,24 @@
                                     </div>
 
                                     <div class="hh-property-body">
-                                        <h4><%= h.name %></h4>
+                                        <div class="hh-hostel-title">
+    <h4><%= h.name %></h4>
+
+```
+<% if (h.is_verified) { %>
+    <span class="hh-verified-badge">
+        <i class="bi bi-patch-check-fill"></i>
+        Verified
+    </span>
+<% } else { %>
+    <span class="hh-pending-badge">
+        Pending verification
+    </span>
+<% } %>
+```
+
+</div>
+
                                         <p><i class="bi bi-geo-alt me-1"></i><%= h.area %></p>
 
                                         <div class="hh-property-actions">

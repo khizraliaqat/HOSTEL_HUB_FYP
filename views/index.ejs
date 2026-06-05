@@ -1396,6 +1396,54 @@
             flex-wrap: wrap;
         }
     }
+
+.hh-hostel-title {
+display: flex;
+align-items: center;
+gap: 8px;
+flex-wrap: wrap;
+}
+
+.hh-hostel-title h1,
+.hh-hostel-title h3,
+.hh-hostel-title h4 {
+margin: 0;
+}
+
+.hh-verified-badge {
+display: inline-flex;
+align-items: center;
+gap: 5px;
+padding: 5px 9px;
+border-radius: 999px;
+background: rgba(16, 185, 129, 0.12);
+border: 1px solid rgba(16, 185, 129, 0.25);
+color: #047857;
+font-size: 0.72rem;
+font-weight: 800;
+line-height: 1;
+white-space: nowrap;
+}
+
+.hh-verified-badge i {
+font-size: 0.8rem;
+}
+
+.hh-pending-badge {
+display: inline-flex;
+align-items: center;
+padding: 5px 9px;
+border-radius: 999px;
+background: rgba(245, 158, 11, 0.14);
+border: 1px solid rgba(245, 158, 11, 0.25);
+color: #b45309;
+font-size: 0.72rem;
+font-weight: 800;
+line-height: 1;
+white-space: nowrap;
+}
+
+
 </style>
 
 <div class="hh-home">
@@ -1433,8 +1481,7 @@
                         <span onclick="applyQuickFilter({ price: '20000' })" style="cursor:pointer;">Budget friendly</span>
                         <span onclick="applyQuickFilter({ category: 'Girls' })" style="cursor:pointer;">Girls hostel</span>
                         <span onclick="applyQuickFilter({ category: 'Family' })" style="cursor:pointer;">Family flats</span>
-                        <span onclick="applyQuickFilter({ area: 'secure' })" style="cursor:pointer;">High security</span>
-                        <span onclick="applyQuickFilter({ area: 'university' })" style="cursor:pointer;">Near universities</span>
+                        <span onclick="applyQuickFilter({ category: 'Boys' })" style="cursor:pointer;">Boys hostel</span>
                     </div>
                 </div>
 
@@ -1451,7 +1498,7 @@
                         <small>Featured residence</small>
                         <h3>Executive Student Living</h3>
                         <div class="meta">
-                            <span><i class="bi bi-geo-alt"></i> Islamabad</span>
+                            <span><i class="bi bi-geo-alt"></i> Faisalabad</span>
                             <span><i class="bi bi-star-fill" style="color:#fbbf24;"></i> 4.9 rating</span>
                             <span class="hh-mini-pill"><i class="bi bi-shield-check"></i> Verified</span>
                         </div>
@@ -1484,7 +1531,7 @@
                     <a href="/?price=20000" class="<%= Number(query?.price || 0) === 20000 ? 'active' : '' %>">Budget friendly</a>
                     <a href="/?category=Girls" class="<%= query?.category === 'Girls' ? 'active' : '' %>">Girls hostel</a>
                     <a href="/?category=Family" class="<%= query?.category === 'Family' ? 'active' : '' %>">Family flats</a>
-                    <a href="/?area=secure" class="<%= (query?.area || '').toLowerCase() === 'secure' ? 'active' : '' %>">High security</a>
+                    
                 </div>
                 <a href="/" class="hh-outline-btn">View all <i class="bi bi-arrow-right ms-2"></i></a>
             </div>
@@ -1514,7 +1561,19 @@
                             <div class="hh-card-body">
                                 <div class="hh-card-title-row">
                                     <div>
-                                        <h3><%= hostel.name %></h3>
+                                        <div class="hh-hostel-title">
+    <h3><%= hostel.name %></h3>
+
+
+<% if (hostel.is_verified) { %>
+    <span class="hh-verified-badge">
+        <i class="bi bi-patch-check-fill"></i>
+        Verified
+    </span>
+<% } %>
+
+</div>
+
                                         <div class="hh-card-meta"><i class="bi bi-geo-alt"></i> <%= hostel.area || 'Pakistan' %></div>
                                     </div>
                                     <span class="hh-rating"><i class="bi bi-star-fill" style="color:#fbbf24;"></i> <%= (4.6 + ((index % 4) * 0.1)).toFixed(1) %></span>
@@ -1553,12 +1612,124 @@
                     </div>
                 <% } %>
             </div>
+
+            <% if (totalPages && totalPages > 1) { %>
+                <style>
+                    .hh-pagination {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        gap: 8px;
+                        margin-top: 48px;
+                    }
+
+                    .hh-pagination a,
+                    .hh-pagination span {
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        min-width: 42px;
+                        height: 42px;
+                        padding: 0 8px;
+                        border-radius: 12px;
+                        border: 1px solid #e2e8f0;
+                        background: #ffffff;
+                        color: #0f172a;
+                        text-decoration: none;
+                        font-weight: 600;
+                        font-size: 0.95rem;
+                        transition: all 0.22s ease;
+                    }
+
+                    .hh-pagination a:hover {
+                        transform: translateY(-1px);
+                        border-color: #0f172a;
+                        box-shadow: 0 8px 16px rgba(15, 23, 42, 0.08);
+                    }
+
+                    .hh-pagination .active {
+                        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+                        border-color: #0f172a;
+                        color: #ffffff;
+                    }
+
+                    .hh-pagination .disabled {
+                        opacity: 0.5;
+                        pointer-events: none;
+                        cursor: not-allowed;
+                    }
+
+                    .hh-pagination-info {
+                        text-align: center;
+                        color: #64748b;
+                        font-size: 0.95rem;
+                        margin-bottom: 16px;
+                    }
+                </style>
+
+                <div class="hh-pagination-info">
+                    Showing page <strong><%= currentPage %></strong> of <strong><%= totalPages %></strong>
+                </div>
+
+                <div class="hh-pagination">
+                    <% if (currentPage > 1) { %>
+                        <a href="/?page=<%= currentPage - 1 %><%= query?.category ? '&category=' + encodeURIComponent(query.category) : '' %><%= query?.price ? '&price=' + encodeURIComponent(query.price) : '' %><%= query?.area ? '&area=' + encodeURIComponent(query.area) : '' %>">
+                            <i class="bi bi-chevron-left"></i> Previous
+                        </a>
+                    <% } else { %>
+                        <span class="disabled">
+                            <i class="bi bi-chevron-left"></i> Previous
+                        </span>
+                    <% } %>
+
+                    <% 
+                        const pageRange = 5;
+                        let startPage = Math.max(1, currentPage - Math.floor(pageRange / 2));
+                        let endPage = Math.min(totalPages, startPage + pageRange - 1);
+                        if (endPage - startPage + 1 < pageRange) {
+                            startPage = Math.max(1, endPage - pageRange + 1);
+                        }
+                    %>
+
+                    <% if (startPage > 1) { %>
+                        <a href="/?page=1<%= query?.category ? '&category=' + encodeURIComponent(query.category) : '' %><%= query?.price ? '&price=' + encodeURIComponent(query.price) : '' %><%= query?.area ? '&area=' + encodeURIComponent(query.area) : '' %>">1</a>
+                        <% if (startPage > 2) { %>
+                            <span>...</span>
+                        <% } %>
+                    <% } %>
+
+                    <% for (let page = startPage; page <= endPage; page++) { %>
+                        <% if (page === currentPage) { %>
+                            <span class="active"><%= page %></span>
+                        <% } else { %>
+                            <a href="/?page=<%= page %><%= query?.category ? '&category=' + encodeURIComponent(query.category) : '' %><%= query?.price ? '&price=' + encodeURIComponent(query.price) : '' %><%= query?.area ? '&area=' + encodeURIComponent(query.area) : '' %>"><%= page %></a>
+                        <% } %>
+                    <% } %>
+
+                    <% if (endPage < totalPages) { %>
+                        <% if (endPage < totalPages - 1) { %>
+                            <span>...</span>
+                        <% } %>
+                        <a href="/?page=<%= totalPages %><%= query?.category ? '&category=' + encodeURIComponent(query.category) : '' %><%= query?.price ? '&price=' + encodeURIComponent(query.price) : '' %><%= query?.area ? '&area=' + encodeURIComponent(query.area) : '' %>"><%= totalPages %></a>
+                    <% } %>
+
+                    <% if (currentPage < totalPages) { %>
+                        <a href="/?page=<%= currentPage + 1 %><%= query?.category ? '&category=' + encodeURIComponent(query.category) : '' %><%= query?.price ? '&price=' + encodeURIComponent(query.price) : '' %><%= query?.area ? '&area=' + encodeURIComponent(query.area) : '' %>">
+                            Next <i class="bi bi-chevron-right"></i>
+                        </a>
+                    <% } else { %>
+                        <span class="disabled">
+                            Next <i class="bi bi-chevron-right"></i>
+                        </span>
+                    <% } %>
+                </div>
+            <% } %>
         </div>
     </section>
     
     
 
-    <section class="hh-section">
+   <section class="hh-section">
         <div class="hh-shell">
             <div class="hh-section-heading">
                 <h2>Explore top destinations</h2>
@@ -1566,37 +1737,41 @@
             </div>
 
             <div class="hh-destination-grid">
-                <div class="hh-destination-card large">
-                    <img src="https://images.unsplash.com/photo-1500534623283-312aade485b7?auto=format&fit=crop&w=1200&q=80" alt="Lahore">
-                    <div class="hh-destination-copy">
-                        <h3>Lahore</h3>
-                        <p>126 active stays</p>
-                    </div>
-                </div>
-                <div class="hh-destination-card tall">
-                    <img src="https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80" alt="Islamabad">
-                    <div class="hh-destination-copy">
-                        <h3>Islamabad</h3>
-                        <p>94 active stays</p>
-                    </div>
-                </div>
-                <div class="hh-destination-card">
-                    <img src="https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=1200&q=80" alt="Karachi">
-                    <div class="hh-destination-copy">
-                        <h3>Karachi</h3>
-                        <p>82 active stays</p>
-                    </div>
-                </div>
-                <div class="hh-destination-card large">
-                    <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80" alt="Skardu">
-                    <div class="hh-destination-copy">
-                        <h3>Skardu</h3>
-                        <p>47 active stays</p>
-                    </div>
-                </div>
-            </div>
+    <div class="hh-destination-card large">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRvwhsY8E81JZwBgqHgc0k7Log4nyc6vESS1Q&s" alt="Clock Tower Faisalabad">
+        <div class="hh-destination-copy">
+            <h3>Clock Tower Faisalabad</h3>
+            <p>126 active stays</p>
         </div>
+    </div>
+
+                <div class="hh-destination-card tall">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3iscXuXsAtZvccOhmlZ880m-K-p4J-IK7dg&s" alt="Madina Town">
+    <div class="hh-destination-copy">
+        <h3>Madina Town</h3>
+        <p>94 active stays</p>
+    </div>
+</div>
+
+<div class="hh-destination-card">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ3qZmJ3vGQM8Ms-ByQABWHH8B8MjXS6s8otQ&s" alt="D Ground">
+    <div class="hh-destination-copy">
+        <h3>D Ground</h3>
+        <p>82 active stays</p>
+    </div>
+</div>
+                <div class="hh-destination-card large">
+
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTB6lqDAbXK4mxXXpsNpcyvV-RnBiq44FGXdA&s" alt="Skardu">
+
+    <div class="hh-destination-copy">
+        <h3>Canal Road</h3>
+        <p>47 active stays</p>
+    </div>
+
+</div>
     </section>
+
 
 
 

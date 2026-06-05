@@ -3,20 +3,47 @@ const Hostel = require('../models/Hostel');
 const Booking = require('../models/Booking');
 const Message = require('../models/Message');
 
-// @desc    Admin dashboard
-// @route   GET /admin_dashboard
+const getHostelVerificationField = () => {
+    if (Hostel.schema.path('is_verified')) {
+        return 'is_verified';
+    }
+
+    if (Hostel.schema.path('isVerified')) {
+        return 'isVerified';
+    }
+
+    throw new Error('Hostel model must contain is_verified or isVerified');
+};
+
 exports.getAdminDashboard = async (req, res) => {
     try {
-        const [totalUsers, totalHostels, totalBookings, unreadMessages, hostels, users] = await Promise.all([
+        if (!req.session.user) {
+            return res.redirect('/login');
+        }
+
+        const adminId = req.session.user.id || req.session.user._id;
+        const verificationField = getHostelVerificationField();
+
+        const [
+            totalUsers,
+            totalHostels,
+            totalBookings,
+            unreadMessages,
+            hostels,
+            users
+        ] = await Promise.all([
             User.countDocuments(),
             Hostel.countDocuments({ is_active: true }),
             Booking.countDocuments(),
-            Message.countDocuments({ receiver: req.session.user.id, is_read: false }),
+            Message.countDocuments({
+                receiver: adminId,
+                is_read: false
+            }),
             Hostel.find({ is_active: true })
                 .populate('owner', 'name email')
                 .sort({ createdAt: -1 })
                 .lean(),
-            User.find({ _id: { $ne: req.session.user.id } })
+            User.find({ _id: { $ne: adminId } })
                 .select('name email role is_active')
                 .sort({ createdAt: -1 })
                 .lean()
@@ -24,11 +51,14 @@ exports.getAdminDashboard = async (req, res) => {
 
         const hostelRows = hostels.map((hostel) => ({
             ...hostel,
-            owner_name: hostel.owner?.name || 'Unknown owner',
-            is_verified: Boolean(hostel.is_verified)
+            owner_name:
+                hostel.owner && hostel.owner.name
+                    ? hostel.owner.name
+                    : 'Unknown owner',
+            is_verified: Boolean(hostel[verificationField])
         }));
 
-        res.render('admin_dashboard', {
+        return res.render('admin_dashboard', {
             stats: {
                 totalUsers,
                 totalHostels,
@@ -40,34 +70,58 @@ exports.getAdminDashboard = async (req, res) => {
         });
     } catch (error) {
         console.error('Admin Dashboard Error:', error);
-        res.status(500).send('Error loading admin dashboard');
+        return res.status(500).send('Error loading admin dashboard');
     }
 };
 
-// @desc    Verify hostel
-// @route   GET /admin/verify_hostel/:id
 exports.verifyHostel = async (req, res) => {
     try {
-        await Hostel.findByIdAndUpdate(req.params.id, { is_verified: true });
-        res.redirect('/admin_dashboard?msg=hostel_verified');
+        if (!req.session.user) {
+            return res.redirect('/login');
+        }
+
+        const verificationField = getHostelVerificationField();
+
+        const updatedHostel = await Hostel.findByIdAndUpdate(
+            req.params.id,
+            {
+                $set: {
+                    [verificationField]: true
+                }
+            },
+            {
+                new: true,
+                runValidators: true
+            }
+        );
+
+        if (!updatedHostel) {
+            return res.redirect('/admin_dashboard?msg=hostel_not_found');
+        }
+
+        return res.redirect('/admin_dashboard?msg=hostel_verified');
     } catch (error) {
         console.error('Verify Hostel Error:', error);
-        res.redirect('/admin_dashboard?msg=verify_failed');
+        return res.redirect('/admin_dashboard?msg=verify_failed');
     }
 };
 
-// @desc    Delete user
-// @route   GET /admin/delete_user/:id
 exports.deleteUser = async (req, res) => {
     try {
-        if (String(req.params.id) === String(req.session.user.id)) {
+        if (!req.session.user) {
+            return res.redirect('/login');
+        }
+
+        const adminId = req.session.user.id || req.session.user._id;
+
+        if (String(req.params.id) === String(adminId)) {
             return res.redirect('/admin_dashboard?msg=cannot_delete_self');
         }
 
         await User.findByIdAndDelete(req.params.id);
-        res.redirect('/admin_dashboard?msg=user_deleted');
+        return res.redirect('/admin_dashboard?msg=user_deleted');
     } catch (error) {
         console.error('Delete User Error:', error);
-        res.redirect('/admin_dashboard?msg=delete_failed');
+        return res.redirect('/admin_dashboard?msg=delete_failed');
     }
 };
